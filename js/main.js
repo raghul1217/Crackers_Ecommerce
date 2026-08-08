@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initial cart UI sync
   _updateCartUI();
 
+  // Apply Lucide icons to all static [data-lucide] elements on page load
+  if (window.lucide) lucide.createIcons();
+
   switch (PAGE) {
     case 'home':    await initHome();    break;
     case 'shop':    await initShop();    break;
@@ -33,7 +36,7 @@ async function initHome() {
 
   // Category grid
   const categories = getCategories();
-  renderCategoryGrid(categories, 'category-grid');
+  renderCategoryGrid(categories, 'category-grid'); // calls _applyIcons internally
 
   // Category chips (horizontal scroll)
   renderCategoryChips(
@@ -50,7 +53,7 @@ async function initHome() {
   renderProductRow(bestsellers, 'bestsellers-row', product => {
     addToCart(product);
     showToast(`${product.name} added to cart!`);
-  });
+  }); // _applyIcons called inside renderProductRow
 
   // Combos row — if none found, show newest products
   let combos = getCombos(10);
@@ -137,7 +140,7 @@ function _applyShopFilters() {
   renderProductGrid(results, 'products-grid', product => {
     addToCart(product);
     showToast(`${product.name} added to cart!`);
-  });
+  }); // _applyIcons called inside renderProductGrid
 }
 
 /* ══════════════════════════════════════════════════════
@@ -151,11 +154,12 @@ async function initProduct() {
   if (!productId) {
     document.getElementById('product-detail').innerHTML = `
       <div class="empty-state" style="padding:3rem;">
-        <div class="empty-icon">😕</div>
+        <div class="empty-icon"><i data-lucide="package-search"></i></div>
         <h3>Product not found</h3>
         <a href="shop.html" class="btn-primary">Browse Products</a>
       </div>
     `;
+    if (window.lucide) lucide.createIcons();
     return;
   }
 
@@ -165,11 +169,12 @@ async function initProduct() {
   if (!product) {
     document.getElementById('product-detail').innerHTML = `
       <div class="empty-state" style="padding:3rem;">
-        <div class="empty-icon">😕</div>
+        <div class="empty-icon"><i data-lucide="package-search"></i></div>
         <h3>Product not found</h3>
         <a href="shop.html" class="btn-primary">Browse Products</a>
       </div>
     `;
+    if (window.lucide) lucide.createIcons();
     return;
   }
 
@@ -199,15 +204,18 @@ async function initProduct() {
           <span class="pd-review-count">(${Math.floor(product.rating * 23)} reviews)</span>
         </div>
         <div class="pd-pricing">
-          <span class="pd-price">₹${product.price.toLocaleString('en-IN')}</span>
+          <span class="pd-price">&#8377;${product.price.toLocaleString('en-IN')}</span>
           ${product.mrp ? `
-            <span class="pd-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>
+            <span class="pd-mrp">&#8377;${product.mrp.toLocaleString('en-IN')}</span>
             <span class="pd-discount-label">${product.discountPercent}% off</span>
           ` : ''}
         </div>
         <div class="pd-unit">Unit: ${product.unit}</div>
         <div class="pd-stock ${product.inStock ? 'in-stock' : 'no-stock'}">
-          ${product.inStock ? '✔ In Stock' : '✘ Out of Stock'}
+          ${product.inStock
+            ? '<i data-lucide="check-circle"></i> In Stock'
+            : '<i data-lucide="x-circle"></i> Out of Stock'
+          }
         </div>
         <div class="pd-desc">
           <h2 class="pd-desc-label">Description</h2>
@@ -224,11 +232,11 @@ async function initProduct() {
         <div class="pd-actions">
           <button class="btn-primary pd-add-cart" id="pd-add-to-cart-btn"
                   ${!product.inStock ? 'disabled' : ''}>
-            🛒 Add to Cart
+            <i data-lucide="shopping-cart"></i> Add to Cart
           </button>
           <button class="btn-secondary pd-buy-now" id="pd-buy-now-btn"
                   ${!product.inStock ? 'disabled' : ''}>
-            ⚡ Buy Now
+            <i data-lucide="zap"></i> Buy Now
           </button>
         </div>
         ${inCartQty > 0 ? `<div class="pd-in-cart-note">Already in cart: ${inCartQty}</div>` : ''}
@@ -273,6 +281,9 @@ async function initProduct() {
   });
 
   // Related products
+  // Apply Lucide icons to the newly injected product detail HTML
+  if (window.lucide) lucide.createIcons();
+
   showLoading('related-products-row');
   const related = getRelatedProducts(productId, 6);
   renderProductRow(related, 'related-products-row', p => {
@@ -368,8 +379,8 @@ function _renderCartPage() {
   const totalEl     = document.getElementById('cart-total');
 
   if (itemCountEl) itemCountEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-  if (subtotalEl)  subtotalEl.textContent  = `₹${total.toLocaleString('en-IN')}`;
-  if (totalEl)     totalEl.textContent     = `₹${total.toLocaleString('en-IN')}`;
+  if (subtotalEl)  subtotalEl.textContent  = `\u20B9${total.toLocaleString('en-IN')}`;
+  if (totalEl)     totalEl.textContent     = `\u20B9${total.toLocaleString('en-IN')}`;
 }
 
 /* ══════════════════════════════════════════════════════

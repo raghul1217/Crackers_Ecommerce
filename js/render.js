@@ -1,22 +1,23 @@
 /**
  * render.js — DOM rendering helpers for product cards, categories, cart items
+ * Icons: Lucide (https://lucide.dev) — call lucide.createIcons() after inserting HTML
  */
 
-/* ── Category Icon Map ──────────────────────────────── */
+/* ── Category Icon Map (Lucide icon names) ───────────── */
 const CATEGORY_ICONS = {
-  'Gift Boxes':          '🎁',
-  'Sky Shots':           '🚀',
-  'Sparklers':           '✨',
-  'Ground Chakkars':     '🌀',
-  'Flower Pots':         '🌸',
-  'Rockets':             '🔴',
-  'Sound Crackers':      '💥',
-  'Fancy Crackers':      '🎆',
-  'Party Crackers':      '🎉',
-  'Kids Special':        '🧒',
-  'Garland Crackers':    '🪅',
-  'Repeating Fountains': '⛲',
-  'Deluxe Premium':      '👑',
+  'Gift Boxes':          'gift',
+  'Sky Shots':           'rocket',
+  'Sparklers':           'sparkles',
+  'Ground Chakkars':     'refresh-cw',
+  'Flower Pots':         'flower-2',
+  'Rockets':             'navigation',
+  'Sound Crackers':      'zap',
+  'Fancy Crackers':      'wand-2',
+  'Party Crackers':      'party-popper',
+  'Kids Special':        'baby',
+  'Garland Crackers':    'link-2',
+  'Repeating Fountains': 'droplets',
+  'Deluxe Premium':      'crown',
 };
 
 const CATEGORY_COLORS = {
@@ -35,20 +36,27 @@ const CATEGORY_COLORS = {
   'Deluxe Premium':      '#827717',
 };
 
+/* ── Lucide helper ─────────────────────────────────────── */
+
+/** Trigger Lucide icon rendering (safe — no-op if not loaded yet) */
+function _applyIcons() {
+  if (window.lucide) lucide.createIcons();
+}
+
 /* ── Star Rating ─────────────────────────────────────── */
 
 /**
- * Generate star rating HTML
+ * Generate star rating HTML using Lucide star icons
  * @param {number} rating — 0 to 5
  */
 function renderStars(rating) {
   const full  = Math.floor(rating);
   const half  = rating % 1 >= 0.5 ? 1 : 0;
   const empty = 5 - full - half;
-  let html = '<span class="stars" aria-label="Rating: ' + rating + ' out of 5">';
-  for (let i = 0; i < full;  i++) html += '<span class="star full">★</span>';
-  if (half)                         html += '<span class="star half">★</span>';
-  for (let i = 0; i < empty; i++) html += '<span class="star empty">★</span>';
+  let html = `<span class="stars" aria-label="Rating: ${rating} out of 5">`;
+  for (let i = 0; i < full;  i++) html += `<span class="star full"><i data-lucide="star"></i></span>`;
+  if (half)                         html += `<span class="star half"><i data-lucide="star-half"></i></span>`;
+  for (let i = 0; i < empty; i++) html += `<span class="star empty"><i data-lucide="star"></i></span>`;
   html += `<span class="rating-num">${rating.toFixed(1)}</span></span>`;
   return html;
 }
@@ -110,8 +118,8 @@ function renderProductCard(product) {
         ${renderStars(product.rating)}
       </div>
       <div class="card-pricing">
-        <span class="card-price">₹${product.price.toLocaleString('en-IN')}</span>
-        ${product.mrp ? `<span class="card-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>` : ''}
+        <span class="card-price">&#8377;${product.price.toLocaleString('en-IN')}</span>
+        ${product.mrp ? `<span class="card-mrp">&#8377;${product.mrp.toLocaleString('en-IN')}</span>` : ''}
       </div>
       <div class="card-unit">${product.unit || ''}</div>
       <button
@@ -142,8 +150,8 @@ function renderCategoryGrid(categories, containerId) {
 
   const filtered = categories.filter(c => c !== 'All');
   container.innerHTML = filtered.map(cat => {
-    const icon  = CATEGORY_ICONS[cat]  || '🎇';
-    const color = CATEGORY_COLORS[cat] || '#FF6F00';
+    const iconName = CATEGORY_ICONS[cat] || 'sparkles';
+    const color    = CATEGORY_COLORS[cat] || '#FF6F00';
     return `
       <a href="shop.html?category=${encodeURIComponent(cat)}"
          class="category-grid-item"
@@ -151,12 +159,14 @@ function renderCategoryGrid(categories, containerId) {
          aria-label="Browse ${cat}"
          id="cat-grid-${cat.replace(/\s+/g, '-').toLowerCase()}">
         <div class="cat-icon-wrap">
-          <span class="cat-icon">${icon}</span>
+          <i data-lucide="${iconName}" class="cat-icon"></i>
         </div>
         <span class="cat-label">${cat}</span>
       </a>
     `;
   }).join('');
+
+  _applyIcons();
 }
 
 /* ── Category Chips ──────────────────────────────────── */
@@ -218,27 +228,28 @@ function renderCartItem(item) {
     </div>
     <div class="cart-item-info">
       <a href="product.html?id=${item.id}" class="cart-item-name">${item.name}</a>
-      <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')} each</div>
+      <div class="cart-item-price">&#8377;${item.price.toLocaleString('en-IN')} each</div>
       <div class="cart-item-controls">
         <button class="qty-btn qty-minus" data-id="${item.id}"
                 aria-label="Decrease quantity of ${item.name}"
-                id="qty-minus-${item.id}">−</button>
+                id="qty-minus-${item.id}">&#8722;</button>
         <span class="qty-display" aria-live="polite">${item.qty}</span>
         <button class="qty-btn qty-plus" data-id="${item.id}"
                 aria-label="Increase quantity of ${item.name}"
-                id="qty-plus-${item.id}">+</button>
+                id="qty-plus-${item.id}">&#43;</button>
       </div>
     </div>
     <div class="cart-item-right">
-      <div class="cart-item-total">₹${lineTotal.toLocaleString('en-IN')}</div>
+      <div class="cart-item-total">&#8377;${lineTotal.toLocaleString('en-IN')}</div>
       <button class="cart-remove-btn" data-id="${item.id}"
               aria-label="Remove ${item.name} from cart"
               id="remove-${item.id}" title="Remove item">
-        ✕
+        <i data-lucide="x"></i>
       </button>
     </div>
   `;
 
+  _applyIcons();
   return row;
 }
 
@@ -259,12 +270,13 @@ function renderProductGrid(products, containerId, onAddToCart) {
   if (!products || products.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🔍</div>
+        <div class="empty-icon"><i data-lucide="search-x"></i></div>
         <h3>No products found</h3>
         <p>Try a different search term or category.</p>
         <a href="shop.html" class="btn-primary">Browse All Products</a>
       </div>
     `;
+    _applyIcons();
     return;
   }
 
@@ -289,6 +301,8 @@ function renderProductGrid(products, containerId, onAddToCart) {
 
     container.appendChild(card);
   });
+
+  _applyIcons();
 }
 
 /* ── Horizontal Scroll Row ───────────────────────────── */
@@ -324,6 +338,8 @@ function renderProductRow(products, containerId, onAddToCart) {
 
     container.appendChild(card);
   });
+
+  _applyIcons();
 }
 
 /* ── Loading Spinner ─────────────────────────────────── */
@@ -334,7 +350,7 @@ function showLoading(containerId) {
   el.innerHTML = `
     <div class="loading-state">
       <div class="spinner"></div>
-      <p>Loading products…</p>
+      <p>Loading products&hellip;</p>
     </div>
   `;
 }

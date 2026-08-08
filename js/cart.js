@@ -128,19 +128,19 @@ function buildWhatsAppURL() {
   const items = getCart();
   if (!items.length) return null;
 
-  let msg = `*${SHOP_NAME} — New Order* 🧨\n\n`;
+  let msg = `*${SHOP_NAME} -- New Order*\n\n`;
   msg += `*Order Summary:*\n`;
-  msg += `─────────────────\n`;
+  msg += `-------------------\n`;
 
   items.forEach((item, i) => {
     const lineTotal = item.price * item.qty;
     msg += `${i + 1}. ${item.name}\n`;
-    msg += `   Qty: ${item.qty} × ₹${item.price.toLocaleString('en-IN')} = *₹${lineTotal.toLocaleString('en-IN')}*\n`;
+    msg += `   Qty: ${item.qty} x Rs.${item.price.toLocaleString('en-IN')} = *Rs.${lineTotal.toLocaleString('en-IN')}*\n`;
   });
 
-  msg += `─────────────────\n`;
-  msg += `*Total: ₹${getCartTotal().toLocaleString('en-IN')}*\n\n`;
-  msg += `Please confirm availability and arrange delivery/pickup. Thank you! 🙏`;
+  msg += `-------------------\n`;
+  msg += `*Total: Rs.${getCartTotal().toLocaleString('en-IN')}*\n\n`;
+  msg += `Please confirm availability and arrange delivery/pickup. Thank you!`;
 
   const encoded = encodeURIComponent(msg);
   return `https://wa.me/${SHOP_PHONE}?text=${encoded}`;
@@ -173,7 +173,7 @@ function _updateCartUI() {
     if (count > 0) {
       bar.classList.add('visible');
       const totalEl = bar.querySelector('[data-cart-total]');
-      if (totalEl) totalEl.textContent = `₹${getCartTotal().toLocaleString('en-IN')}`;
+      if (totalEl) totalEl.textContent = `\u20B9${getCartTotal().toLocaleString('en-IN')}`;
       const countEl = bar.querySelector('[data-cart-count]');
       if (countEl) countEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
     } else {

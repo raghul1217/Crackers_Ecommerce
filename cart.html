@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart &mdash; Sparkle Crackers</title>
+  <meta name="description" content="Review your cart and place your order via WhatsApp or call us directly. Fast, easy ordering with no online payment required." />
+  <meta name="theme-color" content="#C1121F" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body data-page="cart">
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+    <a href="index.html" class="header-logo" aria-label="Sparkle Crackers Home">
+      <span class="logo-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+      <span>
+        <span class="logo-text">Sparkle Crackers</span>
+        <span class="logo-sub">Premium Fireworks</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <div class="header-spacer"></div>
+
+    <div class="header-actions">
+      <button class="header-btn" id="header-search-btn" aria-label="Search products">
+        <i data-lucide="search"></i>
+      </button>
+      <a href="cart.html" class="header-btn" aria-label="View cart" id="header-cart-btn">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-badge" data-cart-badge aria-label="Cart items"></span>
+      </a>
+      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle"
+              aria-label="Open menu" aria-expanded="false"
+              aria-controls="mobile-nav-menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile navigation">
+    <a href="index.html"><i data-lucide="home"></i> Home</a>
+    <a href="shop.html"><i data-lucide="shopping-bag"></i> Shop All</a>
+    <a href="about.html"><i data-lucide="info"></i> About Us</a>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+    <span>My Cart</span>
+  </nav>
+
+  <!-- MAIN: Cart page -->
+  <main class="cart-page page-container" aria-label="Shopping cart">
+
+    <h1 class="cart-page-title">
+      <i data-lucide="shopping-cart"></i> My Cart
+    </h1>
+
+    <!-- EMPTY STATE -->
+    <div class="cart-empty-state" id="cart-empty-state" style="display:none;" role="status">
+      <div class="cart-empty-icon"><i data-lucide="package-open"></i></div>
+      <h2>Your cart is empty!</h2>
+      <p>Looks like you haven&rsquo;t added any crackers yet. Browse our festive collection to get started.</p>
+      <a href="shop.html" class="btn-primary" id="cart-browse-btn">
+        <i data-lucide="shopping-bag"></i> Browse Products
+      </a>
+    </div>
+
+    <!-- CART ITEMS -->
+    <div id="cart-items-container" role="list" aria-label="Cart items" aria-live="polite">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- ORDER PANEL -->
+    <div class="cart-order-panel" id="cart-order-panel">
+
+      <h2 class="cart-summary-title">Order Summary</h2>
+
+      <div class="cart-summary-row">
+        <span>Items</span>
+        <span id="cart-item-count">0 items</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">&#8377;0</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Delivery</span>
+        <span style="color:#2E7D32;font-weight:600;">Discuss with shop</span>
+      </div>
+      <div class="cart-summary-row total">
+        <span>Total</span>
+        <span id="cart-total">&#8377;0</span>
+      </div>
+
+      <!-- Info note -->
+      <div style="
+        background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,111,0,0.1));
+        border-left: 3px solid #FFC107;
+        border-radius: 0 8px 8px 0;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #5D4037;
+        margin: 16px 0;
+        line-height: 1.5;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      ">
+        <i data-lucide="info" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;"></i>
+        <span><strong>How to pay:</strong> Place your order via WhatsApp or call us. We&rsquo;ll confirm stock, price, and arrange payment (UPI/cash) &amp; delivery manually.</span>
+      </div>
+
+      <!-- Order Buttons -->
+      <div class="cart-order-btns">
+        <button class="btn-primary btn-whatsapp" id="whatsapp-order-btn" aria-label="Place order on WhatsApp">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="flex-shrink:0;" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Place Order on WhatsApp
+        </button>
+
+        <a href="tel:+919876543210" class="btn-primary btn-call" id="call-order-btn"
+           style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;"
+           aria-label="Call to place order">
+          <i data-lucide="phone"></i> Call to Order
+        </a>
+      </div>
+
+      <div class="cart-clear-row">
+        <button class="cart-clear-btn" id="clear-cart-btn" aria-label="Clear entire cart">
+          Clear entire cart
+        </button>
+      </div>
+
+      <div style="text-align:center;margin-top:12px;">
+        <a href="shop.html" style="font-size:13px;color:#C1121F;font-weight:600;display:inline-flex;align-items:center;gap:5px;">
+          <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Continue Shopping
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-brand">
+      <span class="logo-icon"><i data-lucide="sparkles"></i></span>
+      <div>
+        <div class="logo-text">Sparkle Crackers</div>
+        <div class="logo-sub">Premium Fireworks</div>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <i data-lucide="alert-triangle"></i>
+      Sale of fireworks is subject to local regulations. Please use crackers responsibly and follow local guidelines and timings.
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Sparkle Crackers</span>
+      <a href="about.html" style="color:rgba(255,255,255,0.5);">About &amp; Contact</a>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

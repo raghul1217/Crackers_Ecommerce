@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Detail &mdash; Sparkle Crackers</title>
+  <meta name="description" content="View product details, pricing, and add to cart. Place your order via WhatsApp or call." />
+  <meta name="theme-color" content="#C1121F" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body data-page="product">
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+    <a href="index.html" class="header-logo" aria-label="Sparkle Crackers Home">
+      <span class="logo-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+      <span>
+        <span class="logo-text">Sparkle Crackers</span>
+        <span class="logo-sub">Premium Fireworks</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="shop.html" class="active">Shop</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <div class="header-spacer"></div>
+
+    <div class="header-actions">
+      <button class="header-btn" id="header-search-btn" aria-label="Search products">
+        <i data-lucide="search"></i>
+      </button>
+      <a href="cart.html" class="header-btn" aria-label="View cart" id="header-cart-btn">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-badge" data-cart-badge aria-label="Cart items"></span>
+      </a>
+      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle"
+              aria-label="Open menu" aria-expanded="false"
+              aria-controls="mobile-nav-menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile navigation">
+    <a href="index.html"><i data-lucide="home"></i> Home</a>
+    <a href="shop.html"><i data-lucide="shopping-bag"></i> Shop All</a>
+    <a href="cart.html"><i data-lucide="shopping-cart"></i> My Cart</a>
+    <a href="about.html"><i data-lucide="info"></i> About Us</a>
+  </nav>
+
+  <!-- Sticky Cart Bar -->
+  <div class="sticky-cart-bar" id="sticky-cart-bar" role="complementary" aria-label="Cart summary">
+    <div class="sticky-cart-info">
+      <span class="scb-count" data-cart-count>0 items</span>
+      <span class="scb-total" data-cart-total>&#8377;0</span>
+    </div>
+    <a href="cart.html" class="sticky-cart-btn">View Cart <i data-lucide="shopping-cart"></i></a>
+  </div>
+
+  <!-- BREADCRUMB (updated dynamically) -->
+  <nav class="breadcrumb" id="product-breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+    <a href="shop.html">Shop</a>
+    <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+    <span id="breadcrumb-product-name">Product</span>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="product-detail-page page-container" aria-label="Product detail">
+    <div id="product-detail">
+      <!-- Loading state -->
+      <div class="loading-state" style="padding:4rem 1rem;">
+        <div class="spinner"></div>
+        <p>Loading product&hellip;</p>
+      </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <section class="page-section" aria-labelledby="related-heading" style="margin-top:2rem;">
+      <div class="section-header">
+        <h2 class="section-title" id="related-heading">Related Products</h2>
+        <a href="shop.html" class="section-see-all">See All &rarr;</a>
+      </div>
+      <div class="section-body">
+        <div class="products-row" id="related-products-row" role="list" aria-label="Related products">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-brand">
+      <span class="logo-icon"><i data-lucide="sparkles"></i></span>
+      <div>
+        <div class="logo-text">Sparkle Crackers</div>
+        <div class="logo-sub">Premium Fireworks</div>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <i data-lucide="alert-triangle"></i>
+      Sale of fireworks is subject to local regulations. Please use crackers responsibly and follow local guidelines and timings.
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Sparkle Crackers</span>
+      <a href="about.html" style="color:rgba(255,255,255,0.5);">About &amp; Contact</a>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Update breadcrumb after product loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (id) {
+        loadProducts().then(() => {
+          const p = getProductById(id);
+          if (p) {
+            document.title = `${p.name} \u2014 Sparkle Crackers`;
+            const nav = document.getElementById('product-breadcrumb');
+            if (nav) {
+              nav.innerHTML = `
+                <a href="index.html">Home</a>
+                <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+                <a href="shop.html?category=${encodeURIComponent(p.category)}">${p.category}</a>
+                <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+                <span>${p.name}</span>
+              `;
+              if (window.lucide) lucide.createIcons();
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop All Crackers &mdash; Sparkle Crackers</title>
+  <meta name="description" content="Browse and buy all premium fireworks and crackers. Filter by category, sort by price, and search. Over 40 products across 13 categories." />
+  <meta name="theme-color" content="#C1121F" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    .desktop-shop-search { display: none; align-items: center; gap: 8px; padding: 12px; }
+    @media(min-width:1024px) {
+      .desktop-shop-search { display: flex; }
+      .shop-toolbar { display: none !important; }
+      .chips-container.shop-chips { display: none; }
+    }
+    .sidebar-sort-wrap { margin-top: 20px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
+    .sidebar-sort-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #757575; margin-bottom: 8px; display: block; }
+    .sidebar-sort-wrap select { width: 100%; padding: 8px 10px; border: 1.5px solid #E0E0E0; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; }
+  </style>
+</head>
+<body data-page="shop">
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+    <a href="index.html" class="header-logo" aria-label="Sparkle Crackers Home">
+      <span class="logo-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+      <span>
+        <span class="logo-text">Sparkle Crackers</span>
+        <span class="logo-sub">Premium Fireworks</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="shop.html" class="active">Shop</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <div class="header-spacer"></div>
+
+    <div class="header-actions">
+      <button class="header-btn" id="header-search-btn" aria-label="Focus search">
+        <i data-lucide="search"></i>
+      </button>
+      <a href="cart.html" class="header-btn" aria-label="View cart" id="header-cart-btn">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-badge" data-cart-badge aria-label="Cart items"></span>
+      </a>
+      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle"
+              aria-label="Open menu" aria-expanded="false"
+              aria-controls="mobile-nav-menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile navigation">
+    <a href="index.html"><i data-lucide="home"></i> Home</a>
+    <a href="shop.html"><i data-lucide="shopping-bag"></i> Shop All</a>
+    <a href="cart.html"><i data-lucide="shopping-cart"></i> My Cart</a>
+    <a href="about.html"><i data-lucide="info"></i> About Us</a>
+  </nav>
+
+  <!-- Sticky Cart Bar -->
+  <div class="sticky-cart-bar" id="sticky-cart-bar" role="complementary" aria-label="Cart summary">
+    <div class="sticky-cart-info">
+      <span class="scb-count" data-cart-count>0 items</span>
+      <span class="scb-total" data-cart-total>&#8377;0</span>
+    </div>
+    <a href="cart.html" class="sticky-cart-btn">View Cart <i data-lucide="shopping-cart"></i></a>
+  </div>
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+    <span>Shop</span>
+  </nav>
+
+  <!-- MOBILE/TABLET TOOLBAR -->
+  <div class="shop-toolbar" role="search" aria-label="Product search and sort">
+    <div class="search-input-wrap">
+      <i data-lucide="search" class="search-icon"></i>
+      <input
+        type="search"
+        class="shop-search-input"
+        id="shop-search-input"
+        placeholder="Search crackers&hellip;"
+        aria-label="Search products"
+        autocomplete="off"
+      />
+    </div>
+    <select class="sort-select" id="sort-select" aria-label="Sort products">
+      <option value="popular">Popular</option>
+      <option value="price-asc">Price &uarr;</option>
+      <option value="price-desc">Price &darr;</option>
+    </select>
+  </div>
+
+  <!-- CATEGORY CHIPS (mobile/tablet) -->
+  <div class="chips-container shop-chips" id="shop-category-chips" role="list" aria-label="Filter by category">
+    <!-- Rendered by JS -->
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <main class="shop-layout" aria-label="Product listings">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="shop-sidebar" aria-label="Filter sidebar">
+      <div class="desktop-shop-search">
+        <div class="search-input-wrap" style="flex:1;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input
+            type="search"
+            class="shop-search-input"
+            id="shop-search-input-desktop"
+            placeholder="Search&hellip;"
+            aria-label="Search products"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <h3>Categories</h3>
+      <div class="sidebar-category-list" id="sidebar-category-list" role="list" aria-label="Category filter">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="sidebar-sort-wrap">
+        <span class="sidebar-sort-label">Sort by</span>
+        <select class="sort-select" id="sort-select-sidebar" aria-label="Sort products">
+          <option value="popular">Most Popular</option>
+          <option value="price-asc">Price: Low &rarr; High</option>
+          <option value="price-desc">Price: High &rarr; Low</option>
+        </select>
+      </div>
+    </aside>
+
+    <!-- PRODUCTS AREA -->
+    <div class="shop-main">
+      <p class="results-count" id="results-count" aria-live="polite" aria-atomic="true">Loading&hellip;</p>
+      <div class="products-grid" id="products-grid" role="list" aria-label="Products">
+        <div class="loading-state" style="grid-column:1/-1;">
+          <div class="spinner"></div>
+          <p>Loading products&hellip;</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-brand">
+      <span class="logo-icon"><i data-lucide="sparkles"></i></span>
+      <div>
+        <div class="logo-text">Sparkle Crackers</div>
+        <div class="logo-sub">Premium Fireworks</div>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <i data-lucide="alert-triangle"></i>
+      Sale of fireworks is subject to local regulations. Please use crackers responsibly and follow local guidelines and timings.
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Sparkle Crackers</span>
+      <a href="about.html" style="color:rgba(255,255,255,0.5);">About &amp; Contact</a>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopSearch = document.getElementById('shop-search-input-desktop');
+      const sidebarSort   = document.getElementById('sort-select-sidebar');
+
+      if (desktopSearch) {
+        desktopSearch.addEventListener('input', () => {
+          _searchQuery = desktopSearch.value.trim();
+          const mobileSearch = document.getElementById('shop-search-input');
+          if (mobileSearch) mobileSearch.value = desktopSearch.value;
+          _applyShopFilters();
+        });
+      }
+
+      if (sidebarSort) {
+        sidebarSort.addEventListener('change', () => {
+          _activeSort = sidebarSort.value;
+          const mobileSort = document.getElementById('sort-select');
+          if (mobileSort) mobileSort.value = sidebarSort.value;
+          _applyShopFilters();
+        });
+      }
+
+      loadProducts().then(() => {
+        const cats = getCategories();
+        const list = document.getElementById('sidebar-category-list');
+        if (!list) return;
+
+        cats.forEach(cat => {
+          const btn = document.createElement('button');
+          btn.className = 'sidebar-cat-btn' + (cat === _activeCategory ? ' active' : '');
+          btn.dataset.category = cat;
+          btn.setAttribute('role', 'listitem');
+          btn.id = `sidebar-cat-${cat.replace(/\s+/g, '-').toLowerCase()}`;
+          const iconName = CATEGORY_ICONS[cat] || 'sparkles';
+          btn.innerHTML = `<i data-lucide="${iconName}" style="width:14px;height:14px;"></i><span>${cat}</span>`;
+          btn.addEventListener('click', () => {
+            list.querySelectorAll('.sidebar-cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            _activeCategory = cat;
+            _searchQuery = '';
+            const ds = document.getElementById('shop-search-input-desktop');
+            if (ds) ds.value = '';
+            const ms = document.getElementById('shop-search-input');
+            if (ms) ms.value = '';
+            _applyShopFilters();
+          });
+          list.appendChild(btn);
+        });
+
+        if (window.lucide) lucide.createIcons();
+      });
+    });
+  </script>
+</body>
+</html>
