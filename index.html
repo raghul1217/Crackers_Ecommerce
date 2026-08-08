@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sparkle Crackers — Premium Fireworks for Diwali &amp; Every Celebration</title>
-  <meta name="description" content="Shop the widest range of premium quality fireworks and crackers online. Sky shots, sparklers, gift boxes, rockets and more. Order via WhatsApp or call us!" />
+  <meta name="description"
+    content="Shop the widest range of premium quality fireworks and crackers online. Sky shots, sparklers, gift boxes, rockets and more. Order via WhatsApp or call us!" />
   <meta name="theme-color" content="#C1121F" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
+
 <body data-page="home">
 
   <!-- ═══════ HEADER ═══════ -->
@@ -31,16 +34,12 @@
     <div class="header-spacer"></div>
 
     <div class="header-actions">
-      <button class="header-btn" id="header-search-btn" aria-label="Search products">
-        <i data-lucide="search"></i>
-      </button>
       <a href="cart.html" class="header-btn" aria-label="View cart" id="header-cart-btn">
         <i data-lucide="shopping-cart"></i>
         <span class="cart-badge" data-cart-badge aria-label="Cart items"></span>
       </a>
-      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle"
-              aria-label="Open navigation menu" aria-expanded="false"
-              aria-controls="mobile-nav-menu">
+      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Open navigation menu"
+        aria-expanded="false" aria-controls="mobile-nav-menu">
         <i data-lucide="menu"></i>
       </button>
     </div>
@@ -69,16 +68,22 @@
   </div>
 
   <!-- ═══════ MAIN ═══════ -->
-  <main class="page-container">
+  <main>
 
-    <!-- HERO BANNER -->
+    <!-- HERO BANNER (Full Width) -->
     <section class="hero-banner" aria-label="Hero offer banner">
       <!-- Floating particles -->
-      <div class="hero-particle" style="left:15%;top:80%;background:#FFC107;animation-delay:0s;animation-duration:3.5s;"></div>
-      <div class="hero-particle" style="left:35%;top:70%;background:#FF6F00;animation-delay:0.8s;animation-duration:4.2s;"></div>
-      <div class="hero-particle" style="left:60%;top:85%;background:#fff;animation-delay:0.3s;animation-duration:3.8s;"></div>
-      <div class="hero-particle" style="left:80%;top:75%;background:#FFC107;animation-delay:1.2s;animation-duration:4s;width:8px;height:8px;"></div>
-      <div class="hero-particle" style="left:50%;top:90%;background:#FF6F00;animation-delay:1.8s;animation-duration:3.2s;"></div>
+      <div class="hero-particle"
+        style="left:15%;top:80%;background:#FFC107;animation-delay:0s;animation-duration:3.5s;"></div>
+      <div class="hero-particle"
+        style="left:35%;top:70%;background:#FF6F00;animation-delay:0.8s;animation-duration:4.2s;"></div>
+      <div class="hero-particle" style="left:60%;top:85%;background:#fff;animation-delay:0.3s;animation-duration:3.8s;">
+      </div>
+      <div class="hero-particle"
+        style="left:80%;top:75%;background:#FFC107;animation-delay:1.2s;animation-duration:4s;width:8px;height:8px;">
+      </div>
+      <div class="hero-particle"
+        style="left:50%;top:90%;background:#FF6F00;animation-delay:1.8s;animation-duration:3.2s;"></div>
 
       <div class="hero-eyebrow">
         <i data-lucide="sparkles"></i>
@@ -87,7 +92,8 @@
       </div>
       <h1 class="hero-title">
         Light Up Your
-        <span>Celebrations! <i data-lucide="sparkles" style="width:32px;height:32px;vertical-align:middle;color:#FFC107;"></i></span>
+        <span>Celebrations! <i data-lucide="sparkles"
+            style="width:32px;height:32px;vertical-align:middle;color:#FFC107;"></i></span>
       </h1>
       <p class="hero-sub">Premium crackers at unbeatable prices. Order via WhatsApp &mdash; fast &amp; easy!</p>
 
@@ -101,13 +107,16 @@
         <a href="shop.html" class="btn-primary" id="hero-shop-btn">
           <i data-lucide="shopping-bag"></i> Shop Now
         </a>
-        <a href="about.html#contact" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.6);" id="hero-contact-btn">
+        <a href="about.html#contact" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.6);"
+          id="hero-contact-btn">
           <i data-lucide="phone"></i> Call Us
         </a>
       </div>
     </section>
 
-    <!-- CATEGORY CHIPS -->
+    <div class="page-container">
+
+      <!-- CATEGORY CHIPS -->
     <section class="page-section" aria-label="Browse by category">
       <div class="chips-container" id="home-category-chips" role="list" aria-label="Product categories">
         <div class="loading-state" style="min-height:44px;padding:0;flex-direction:row;">
@@ -144,19 +153,10 @@
 
     <!-- OFFER STRIP -->
     <section class="page-section" aria-label="Offer banner">
-      <div style="
-        background: linear-gradient(135deg, #004D40, #00897B);
-        margin: 0 16px;
-        border-radius: 12px;
-        padding: 20px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        box-shadow: 0 4px 16px rgba(0,137,123,0.3);
-      ">
+      <div class="offer-strip-banner">
         <div>
-          <div style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">
+          <div
+            style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">
             <i data-lucide="gift" style="width:22px;height:22px;flex-shrink:0;"></i>
             Gift Box Combos
           </div>
@@ -164,7 +164,8 @@
             Best value packs from &#8377;299. Perfect for family celebrations!
           </div>
         </div>
-        <a href="shop.html?category=Gift%20Boxes" class="btn-primary" style="flex-shrink:0;font-size:13px;padding:9px 16px;" id="offer-strip-btn">
+        <a href="shop.html?category=Gift%20Boxes" class="btn-primary"
+          style="flex-shrink:0;font-size:13px;padding:9px 16px;" id="offer-strip-btn">
           Shop &rarr;
         </a>
       </div>
@@ -189,24 +190,33 @@
         <h2 class="section-title" id="why-heading">Why Sparkle Crackers?</h2>
       </div>
       <div class="section-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i data-lucide="shield-check" style="color:#2E7D32;"></i></div>
+        <div class="trust-badges-grid">
+          <div
+            style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i
+                data-lucide="shield-check" style="color:#2E7D32;"></i></div>
             <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;">Licensed &amp; Safe</div>
             <div style="font-size:11.5px;color:#757575;margin-top:4px;">All products meet BIS safety standards</div>
           </div>
-          <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i data-lucide="message-circle" style="color:#128C7E;"></i></div>
+          <div
+            style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i
+                data-lucide="message-circle" style="color:#128C7E;"></i></div>
             <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;">WhatsApp Ordering</div>
-            <div style="font-size:11.5px;color:#757575;margin-top:4px;">Quick &amp; easy &mdash; chat to confirm &amp; pay</div>
+            <div style="font-size:11.5px;color:#757575;margin-top:4px;">Quick &amp; easy &mdash; chat to confirm &amp;
+              pay</div>
           </div>
-          <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i data-lucide="tag" style="color:#FF6F00;"></i></div>
+          <div
+            style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i data-lucide="tag"
+                style="color:#FF6F00;"></i></div>
             <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;">Best Prices</div>
             <div style="font-size:11.5px;color:#757575;margin-top:4px;">Up to 30% off manufacturer MRP</div>
           </div>
-          <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i data-lucide="truck" style="color:#1565C0;"></i></div>
+          <div
+            style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+            <div class="trust-icon" style="margin-bottom:8px;display:flex;justify-content:center;"><i
+                data-lucide="truck" style="color:#1565C0;"></i></div>
             <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;">Home Delivery</div>
             <div style="font-size:11.5px;color:#757575;margin-top:4px;">Local delivery &amp; pickup available</div>
           </div>
@@ -214,7 +224,8 @@
       </div>
     </section>
 
-  </main>
+  </div>
+</main>
 
   <!-- ═══════ FOOTER ═══════ -->
   <footer class="site-footer" role="contentinfo">
@@ -225,7 +236,8 @@
         <div class="logo-sub">Premium Fireworks</div>
       </div>
     </div>
-    <p class="footer-tagline">Your one-stop destination for premium quality fireworks. Lighting up celebrations across Tamil Nadu since 2005.</p>
+    <p class="footer-tagline">Your one-stop destination for premium quality fireworks. Lighting up celebrations across
+      Tamil Nadu since 2005.</p>
 
     <div class="footer-links-grid">
       <div class="footer-links-col">
@@ -250,13 +262,13 @@
       </div>
     </div>
 
-    <div class="footer-disclaimer">
+    <!-- <div class="footer-disclaimer">
       <i data-lucide="alert-triangle"></i>
       <strong>Safety Notice:</strong> Sale of fireworks is subject to local regulations. Please use crackers responsibly, follow local timings and guidelines, and keep children under adult supervision. Do not use near flammable material. Sparkle Crackers holds valid licenses for fireworks retail under The Explosives Act, 1884.
-    </div>
+    </div> -->
 
     <div class="footer-bottom">
-      <span>&copy; 2025 Sparkle Crackers. All rights reserved.</span>
+      <span>&copy; 2026 Sparkle Crackers. All rights reserved.</span>
       <span>Made with <span class="heart-icon"><i data-lucide="heart"></i></span> in Sivakasi, Tamil Nadu</span>
     </div>
   </footer>
@@ -268,4 +280,5 @@
   <script src="js/render.js"></script>
   <script src="js/main.js"></script>
 </body>
+
 </html>

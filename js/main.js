@@ -436,19 +436,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // Header search icon
-  const headerSearchBtn = document.getElementById('header-search-btn');
-  if (headerSearchBtn) {
-    headerSearchBtn.addEventListener('click', () => {
-      if (PAGE === 'shop') {
-        document.getElementById('shop-search-input')?.focus();
-      } else {
-        const q = prompt('Search for crackers:');
-        if (q && q.trim()) {
-          window.location.href = `shop.html?q=${encodeURIComponent(q.trim())}`;
-        }
-      }
-    });
-  }
 });
