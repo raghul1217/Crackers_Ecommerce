@@ -4,7 +4,7 @@
  */
 
 const CART_KEY = 'sparkle_crackers_cart';
-const SHOP_PHONE = '919876543210'; // Replace with real phone number (country code + number, no +)
+const SHOP_PHONE = '919345546946'; // Store WhatsApp number (country code + 9345546946)
 const SHOP_NAME  = 'Sparkle Crackers';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }

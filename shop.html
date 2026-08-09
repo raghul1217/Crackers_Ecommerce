@@ -16,7 +16,63 @@
       .desktop-shop-search { display: flex; }
       .shop-toolbar { display: none !important; }
       .chips-container.shop-chips { display: none !important; }
-      .shop-sidebar { display: block !important; }
+      .shop-layout {
+        display: grid !important;
+        grid-template-columns: 280px 1fr !important;
+        gap: 24px !important;
+        align-items: start !important;
+        position: relative !important;
+        padding: 8px 24px 24px !important;
+      }
+      .shop-sidebar {
+        display: block !important;
+        position: sticky !important;
+        top: 70px !important;
+        align-self: flex-start !important;
+        max-height: calc(100vh - 85px) !important;
+        overflow-y: auto !important;
+        scrollbar-width: none !important;
+        width: 280px !important;
+        min-width: 280px !important;
+        z-index: 10 !important;
+      }
+      .shop-sidebar::-webkit-scrollbar { display: none !important; }
+      .shop-main {
+        max-height: calc(100vh - 120px) !important;
+        overflow-y: auto !important;
+        padding-right: 12px !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #C1121F #f0f0f0 !important;
+      }
+      .shop-main::-webkit-scrollbar {
+        width: 6px !important;
+        display: block !important;
+      }
+      .shop-main::-webkit-scrollbar-track {
+        background: #f0f0f0 !important;
+        border-radius: 999px !important;
+      }
+      .shop-main::-webkit-scrollbar-thumb {
+        background: #C1121F !important;
+        border-radius: 999px !important;
+      }
+      .shop-main::-webkit-scrollbar-thumb:hover {
+        background: #96040F !important;
+      }
+      .shop-sidebar h3 {
+        color: #C1121F !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.8px !important;
+      }
+      .sidebar-cat-btn.active {
+        background: #C1121F !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 3px 10px rgba(193, 18, 31, 0.3) !important;
+      }
+      .sidebar-cat-btn.active .lucide {
+        color: #ffffff !important;
+      }
     }
     .sidebar-sort-wrap { margin-top: 20px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
     .sidebar-sort-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #757575; margin-bottom: 8px; display: block; }
@@ -40,6 +96,19 @@
       <a href="shop.html" class="active">Shop</a>
       <a href="about.html">About</a>
     </nav>
+
+    <!-- Header Search Bar -->
+    <div class="header-search-wrap" role="search">
+      <i data-lucide="search" class="header-search-icon"></i>
+      <input
+        type="search"
+        class="header-search-input"
+        id="navbar-search-input"
+        placeholder="Search crackers, sparklers, gift boxes..."
+        aria-label="Search crackers"
+        autocomplete="off"
+      />
+    </div>
 
     <div class="header-spacer"></div>
 
@@ -110,20 +179,6 @@
 
     <!-- DESKTOP SIDEBAR -->
     <aside class="shop-sidebar" aria-label="Filter sidebar">
-      <div class="desktop-shop-search">
-        <div class="search-input-wrap" style="flex:1;">
-          <i data-lucide="search" class="search-icon"></i>
-          <input
-            type="search"
-            class="shop-search-input"
-            id="shop-search-input-desktop"
-            placeholder="Search&hellip;"
-            aria-label="Search products"
-            autocomplete="off"
-          />
-        </div>
-      </div>
-
       <h3>Categories</h3>
       <div class="sidebar-category-list" id="sidebar-category-list" role="list" aria-label="Category filter">
         <!-- Rendered by JS -->
@@ -179,8 +234,8 @@
       </div>
       <div class="footer-links-col">
         <h4>Contact</h4>
-        <a href="tel:+919876543210"><i data-lucide="phone"></i> +91 98765 43210</a>
-        <a href="https://wa.me/919876543210" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
+        <a href="tel:+919345546946"><i data-lucide="phone"></i> +91 93455 46946</a>
+        <a href="https://wa.me/919345546946" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
         <a href="about.html#contact"><i data-lucide="map-pin"></i> Sivakasi, TN</a>
       </div>
     </div>

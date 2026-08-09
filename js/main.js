@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Apply Lucide icons to all static [data-lucide] elements on page load
   if (window.lucide) lucide.createIcons();
 
+  // Navbar global search bar setup for non-shop pages
+  const navSearch = document.getElementById('navbar-search-input');
+  if (navSearch && PAGE !== 'shop') {
+    navSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && navSearch.value.trim()) {
+        window.location.href = `shop.html?q=${encodeURIComponent(navSearch.value.trim())}`;
+      }
+    });
+  }
+
   switch (PAGE) {
     case 'home':    await initHome();    break;
     case 'shop':    await initShop();    break;
@@ -98,14 +108,27 @@ async function initShop() {
     }
   );
 
-  // Search bar pre-fill
-  const searchInput = document.getElementById('shop-search-input');
-  if (searchInput && _searchQuery) {
-    searchInput.value = _searchQuery;
+  // Search bar pre-fill & live filter wiring
+  const navSearch = document.getElementById('navbar-search-input');
+  if (navSearch) {
+    if (_searchQuery) navSearch.value = _searchQuery;
+    navSearch.addEventListener('input', () => {
+      _searchQuery = navSearch.value.trim();
+      _applyShopFilters();
+    });
+    navSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        _searchQuery = navSearch.value.trim();
+        _applyShopFilters();
+      }
+    });
   }
 
-  // Wire search
+  // Also support any inline search inputs
+  const searchInput = document.getElementById('shop-search-input') || document.getElementById('shop-search-input-desktop');
   if (searchInput) {
+    if (_searchQuery) searchInput.value = _searchQuery;
     searchInput.addEventListener('input', () => {
       _searchQuery = searchInput.value.trim();
       _applyShopFilters();
