@@ -8,6 +8,9 @@
 const PAGE = document.body.dataset.page;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Inject shared header/footer partials before any page logic runs
+  await initLayout();
+
   // Initial cart UI sync
   _updateCartUI();
 
@@ -439,24 +442,3 @@ function showToast(message, duration = 2500) {
   }, duration);
 }
 
-/* ── Mobile Nav Toggle ───────────────────────────────── */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const menuToggle = document.getElementById('mobile-menu-toggle');
-  const mobileNav  = document.getElementById('mobile-nav-menu');
-
-  if (menuToggle && mobileNav) {
-    menuToggle.addEventListener('click', () => {
-      const isOpen = mobileNav.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', isOpen);
-    });
-
-    // Close on outside click
-    document.addEventListener('click', e => {
-      if (!menuToggle.contains(e.target) && !mobileNav.contains(e.target)) {
-        mobileNav.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-});
