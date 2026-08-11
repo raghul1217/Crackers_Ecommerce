@@ -15,69 +15,6 @@
 
 <body data-page="home">
 
-  <!-- ═══════ HEADER ═══════ -->
-  <header class="site-header" role="banner">
-    <a href="index.html" class="header-logo" aria-label="Sparkle Crackers Home">
-      <span class="logo-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
-      <span>
-        <span class="logo-text">Sparkle Crackers</span>
-        <span class="logo-sub">Premium Fireworks</span>
-      </span>
-    </a>
-
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="index.html" class="active">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="about.html">About</a>
-    </nav>
-
-    <!-- Header Search Bar -->
-    <div class="header-search-wrap" role="search">
-      <i data-lucide="search" class="header-search-icon"></i>
-      <input
-        type="search"
-        class="header-search-input"
-        id="navbar-search-input"
-        placeholder="Search crackers, sparklers, gift boxes..."
-        aria-label="Search crackers"
-        autocomplete="off"
-      />
-    </div>
-
-    <div class="header-actions">
-      <a href="cart.html" class="header-btn" aria-label="View cart" id="header-cart-btn">
-        <i data-lucide="shopping-cart"></i>
-        <span class="cart-badge" data-cart-badge aria-label="Cart items"></span>
-      </a>
-      <button class="header-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Open navigation menu"
-        aria-expanded="false" aria-controls="mobile-nav-menu">
-        <i data-lucide="menu"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- Mobile Nav -->
-  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile navigation">
-    <a href="index.html"><i data-lucide="home"></i> Home</a>
-    <a href="shop.html"><i data-lucide="shopping-bag"></i> Shop All</a>
-    <a href="shop.html?category=Gift%20Boxes"><i data-lucide="gift"></i> Gift Boxes</a>
-    <a href="shop.html?category=Sky%20Shots"><i data-lucide="rocket"></i> Sky Shots</a>
-    <a href="shop.html?category=Sparklers"><i data-lucide="sparkles"></i> Sparklers</a>
-    <a href="cart.html"><i data-lucide="shopping-cart"></i> My Cart</a>
-    <a href="about.html"><i data-lucide="info"></i> About Us</a>
-  </nav>
-
-  <!-- Sticky Cart Bar -->
-  <div class="sticky-cart-bar" id="sticky-cart-bar" role="complementary" aria-label="Cart summary">
-    <div class="sticky-cart-info">
-      <span class="scb-count" data-cart-count>0 items</span>
-      <span class="scb-total" data-cart-total>&#8377;0</span>
-    </div>
-    <a href="cart.html" class="sticky-cart-btn">
-      View Cart <i data-lucide="shopping-cart"></i>
-    </a>
-  </div>
-
   <!-- ═══════ MAIN ═══════ -->
   <main>
 
@@ -249,52 +186,6 @@
 
   </div>
 </main>
-
-  <!-- ═══════ FOOTER ═══════ -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="footer-brand">
-      <span class="logo-icon"><i data-lucide="sparkles"></i></span>
-      <div>
-        <div class="logo-text">Sparkle Crackers</div>
-        <div class="logo-sub">Premium Fireworks</div>
-      </div>
-    </div>
-    <p class="footer-tagline">Your one-stop destination for premium quality fireworks. Lighting up celebrations across
-      Tamil Nadu since 2005.</p>
-
-    <div class="footer-links-grid">
-      <div class="footer-links-col">
-        <h4>Quick Links</h4>
-        <a href="index.html"><i data-lucide="home"></i> Home</a>
-        <a href="shop.html"><i data-lucide="shopping-bag"></i> All Products</a>
-        <a href="cart.html"><i data-lucide="shopping-cart"></i> My Cart</a>
-        <a href="about.html"><i data-lucide="info"></i> About Us</a>
-      </div>
-      <div class="footer-links-col">
-        <h4>Categories</h4>
-        <a href="shop.html?category=Gift%20Boxes"><i data-lucide="gift"></i> Gift Boxes</a>
-        <a href="shop.html?category=Sky%20Shots"><i data-lucide="rocket"></i> Sky Shots</a>
-        <a href="shop.html?category=Sparklers"><i data-lucide="sparkles"></i> Sparklers</a>
-        <a href="shop.html?category=Deluxe%20Premium"><i data-lucide="crown"></i> Premium</a>
-      </div>
-      <div class="footer-links-col">
-        <h4>Contact</h4>
-        <a href="tel:+919345546946"><i data-lucide="phone"></i> +91 93455 46946</a>
-        <a href="https://wa.me/919345546946" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
-        <a href="about.html"><i data-lucide="map-pin"></i> Sivakasi, TN</a>
-      </div>
-    </div>
-
-    <!-- <div class="footer-disclaimer">
-      <i data-lucide="alert-triangle"></i>
-      <strong>Safety Notice:</strong> Sale of fireworks is subject to local regulations. Please use crackers responsibly, follow local timings and guidelines, and keep children under adult supervision. Do not use near flammable material. Sparkle Crackers holds valid licenses for fireworks retail under The Explosives Act, 1884.
-    </div> -->
-
-    <div class="footer-bottom">
-      <span>&copy; 2026 Sparkle Crackers. All rights reserved.</span>
-      <span>Made with <span class="heart-icon"><i data-lucide="heart"></i></span> in Sivakasi, Tamil Nadu</span>
-    </div>
-  </footer>
 
   <!-- Lucide Icons CDN (must load before main.js) -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
