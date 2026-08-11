@@ -35,7 +35,7 @@ function _saveCart() {
 
 /**
  * Add a product to the cart (or increase qty if already present)
- * @param {Object} product — full product object from products.json
+ * @param {Object} product — full product object (from crackers_list.xlsx)
  * @param {number} qty
  */
 function addToCart(product, qty = 1) {
