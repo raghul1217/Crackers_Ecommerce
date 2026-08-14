@@ -1,6 +1,6 @@
 /**
  * data.js — Product data loading and querying
- * Reads products directly from data/crackers_list.xlsx (via SheetJS)
+ * Reads products from a Google Sheet (published CSV export, via SheetJS)
  * and exposes query helpers
  */
 
@@ -81,15 +81,35 @@ function _round2(value) {
 }
 
 /**
- * Parse the xlsx workbook buffer into product objects
- * @param {ArrayBuffer} buffer
+ * Parse money values that may be formatted, e.g. "₹2,500.00"
+ * @param {*} value
+ * @returns {number}
+ */
+function _parseMoney(value) {
+  if (typeof value === 'number') return isFinite(value) ? value : NaN;
+  const cleaned = String(value == null ? '' : value).replace(/[^\d.-]/g, '');
+  if (!cleaned) return NaN;
+  return Number(cleaned);
+}
+
+/**
+ * Parse percent values, e.g. "10%" → 10
+ * @param {*} value
+ * @returns {number}
+ */
+function _parsePercent(value) {
+  if (typeof value === 'number') return isFinite(value) ? value : 0;
+  const cleaned = String(value == null ? '' : value).replace(/[^\d.-]/g, '');
+  const n = Number(cleaned);
+  return isFinite(n) ? n : 0;
+}
+
+/**
+ * Parse spreadsheet rows into product objects
+ * @param {Array<Object>} rows — objects keyed by header names
  * @returns {Array<Object>}
  */
-function _parseProductsFromXlsx(buffer) {
-  const wb = XLSX.read(buffer, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws, { defval: null });
-
+function _parseProductsFromRows(rows) {
   const perCat = {};
   const products = [];
 
@@ -100,13 +120,13 @@ function _parseProductsFromXlsx(buffer) {
 
     if (!name || !category || sno == null) continue;
 
-    const mrp = Number(row['MRP (₹)']);
-    const price = Number(row['Final Price (₹)']);
+    const mrp = _parseMoney(row['MRP (₹)']);
+    const price = _parseMoney(row['Final Price (₹)']);
     if (!isFinite(mrp) || !isFinite(price)) continue;
 
     const tag = row['Tag'];
     const contents = String(row['Contents / Packing Details'] || '');
-    const discountPercent = Math.round((Number(row['Discount (%)']) || 0) * 100);
+    const discountPercent = Math.round(_parsePercent(row['Discount (%)']));
 
     const base = CATEGORY_IMAGE_BASE[category] || 'placeholder';
     const count = CATEGORY_IMAGE_COUNT[category] || 1;
@@ -131,22 +151,66 @@ function _parseProductsFromXlsx(buffer) {
   return products;
 }
 
+const GOOGLE_SHEET_ID = '1fVKmBQNx9BLI0uTuXf1-26uWdkt8AP4yMaGzn7tfns4';
+const GOOGLE_API_KEY = 'AIzaSyDNsaBBMlV-d-8vYgMiEpW7JneE1bxRtSE';
+
 /**
- * Load all products from data/crackers_list.xlsx
+ * Convert a 2D array of values (first row = headers) into row objects
+ * @param {Array<Array<*>>} rows
+ * @returns {Array<Object>}
+ */
+function _rowsToObjects(rows) {
+  if (!rows || rows.length < 2) return [];
+  const headers = rows[0].map(h => String(h == null ? '' : h));
+  return rows.slice(1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = r[i] != null ? r[i] : null;
+    });
+    return obj;
+  });
+}
+
+/**
+ * Fetch products from the Google Sheet via the Sheets API v4
+ * @returns {Promise<Array<Object>>}
+ */
+async function _fetchProductsFromGoogleSheets() {
+  if (GOOGLE_API_KEY === 'PASTE_YOUR_API_KEY_HERE') {
+    throw new Error('Google Sheets API key not set. Edit GOOGLE_API_KEY in js/data.js');
+  }
+
+  const metaRes = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}?key=${GOOGLE_API_KEY}`
+  );
+  if (!metaRes.ok) throw new Error('Sheets API metadata: HTTP ' + metaRes.status);
+  const meta = await metaRes.json();
+
+  const title = meta.sheets && meta.sheets[0] && meta.sheets[0].properties
+    ? meta.sheets[0].properties.title
+    : 'Sheet1';
+
+  const valuesRes = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${encodeURIComponent(title)}?key=${GOOGLE_API_KEY}`
+  );
+  if (!valuesRes.ok) throw new Error('Sheets API values: HTTP ' + valuesRes.status);
+  const data = await valuesRes.json();
+
+  return _parseProductsFromRows(_rowsToObjects(data.values));
+}
+
+/**
+ * Load all products from the Google Sheet
  * Returns array of product objects (cached after first load)
  */
 async function loadProducts() {
   if (_allProducts.length > 0) return _allProducts;
 
   try {
-    if (typeof XLSX === 'undefined') throw new Error('SheetJS (XLSX) library not loaded');
-    const res = await fetch('data/crackers_list.xlsx');
-    if (!res.ok) throw new Error('Failed to load data/crackers_list.xlsx');
-    const buffer = await res.arrayBuffer();
-    _allProducts = _parseProductsFromXlsx(buffer);
+    _allProducts = await _fetchProductsFromGoogleSheets();
     return _allProducts;
   } catch (err) {
-    console.error('[data.js] Error loading xlsx:', err);
+    console.error('[data.js] Error loading products:', err);
     return [];
   }
 }
