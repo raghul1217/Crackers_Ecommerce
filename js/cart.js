@@ -3,9 +3,9 @@
  * Handles add/remove/update, totals, WhatsApp message generation
  */
 
-const CART_KEY = 'sparkle_crackers_cart';
-const SHOP_PHONE = '919345546946'; // Store WhatsApp number (country code + 9345546946)
-const SHOP_NAME  = 'Sparkle Crackers';
+const CART_KEY = 'sivakasi666_cart';
+const SHOP_PHONE = '919943467824'; // Store WhatsApp number (country code + 9943467824)
+const SHOP_NAME  = 'Sivakasi666crackers';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }
 let _cart = {};

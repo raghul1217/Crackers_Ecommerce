@@ -77,6 +77,85 @@ async function initHome() {
     addToCart(product);
     showToast(`${product.name} added to cart!`);
   });
+
+  initCarousel('bestsellers-row');
+  initCarousel('combos-row');
+}
+
+/**
+ * Wire up prev/next arrows for a horizontal-scroll product row.
+ * Arrows appear only when the row overflows, and update with scroll position.
+ * @param {string} rowId — id of the scrollable .products-row element
+ */
+function initCarousel(rowId) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  const wrap = row.closest('.carousel');
+  if (!wrap) return;
+  const prev = wrap.querySelector('.carousel-arrow.prev');
+  const next = wrap.querySelector('.carousel-arrow.next');
+  if (!prev || !next) return;
+
+  const update = () => {
+    const maxScroll = row.scrollWidth - row.clientWidth;
+    prev.classList.toggle('show', row.scrollLeft > 4);
+    next.classList.toggle('show', row.scrollLeft < maxScroll - 4);
+  };
+
+  const hasOverflow = () => row.scrollWidth > row.clientWidth + 4;
+  if (!hasOverflow()) {
+    wrap.classList.add('no-scroll');
+    return;
+  }
+
+  const step = () => {
+    const card = row.querySelector('.product-card');
+    return (card ? card.getBoundingClientRect().width : 155) + 14;
+  };
+
+  prev.addEventListener('click', () => row.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next.addEventListener('click', () => row.scrollBy({ left: step(), behavior: 'smooth' }));
+
+  row.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  // Auto-scroll: advance every 3.5s, pause on hover / touch / manual scroll
+  let timer = null;
+  let restartDelay = null;
+
+  const start = () => {
+    if (timer) return;
+    timer = setInterval(() => {
+      const maxScroll = row.scrollWidth - row.clientWidth;
+      const nextLeft = row.scrollLeft + step();
+      if (nextLeft >= maxScroll - 4) {
+        row.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        row.scrollBy({ left: step(), behavior: 'smooth' });
+      }
+    }, 2500);
+  };
+  const stop = () => {
+    if (timer) { clearInterval(timer); timer = null; }
+    if (restartDelay) { clearTimeout(restartDelay); restartDelay = null; }
+  };
+  const scheduleRestart = () => {
+    stop();
+    restartDelay = setTimeout(start, 2500);
+  };
+
+  wrap.addEventListener('mouseenter', stop);
+  wrap.addEventListener('mouseleave', start);
+  row.addEventListener('touchstart', stop, { passive: true });
+  row.addEventListener('touchend', scheduleRestart, { passive: true });
+  prev.addEventListener('click', stop);
+  next.addEventListener('click', stop);
+  if ('scrollend' in row) {
+    row.addEventListener('scrollend', scheduleRestart);
+  }
+
+  start();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -205,7 +284,7 @@ async function initProduct() {
   }
 
   // Populate product detail
-  document.title = `${product.name} — Sparkle Crackers`;
+  document.title = `${product.name} — Sivakasi666crackers`;
 
   const detail = document.getElementById('product-detail');
   if (!detail) return;
