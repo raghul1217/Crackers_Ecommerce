@@ -167,10 +167,11 @@ function _updateCartUI() {
     el.style.display = count > 0 ? 'flex' : 'none';
   });
 
-  // Sticky bottom cart bar
+  // Sticky bottom cart bar (hidden on the cart page itself)
   const bar = document.getElementById('sticky-cart-bar');
   if (bar) {
-    if (count > 0) {
+    const onCartPage = document.body.dataset.page === 'cart';
+    if (count > 0 && !onCartPage) {
       bar.classList.add('visible');
       const totalEl = bar.querySelector('[data-cart-total]');
       if (totalEl) totalEl.textContent = `\u20B9${getCartTotal().toLocaleString('en-IN')}`;
