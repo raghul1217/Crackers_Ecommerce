@@ -9,6 +9,7 @@
     content="Shop the widest range of premium quality fireworks and crackers online. Sky shots, sparklers, gift boxes, rockets and more. Order via WhatsApp or call us!" />
   <meta name="theme-color" content="#C1121F" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
@@ -38,7 +39,10 @@
 
       <!-- Right Side Banner Background Video -->
       <div class="hero-banner-art" aria-hidden="true">
-        <video class="hero-art-video" autoplay muted loop playsinline src="images/Crackers_bursting.mp4"></video>
+        <video class="hero-art-video" autoplay muted loop playsinline>
+          <source src="images/Crackers_bursting.mp4" media="(min-width: 768px)" />
+          <source src="images/Crackers_bursting_mobile_bg.mp4" media="(max-width: 767px)" />
+        </video>
       </div>
 
       <div class="hero-container">
