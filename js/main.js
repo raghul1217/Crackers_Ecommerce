@@ -512,7 +512,47 @@ function _renderCartPage() {
 ══════════════════════════════════════════════════════ */
 
 function initAbout() {
-  // Nothing dynamic needed; static page
+  animateStatCounters();
+}
+
+/* ── Animated stat counters ─────────────────────────── */
+
+function animateStatCounters() {
+  const counters = document.querySelectorAll('.stat-count');
+  if (!counters.length) return;
+
+  const duration = 5000;
+
+  const animate = (el) => {
+    const target = parseInt(el.dataset.count, 10) || 0;
+    const start = performance.now();
+
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased).toLocaleString('en-IN');
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(c => io.observe(c));
+  } else {
+    counters.forEach(c => {
+      c.textContent = (parseInt(c.dataset.count, 10) || 0).toLocaleString('en-IN');
+    });
+  }
 }
 
 /* ══════════════════════════════════════════════════════

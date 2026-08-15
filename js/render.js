@@ -117,7 +117,6 @@ function renderProductCard(product) {
     <a href="product.html?id=${product.id}" class="card-img-link" aria-label="View ${product.name}">
       <div class="card-img-wrap">
         ${discountBadge}
-        ${renderBadge(product.badge)}
         <img
           src="${product.image}"
           alt="${product.name}"
@@ -557,6 +556,26 @@ function renderGiftBoxGrid(products, containerId, onAddToCart) {
   });
 
   _applyIcons();
+
+  // Mobile: limit visible boxes to 3 with a "Show all" toggle
+  if (products.length > 3) {
+    container.classList.add('giftbox-grid-limited');
+
+    const showAllBtn = document.createElement('button');
+    showAllBtn.type = 'button';
+    showAllBtn.className = 'giftbox-show-all';
+    showAllBtn.textContent = `Show all ${products.length} boxes`;
+    showAllBtn.setAttribute('aria-expanded', 'false');
+
+    showAllBtn.addEventListener('click', () => {
+      const collapsed = container.classList.contains('giftbox-grid-limited');
+      container.classList.toggle('giftbox-grid-limited', !collapsed);
+      showAllBtn.textContent = collapsed ? 'Show less' : `Show all ${products.length} boxes`;
+      showAllBtn.setAttribute('aria-expanded', String(!collapsed));
+    });
+
+    container.after(showAllBtn);
+  }
 }
 
 /* ── Loading Spinner ─────────────────────────────────── */

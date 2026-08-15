@@ -26,10 +26,6 @@
   <!-- MAIN: Cart page -->
   <main class="cart-page page-container" aria-label="Shopping cart">
 
-    <h1 class="cart-page-title">
-      <i data-lucide="shopping-cart"></i> My Cart
-    </h1>
-
     <!-- EMPTY STATE -->
     <div class="cart-empty-state" id="cart-empty-state" style="display:none;" role="status">
       <div class="cart-empty-icon"><i data-lucide="package-open"></i></div>
@@ -68,20 +64,8 @@
       </div>
 
       <!-- Info note -->
-      <div style="
-        background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,111,0,0.1));
-        border-left: 3px solid #FFC107;
-        border-radius: 0 8px 8px 0;
-        padding: 10px 12px;
-        font-size: 12px;
-        color: #5D4037;
-        margin: 16px 0;
-        line-height: 1.5;
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-      ">
-        <i data-lucide="info" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;"></i>
+      <div class="cart-pay-note">
+        <i data-lucide="info"></i>
         <span><strong>How to pay:</strong> Place your order via WhatsApp or call us. We&rsquo;ll confirm stock, price, and arrange payment (UPI/cash) &amp; delivery manually.</span>
       </div>
 
@@ -95,7 +79,6 @@
         </button>
 
         <a href="tel:+919843029619" class="btn-primary btn-call" id="call-order-btn"
-           style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;"
            aria-label="Call to place order">
           <i data-lucide="phone"></i> Call to Order
         </a>
@@ -107,9 +90,9 @@
         </button>
       </div>
 
-      <div style="text-align:center;margin-top:12px;">
-        <a href="shop.html" style="font-size:13px;color:#C1121F;font-weight:600;display:inline-flex;align-items:center;gap:5px;">
-          <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Continue Shopping
+      <div class="cart-continue-wrap">
+        <a href="shop.html" class="cart-continue-link">
+          <i data-lucide="arrow-left"></i> Continue Shopping
         </a>
       </div>
     </div>
