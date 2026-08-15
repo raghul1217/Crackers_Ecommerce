@@ -187,7 +187,7 @@
         const list = document.getElementById('sidebar-category-list');
         if (!list) return;
 
-        cats.forEach(cat => {
+        cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
           const btn = document.createElement('button');
           btn.className = 'sidebar-cat-btn' + (cat === _activeCategory ? ' active' : '');
           btn.dataset.category = cat;

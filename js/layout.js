@@ -20,7 +20,7 @@ async function _loadPartial(id, url) {
 }
 
 function _setActiveNav() {
-  const map = { home: 'index.html', shop: 'shop.html', product: 'shop.html', about: 'about.html' };
+  const map = { home: 'index.html', shop: 'shop.html', product: 'shop.html', about: 'about.html', giftbox: 'giftbox.html' };
   const target = map[document.body.dataset.page];
   if (!target) return;
   document.querySelectorAll('.desktop-nav a, .mobile-nav-menu a').forEach(a => {

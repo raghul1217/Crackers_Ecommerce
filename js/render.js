@@ -170,8 +170,9 @@ function renderCategoryGrid(categories, containerId) {
     const imgSrc = CATEGORY_IMAGES[cat] || '';
     const color  = CATEGORY_COLORS[cat] || '#FF6F00';
     const slug   = cat.replace(/\s+/g, '-').toLowerCase();
+    const href   = cat === 'Gift Boxes' ? 'giftbox.html' : `shop.html?category=${encodeURIComponent(cat)}`;
     return `
-      <a href="shop.html?category=${encodeURIComponent(cat)}"
+      <a href="${href}"
          class="category-grid-item"
          style="--cat-color: ${color}"
          aria-label="Browse ${cat}"
@@ -341,6 +342,203 @@ function renderProductRow(products, containerId, onAddToCart) {
   products.forEach(product => {
     const card = renderProductCard(product);
     card.style.minWidth = '160px';
+
+    const btn = card.querySelector('.btn-add-cart');
+    if (btn && onAddToCart) {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        onAddToCart(product);
+        btn.classList.add('in-cart', 'bounce');
+        const qty = getCartItemQty(product.id);
+        btn.textContent = `In Cart (${qty})`;
+        setTimeout(() => btn.classList.remove('bounce'), 400);
+      });
+    }
+
+    container.appendChild(card);
+  });
+
+  _applyIcons();
+}
+
+/* ── Gift Box Card ───────────────────────────────────── */
+
+/**
+ * Available gift box artwork files in images/giftbox (basenames).
+ * The matching image is resolved at render time by checking whether
+ * a slug of the file name is contained in the slug of the box name,
+ * so new boxes/images work without code changes.
+ */
+const GIFTBOX_IMAGE_FILES = [
+  'andal',
+  'balaji',
+  'king_of_jungle',
+  'little_hero',
+  'tuktuk',
+  'vip',
+];
+
+/**
+ * Compact lowercase slug: removes spaces/punctuation.
+ * "Tuk Tuk (20 Items)" → "tuktuk20items"
+ * @param {*} value
+ * @returns {string}
+ */
+function _slugify(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * Resolve the gift box artwork for a product by matching the file
+ * name against the box name (contains match, longest match wins).
+ * @param {Object} product
+ * @returns {string} image path
+ */
+function _getGiftBoxImage(product) {
+  const nameSlug = _slugify(product.name);
+  let best = null;
+  for (const file of GIFTBOX_IMAGE_FILES) {
+    const fileSlug = _slugify(file);
+    if (nameSlug.includes(fileSlug) && (!best || fileSlug.length > best.len)) {
+      best = { file, len: fileSlug.length };
+    }
+  }
+  return best ? `images/giftbox/${best.file}.png` : product.image;
+}
+
+/**
+ * Split a contents/packing-details string into a clean item list.
+ * Handles pipe, comma, semicolon and newline separators.
+ * @param {string} contents
+ * @returns {Array<string>}
+ */
+function _splitContents(contents) {
+  if (!contents) return [];
+  return String(contents)
+    .split(/[|;\n]+|,\s*/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Render a gift box row card showing the items packed inside the box.
+ * Long item lists are clamped to 5 visible items with a "Show all" toggle.
+ * @param {Object} product
+ * @returns {HTMLElement}
+ */
+function renderGiftBoxCard(product) {
+  const card = document.createElement('article');
+  card.className = 'giftbox-card';
+  card.setAttribute('data-product-id', product.id);
+  card.setAttribute('role', 'listitem');
+
+  const items = _splitContents(product.unit);
+  const showAllToggle = items.length > 5;
+
+  const discountPercent = product.discountPercent || 0;
+
+  const boxImg = _getGiftBoxImage(product);
+
+  const itemList = items.length
+    ? items.map(it => `<li><i data-lucide="check"></i><span>${it}</span></li>`).join('')
+    : `<li><i data-lucide="check"></i><span>${product.description}</span></li>`;
+
+  card.innerHTML = `
+    <div class="giftbox-media">
+      <a href="product.html?id=${product.id}" class="giftbox-img-link" aria-label="View ${product.name}">
+        <div class="giftbox-img-wrap" style="background-image:url('${boxImg}');"
+             role="img" aria-label="Gift box artwork for ${product.name}">
+          ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
+        </div>
+      </a>
+    </div>
+    <div class="giftbox-body">
+      <div class="giftbox-head">
+        <div style="min-width:0;">
+          <a href="product.html?id=${product.id}" class="giftbox-name-link">
+            <h3 class="giftbox-name">${product.name}</h3>
+          </a>
+        </div>
+        <div class="giftbox-pricing">
+          <span class="giftbox-price">&#8377;${product.price.toLocaleString('en-IN')}</span>
+          ${product.mrp ? `<span class="giftbox-mrp">&#8377;${product.mrp.toLocaleString('en-IN')}</span>` : ''}
+          ${discountPercent ? `<span class="giftbox-off">${discountPercent}% OFF</span>` : ''}
+        </div>
+      </div>
+      <div class="giftbox-items">
+        <div class="giftbox-items-head">
+          <span class="giftbox-items-label"><i data-lucide="package"></i> Items in this box</span>
+          <span class="giftbox-items-count">${items.length} items</span>
+        </div>
+        <ul class="${showAllToggle ? 'giftbox-collapsed' : ''}">${itemList}</ul>
+        ${showAllToggle ? `
+          <button class="giftbox-toggle" type="button" data-giftbox-toggle aria-expanded="false">
+            <i data-lucide="chevron-down"></i>
+            <span>Show all ${items.length} items</span>
+          </button>
+        ` : ''}
+      </div>
+      <div class="giftbox-footer">
+        <a href="product.html?id=${product.id}" class="giftbox-details-link">
+          View Details <i data-lucide="arrow-right"></i>
+        </a>
+        <button class="btn-add-cart" data-product-id="${product.id}"
+                id="add-to-cart-${product.id}"
+                ${!product.inStock ? 'disabled' : ''}
+                aria-label="Add ${product.name} to cart">
+          ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Wire up Show all / Show less toggle
+  const toggle = card.querySelector('[data-giftbox-toggle]');
+  if (toggle) {
+    const list = card.querySelector('.giftbox-items ul');
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      toggle.classList.toggle('expanded', !expanded);
+      list.classList.toggle('giftbox-collapsed', expanded);
+      const label = toggle.querySelector('span');
+      label.textContent = expanded ? `Show all ${items.length} items` : 'Show less';
+    });
+  }
+
+  return card;
+}
+
+/* ── Gift Box Grid Renderer ──────────────────────────── */
+
+/**
+ * Render a list of gift boxes into a grid container
+ * @param {Array} products
+ * @param {string} containerId
+ * @param {Function} [onAddToCart] callback(product)
+ */
+function renderGiftBoxGrid(products, containerId, onAddToCart) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (!products || products.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon"><i data-lucide="gift"></i></div>
+        <h3>No gift boxes found</h3>
+        <p>Check back soon &mdash; new combos are being added!</p>
+        <a href="shop.html?category=Gift%20Boxes" class="btn-primary">Browse Shop</a>
+      </div>
+    `;
+    _applyIcons();
+    return;
+  }
+
+  products.forEach(product => {
+    const card = renderGiftBoxCard(product);
 
     const btn = card.querySelector('.btn-add-cart');
     if (btn && onAddToCart) {

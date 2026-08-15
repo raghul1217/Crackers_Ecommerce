@@ -56,6 +56,8 @@
   }
   .hero-art-video {
     object-position: center center;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
   }
 }
 
@@ -481,5 +483,45 @@
   .about-contact-card { padding: 24px 20px; }
   .about-panel { padding: 22px 18px; }
   .about-cta-banner { padding: 28px 20px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GIFTBOX PAGE — RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .giftbox-grid { gap: 14px; }
+  .giftbox-card { border-radius: var(--radius-md); align-items: flex-start; }
+  .giftbox-media { width: 100px; }
+  .giftbox-img-link { height: auto; }
+  .giftbox-img-wrap { height: 150px; }
+  .giftbox-body { padding: 14px 14px; gap: 10px; }
+  .giftbox-head { flex-wrap: wrap; gap: 8px; }
+  .giftbox-name { font-size: 15px; margin-bottom: 3px; }
+  .giftbox-pricing { white-space: normal; }
+  .giftbox-items { padding: 10px 12px; }
+  .giftbox-items ul { gap: 5px; }
+  .giftbox-items ul.giftbox-collapsed li:nth-child(n+16) { display: none; }
+  .giftbox-items li { padding: 3px 8px; font-size: 11.5px; }
+  .giftbox-items-head { margin-bottom: 8px; }
+  .giftbox-toggle { margin-top: 8px; }
+  .giftbox-footer { flex-wrap: wrap; padding-top: 12px; gap: 10px; }
+  .giftbox-footer .btn-add-cart { padding: 9px 16px; width: 100%; }
+  .giftbox-footer { flex-direction: column; align-items: stretch; }
+  .giftbox-details-link { justify-content: center; }
+}
+
+/* ── Tablet (≥ 768px) ── */
+@media (min-width: 768px) {
+  .giftbox-media { width: 160px; }
+  .giftbox-page-title { font-size: 30px; }
+}
+
+/* ── Large Desktop (≥ 1200px) ── */
+@media (min-width: 1200px) {
+  .giftbox-media { width: 180px; }
+  .giftbox-grid { gap: 22px; }
+  .giftbox-body { padding: 20px 24px; }
 }
 

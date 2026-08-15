@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gift Box Combos &mdash; Sivakasi666crackers</title>
+  <meta name="description" content="Shop premium cracker gift boxes. See exactly what's inside each combo box, compare prices and order via WhatsApp or call." />
+  <meta name="theme-color" content="#C1121F" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body data-page="giftbox">
+
+  <!-- HEADER (injected from header.html) -->
+  <div id="site-header"></div>
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
+    <span>Gift Boxes</span>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="page-container giftbox-page" aria-label="Gift box combos">
+    <h1 class="giftbox-page-title">
+      <i data-lucide="gift" style="width:26px;height:26px;"></i> Gift Box Combos
+    </h1>
+    <p class="giftbox-page-sub">Best value packs from &#8377;499. Perfect for family celebrations!</p>
+
+    <div class="giftbox-grid" id="giftbox-grid" role="list" aria-label="Gift box products">
+      <!-- Rendered by JS -->
+    </div>
+  </main>
+
+  <!-- FOOTER (injected from footer.html) -->
+  <div id="site-footer"></div>
+
+  <!-- Lucide Icons CDN (must load before main.js) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

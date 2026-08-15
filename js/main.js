@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     case 'product': await initProduct(); break;
     case 'cart':    initCart();          break;
     case 'about':   initAbout();         break;
+    case 'giftbox': await initGiftbox(); break;
     default: break;
   }
 });
@@ -57,7 +58,9 @@ async function initHome() {
     'home-category-chips',
     'All',
     cat => {
-      window.location.href = `shop.html?category=${encodeURIComponent(cat)}`;
+      window.location.href = cat === 'Gift Boxes'
+        ? 'giftbox.html'
+        : `shop.html?category=${encodeURIComponent(cat)}`;
     }
   );
 
@@ -177,7 +180,7 @@ async function initShop() {
   _activeCategory = params.get('category') || 'All';
   _searchQuery    = params.get('q') || '';
 
-  const categories = getCategories();
+  const categories = getCategories().filter(c => c !== 'Gift Boxes');
 
   // Category chips
   renderCategoryChips(
@@ -230,9 +233,10 @@ async function initShop() {
 }
 
 function _applyShopFilters() {
-  let results = _searchQuery
+  let results = (_searchQuery
     ? searchProducts(_searchQuery)
-    : getByCategory(_activeCategory);
+    : getByCategory(_activeCategory))
+    .filter(p => p.category !== 'Gift Boxes');
 
   results = sortProducts(results, _activeSort);
 
@@ -246,6 +250,21 @@ function _applyShopFilters() {
     addToCart(product);
     showToast(`${product.name} added to cart!`);
   }); // _applyIcons called inside renderProductGrid
+}
+
+/* ══════════════════════════════════════════════════════
+   GIFT BOXES PAGE
+══════════════════════════════════════════════════════ */
+
+async function initGiftbox() {
+  showLoading('giftbox-grid');
+
+  await loadProducts();
+  const boxes = getByCategory('Gift Boxes');
+  renderGiftBoxGrid(boxes, 'giftbox-grid', product => {
+    addToCart(product);
+    showToast(`${product.name} added to cart!`);
+  });
 }
 
 /* ══════════════════════════════════════════════════════
