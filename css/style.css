@@ -1908,26 +1908,6 @@ select option,
   gap: 20px;
 }
 
-/* "Show all" toggle for gift box list (visible only on mobile) */
-.giftbox-show-all {
-  display: none;
-  width: 100%;
-  padding: 12px 16px;
-  margin-top: 4px;
-  border: 1px dashed var(--clr-red, #C1121F);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--clr-red-dark, #A10F1A);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-.giftbox-show-all:hover {
-  background: rgba(193, 18, 31, 0.08);
-}
-
 /* Gift box row card */
 .giftbox-card {
   background: var(--clr-bg-card);

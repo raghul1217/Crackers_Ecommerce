@@ -422,7 +422,7 @@ function _splitContents(contents) {
 
 /**
  * Render a gift box row card showing the items packed inside the box.
- * Long item lists are clamped to 5 visible items with a "Show all" toggle.
+ * Long item lists are clamped (3 on mobile, 15 on desktop) with a "Show all" toggle.
  * @param {Object} product
  * @returns {HTMLElement}
  */
@@ -433,7 +433,8 @@ function renderGiftBoxCard(product) {
   card.setAttribute('role', 'listitem');
 
   const items = _splitContents(product.unit);
-  const showAllToggle = items.length > 5;
+  const visibleLimit = window.matchMedia('(max-width: 767px)').matches ? 3 : 15;
+  const showAllToggle = items.length > visibleLimit;
 
   const discountPercent = product.discountPercent || 0;
 
@@ -556,26 +557,6 @@ function renderGiftBoxGrid(products, containerId, onAddToCart) {
   });
 
   _applyIcons();
-
-  // Mobile: limit visible boxes to 3 with a "Show all" toggle
-  if (products.length > 3) {
-    container.classList.add('giftbox-grid-limited');
-
-    const showAllBtn = document.createElement('button');
-    showAllBtn.type = 'button';
-    showAllBtn.className = 'giftbox-show-all';
-    showAllBtn.textContent = `Show all ${products.length} boxes`;
-    showAllBtn.setAttribute('aria-expanded', 'false');
-
-    showAllBtn.addEventListener('click', () => {
-      const collapsed = container.classList.contains('giftbox-grid-limited');
-      container.classList.toggle('giftbox-grid-limited', !collapsed);
-      showAllBtn.textContent = collapsed ? 'Show less' : `Show all ${products.length} boxes`;
-      showAllBtn.setAttribute('aria-expanded', String(!collapsed));
-    });
-
-    container.after(showAllBtn);
-  }
 }
 
 /* ── Loading Spinner ─────────────────────────────────── */

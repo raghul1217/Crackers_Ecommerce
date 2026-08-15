@@ -493,8 +493,6 @@
 /* ── Mobile (≤ 767px) ── */
 @media (max-width: 767px) {
   .giftbox-grid { gap: 14px; }
-  .giftbox-grid-limited .giftbox-card:nth-child(n+4) { display: none; }
-  .giftbox-show-all { display: block; }
   .giftbox-card { border-radius: var(--radius-md); align-items: flex-start; }
   .giftbox-media { width: 100px; }
   .giftbox-img-link { height: auto; }
@@ -505,7 +503,7 @@
   .giftbox-pricing { white-space: normal; }
   .giftbox-items { padding: 10px 12px; }
   .giftbox-items ul { gap: 5px; }
-  .giftbox-items ul.giftbox-collapsed li:nth-child(n+16) { display: none; }
+  .giftbox-items ul.giftbox-collapsed li:nth-child(n+4) { display: none; }
   .giftbox-items li { padding: 3px 8px; font-size: 11.5px; }
   .giftbox-items-head { margin-bottom: 8px; }
   .giftbox-toggle { margin-top: 8px; }
