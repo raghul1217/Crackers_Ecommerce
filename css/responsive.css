@@ -37,8 +37,9 @@
 @media (max-width: 767px) {
   .hero-banner {
     background: var(--gradient-hero);
-    padding: 28px var(--space-md);
-    min-height: calc(100vh - var(--header-height));
+    padding: calc(var(--header-height) + 16px) var(--space-md) 28px;
+    height: 100vh;
+    min-height: 100vh;
   }
   .hero-container {
     padding: 0 var(--space-xs);
@@ -55,8 +56,6 @@
   }
   .hero-art-video {
     object-position: center center;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
   }
 }
 

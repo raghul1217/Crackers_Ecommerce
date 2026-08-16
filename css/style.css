@@ -371,6 +371,17 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   color: var(--clr-text);
   font-size: 18px;
   position: relative;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.header-btn:hover {
+  background: rgba(193, 18, 31, 0.08);
+  color: var(--clr-red);
+}
+  color: var(--clr-text);
+  font-size: 18px;
+  position: relative;
   transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 .header-btn:hover {
@@ -901,13 +912,15 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
 
 .hero-banner {
   background: var(--gradient-hero);
-  padding: 36px var(--space-md);
+  padding: calc(var(--header-height) + 24px) var(--space-md) 36px;
+  margin-top: calc(-1 * var(--header-height));
   position: relative;
   overflow: hidden;
   margin-bottom: var(--space-md);
   width: 100%;
   max-width: 100%;
-  min-height: calc(100vh - var(--header-height));
+  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
 }
@@ -920,7 +933,7 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   pointer-events: none;
 }
 
-/* Right Side Banner Artwork Image */
+/* Right Side Banner Artwork Video & Image */
 .hero-banner-art {
   position: absolute;
   top: 0;
@@ -938,8 +951,8 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   height: 100%;
   object-fit: cover;
   object-position: center right;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
-  mask-image: linear-gradient(to right, transparent 0%, black 35%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
+  mask-image: linear-gradient(to right, transparent 0%, black 30%);
 }
 
 .hero-container {
@@ -1802,10 +1815,12 @@ select option,
 /* ── Hero Banner ────────────────────────────────────────── */
 .about-hero-banner {
   position: relative;
-  min-height: 420px;
+  min-height: 480px;
   display: flex;
   align-items: center;
   overflow: hidden;
+  margin-top: calc(-1 * var(--header-height));
+  padding-top: calc(var(--header-height) + 16px);
 }
 .about-hero-bg {
   position: absolute;
@@ -1813,10 +1828,7 @@ select option,
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transform: scale(1.04);
-  transition: transform 8s ease;
 }
-.about-hero-banner:hover .about-hero-bg { transform: scale(1.08); }
 .about-hero-overlay {
   position: absolute;
   inset: 0;
@@ -1826,7 +1838,7 @@ select option,
   position: relative;
   z-index: 2;
   max-width: 720px;
-  padding: 64px clamp(20px, 6vw, 80px);
+  padding: 32px clamp(20px, 6vw, 80px) 64px;
   color: #fff;
 }
 .about-hero-eyebrow {
@@ -2565,18 +2577,41 @@ select option,
    PAGE BREADCRUMB
    ═══════════════════════════════════════════════════════════════ */
 .breadcrumb {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: 6px var(--space-md);
+  gap: 6px;
+  padding: 6px 14px;
   font-size: 12px;
-  color: var(--clr-text-muted);
-  background: #fff;
-  border-bottom: 1px solid var(--clr-divider);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  width: fit-content;
 }
-.breadcrumb a { color: var(--clr-red); }
-.breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb span { color: var(--clr-text-muted); }
+.breadcrumb a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+.breadcrumb a:hover {
+  color: var(--clr-gold);
+  text-decoration: underline;
+}
+.breadcrumb .lucide {
+  width: 12px;
+  height: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.breadcrumb span {
+  color: var(--clr-gold);
+  font-weight: 700;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    UTILITY
