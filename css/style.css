@@ -229,25 +229,28 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   flex-shrink: 0;
 }
 
-.header-logo .logo-icon {
-  width: 36px;
-  height: 36px;
+.logo-icon {
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #C1121F 0%, #FF6F00 100%);
-  box-shadow: 0 4px 12px rgba(193, 18, 31, 0.35);
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
 }
 
-.header-logo .logo-icon .lucide {
-  color: #ffffff;
+.header-logo:hover .logo-icon {
+  transform: scale(1.08);
 }
 
-@keyframes sparkle-pulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
-  50%       { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 .header-logo .logo-text {
@@ -976,6 +979,7 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   width: 100%;
   gap: 18px;
   padding: 24px 0;
+  padding-top: 85px;
 }
 
 .hero-eyebrow {
@@ -1989,6 +1993,7 @@ select option,
 .about-story-img-wrap img {
   width: 100%; height: 100%;
   object-fit: cover;
+  object-position: right center;
   display: block;
   transition: transform 0.6s ease;
 }
@@ -2577,6 +2582,41 @@ select option,
    PAGE BREADCRUMB
    ═══════════════════════════════════════════════════════════════ */
 .breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px clamp(16px, 3vw, 40px) 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--clr-text-muted);
+  background: transparent;
+  width: 100%;
+}
+.breadcrumb a {
+  color: var(--clr-red);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+.breadcrumb a:hover {
+  color: var(--clr-red-dark);
+  text-decoration: underline;
+}
+.breadcrumb .lucide {
+  width: 13px;
+  height: 13px;
+  color: var(--clr-text-muted);
+}
+.breadcrumb span {
+  color: var(--clr-text);
+  font-weight: 600;
+}
+
+/* Glass Pill Variant for Hero Banners (About page, etc.) */
+.about-hero-content .breadcrumb,
+.hero-breadcrumb {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2593,24 +2633,21 @@ select option,
   box-shadow: 0 4px 14px rgba(0,0,0,0.25);
   width: fit-content;
 }
-.breadcrumb a {
+.about-hero-content .breadcrumb a,
+.hero-breadcrumb a {
   color: #ffffff;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color var(--transition-fast);
 }
-.breadcrumb a:hover {
+.about-hero-content .breadcrumb a:hover,
+.hero-breadcrumb a:hover {
   color: var(--clr-gold);
-  text-decoration: underline;
 }
-.breadcrumb .lucide {
-  width: 12px;
-  height: 12px;
+.about-hero-content .breadcrumb .lucide,
+.hero-breadcrumb .lucide {
   color: rgba(255, 255, 255, 0.55);
 }
-.breadcrumb span {
+.about-hero-content .breadcrumb span,
+.hero-breadcrumb span {
   color: var(--clr-gold);
-  font-weight: 700;
 }
 
 /* ═══════════════════════════════════════════════════════════════
