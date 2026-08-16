@@ -74,7 +74,7 @@ function renderStars(rating) {
   for (let i = 0; i < full;  i++) html += `<span class="star full"><i data-lucide="star"></i></span>`;
   if (half)                         html += `<span class="star half"><i data-lucide="star-half"></i></span>`;
   for (let i = 0; i < empty; i++) html += `<span class="star empty"><i data-lucide="star"></i></span>`;
-  html += `<span class="rating-num">${rating.toFixed(1)}</span></span>`;
+  html += `<span class="rating-num">${Number.isInteger(rating) ? rating : rating.toFixed(1)}</span></span>`;
   return html;
 }
 

@@ -178,9 +178,13 @@ async function initShop() {
 
   // Read URL params
   const params = new URLSearchParams(window.location.search);
-  _activeCategory = params.get('category') || 'All';
+  _activeCategories = params.getAll('category').filter(Boolean);
+  _activeCategory = _activeCategories.length === 1 ? _activeCategories[0] : 'All';
   _searchQuery    = params.get('q') || '';
-  _activeCategories = _activeCategory === 'All' ? [] : [_activeCategory];
+  _activeSort     = params.get('sort') || 'popular';
+
+  const ss = document.getElementById('sort-select-sidebar');
+  if (ss) ss.value = _activeSort;
 
   const categories = getCategories().filter(c => c !== 'Gift Boxes');
 
@@ -252,6 +256,35 @@ function _applyShopFilters() {
     addToCart(product);
     showToast(`${product.name} added to cart!`);
   }); // _applyIcons called inside renderProductGrid
+
+  _saveShopState();
+}
+
+/* ── Shop state persistence (for "Continue Shopping") ── */
+
+const SHOP_STATE_KEY = 'shopState';
+
+function _getShopState() {
+  return {
+    categories: _activeCategories,
+    sort: _activeSort,
+    q: _searchQuery,
+  };
+}
+
+function _saveShopState() {
+  try {
+    sessionStorage.setItem(SHOP_STATE_KEY, JSON.stringify(_getShopState()));
+  } catch (e) { /* storage unavailable */ }
+}
+
+function _buildShopUrl(state) {
+  const params = new URLSearchParams();
+  (state.categories || []).forEach(c => params.append('category', c));
+  if (state.q) params.set('q', state.q);
+  if (state.sort && state.sort !== 'popular') params.set('sort', state.sort);
+  const qs = params.toString();
+  return qs ? `shop.html?${qs}` : 'shop.html';
 }
 
 /* ══════════════════════════════════════════════════════
@@ -424,6 +457,16 @@ async function initProduct() {
 
 function initCart() {
   _renderCartPage();
+
+  // Continue Shopping → restore last shop filters
+  const contLink = document.getElementById('cart-continue-link');
+  if (contLink) {
+    let state = null;
+    try {
+      state = JSON.parse(sessionStorage.getItem(SHOP_STATE_KEY) || 'null');
+    } catch (e) { /* ignore */ }
+    contLink.href = _buildShopUrl(state || { categories: [] });
+  }
 
   // WhatsApp button
   const waBtn = document.getElementById('whatsapp-order-btn');

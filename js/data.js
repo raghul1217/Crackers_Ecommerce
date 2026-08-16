@@ -81,6 +81,26 @@ function _round2(value) {
 }
 
 /**
+ * Parse a rating value from the sheet (supports several common headers)
+ * Returns a number 0–5, or null if absent/invalid
+ * @param {Object} row
+ * @returns {number|null}
+ */
+function _getRowRating(row) {
+  const keys = [
+    'Rating',
+    'Ratings',
+  ];
+  for (const key of keys) {
+    const v = row[key];
+    if (v == null || v === '') continue;
+    const n = Number(String(v).replace(/[^\d.]/g, ''));
+    if (isFinite(n)) return Math.min(5, Math.max(0, n));
+  }
+  return null;
+}
+
+/**
  * Parse money values that may be formatted, e.g. "₹2,500.00"
  * @param {*} value
  * @returns {number}
@@ -127,6 +147,7 @@ function _parseProductsFromRows(rows) {
     const tag = row['Tag'];
     const contents = String(row['Contents / Packing Details'] || '');
     const discountPercent = Math.round(_parsePercent(row['Discount (%)']));
+    const sheetRating = _getRowRating(row);
 
     const base = CATEGORY_IMAGE_BASE[category] || 'placeholder';
     const count = CATEGORY_IMAGE_COUNT[category] || 1;
@@ -142,7 +163,7 @@ function _parseProductsFromRows(rows) {
       image: `images/${base}-${((idx - 1) % count) + 1}.jpg`,
       description: `${contents || 'Premium quality product'}. A best-value pick from our ${category} collection, priced for the festive season.`,
       unit: contents || '1 box',
-      rating: TAG_RATING[tag] || 4.2,
+      rating: sheetRating != null ? _round2(sheetRating) : (TAG_RATING[tag] || 4.2),
       inStock: true,
       badge: TAG_BADGE[tag] || null,
     });
