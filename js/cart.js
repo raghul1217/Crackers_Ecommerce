@@ -4,8 +4,8 @@
  */
 
 const CART_KEY = 'sivakasi666_cart';
-const SHOP_PHONE = '919843029619'; // Agni Pattasu Kadai WhatsApp order number
-const SHOP_NAME  = 'Agni Pattasu Kadai';
+const SHOP_PHONE = '919843029619'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
+const SHOP_NAME  = 'sivakasi666crackers Pattasu Kadai';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }
 let _cart = {};

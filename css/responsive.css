@@ -8,9 +8,19 @@
   .desktop-nav {
     display: none;
   }
-  .site-header {
+  .header-main {
     padding: 0 var(--space-md);
     justify-content: space-between;
+  }
+  .site-notice-bar {
+    font-size: 11px;
+  }
+  .site-notice-item {
+    gap: 6px;
+    padding: 0 36px;
+  }
+  .site-notice-item .lucide:last-child {
+    display: none;
   }
   .header-logo .logo-sub {
     display: none;
@@ -166,7 +176,7 @@
 }
 
 @media (min-width: 768px) {
-  :root { --header-height: 60px; }
+  :root { --header-height: calc(60px + var(--notice-height)); }
 
   html { font-size: 15px; }
 
