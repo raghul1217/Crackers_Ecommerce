@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     case 'giftbox': await initGiftbox(); break;
     default: break;
   }
+
+  // Auto-refresh: reflect sheet re-exports without a page reload
+  setTimeout(_checkAndRefresh, 800);
+  setInterval(_checkAndRefresh, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') _checkAndRefresh();
+  });
 });
 
 /* ══════════════════════════════════════════════════════
@@ -235,6 +242,17 @@ async function initShop() {
     });
   }
 
+  // Manual refresh button (re-fetch from products.json)
+  const refreshBtn = document.getElementById('shop-refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      refreshBtn.classList.add('spinning');
+      _forceRefresh().finally(() => {
+        setTimeout(() => refreshBtn.classList.remove('spinning'), 700);
+      });
+    });
+  }
+
   _applyShopFilters();
 }
 
@@ -285,6 +303,83 @@ function _buildShopUrl(state) {
   if (state.sort && state.sort !== 'popular') params.set('sort', state.sort);
   const qs = params.toString();
   return qs ? `shop.html?${qs}` : 'shop.html';
+}
+
+/* ══════════════════════════════════════════════════════
+   PRODUCT AUTO-REFRESH (reflect sheet re-exports live)
+══════════════════════════════════════════════════════ */
+
+function _refreshHome() {
+  const all = getByCategories([]);
+  renderCategoryGrid(getCategories(), 'category-grid');
+  renderCategoryChips(
+    getCategories(),
+    'home-category-chips',
+    'All',
+    cat => {
+      window.location.href = cat === 'Gift Boxes'
+        ? 'giftbox.html'
+        : `shop.html?category=${encodeURIComponent(cat)}`;
+    }
+  );
+  renderProductRow(getBestsellers(10), 'bestsellers-row', product => {
+    addToCart(product);
+    showToast(`${product.name} added to cart!`);
+  });
+  let combos = getCombos(10);
+  if (!combos.length) {
+    combos = all.filter(p => p.badge === 'New').slice(0, 8);
+  }
+  renderProductRow(combos, 'combos-row', product => {
+    addToCart(product);
+    showToast(`${product.name} added to cart!`);
+  });
+  initCarousel('bestsellers-row');
+  initCarousel('combos-row');
+}
+
+async function _refreshCurrentPage() {
+  switch (PAGE) {
+    case 'home':
+      _refreshHome();
+      break;
+    case 'shop':
+      _applyShopFilters();
+      break;
+    case 'giftbox':
+      renderGiftBoxGrid(getByCategory('Gift Boxes'), 'giftbox-grid', product => {
+        addToCart(product);
+        showToast(`${product.name} added to cart!`);
+      });
+      break;
+    case 'product':
+      await initProduct();
+      break;
+    default:
+      return;
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+async function _checkAndRefresh() {
+  try {
+    let updated = await checkForLiveUpdates();
+    if (!updated) updated = await checkForProductUpdates();
+    if (!updated) return;
+    await _refreshCurrentPage();
+    showToast('Products updated');
+  } catch (e) { /* ignore */ }
+}
+
+async function _forceRefresh() {
+  let ok = await checkForLiveUpdates();
+  if (!ok) ok = await forceReloadProducts();
+  if (!ok) {
+    showToast('Could not refresh products');
+    return;
+  }
+  await _refreshCurrentPage();
+  showToast('Products updated');
 }
 
 /* ══════════════════════════════════════════════════════

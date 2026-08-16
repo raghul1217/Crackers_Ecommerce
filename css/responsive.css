@@ -625,6 +625,31 @@ body[data-page="cart"] .sticky-cart-bar {
   .shop-filter-btn { padding: 9px 11px; }
 }
 
+/* ── Refresh button (mobile/tablet toolbar) ────────────── */
+.shop-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--clr-divider);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--clr-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.shop-refresh-btn .lucide { width: 16px; height: 16px; }
+.shop-refresh-btn:hover { border-color: var(--clr-red); color: var(--clr-red); }
+.shop-refresh-btn.spinning .lucide {
+  animation: refresh-spin 0.7s linear infinite;
+}
+@keyframes refresh-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ── Filter drawer (mobile/tablet) ─────────────────────── */
 .filter-drawer-overlay {
   position: fixed;

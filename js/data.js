@@ -160,7 +160,7 @@ function _parseProductsFromRows(rows) {
       price: _round2(price),
       mrp: _round2(mrp),
       discountPercent,
-      image: `images/${base}-${((idx - 1) % count) + 1}.jpg`,
+      image: `images/${base}-${((idx - 1) % count) + 1}.webp`,
       description: `${contents || 'Premium quality product'}. A best-value pick from our ${category} collection, priced for the festive season.`,
       unit: contents || '1 box',
       rating: sheetRating != null ? _round2(sheetRating) : (TAG_RATING[tag] || 4.2),
@@ -174,6 +174,51 @@ function _parseProductsFromRows(rows) {
 
 const GOOGLE_SHEET_ID = '1fVKmBQNx9BLI0uTuXf1-26uWdkt8AP4yMaGzn7tfns4';
 const GOOGLE_API_KEY = 'AIzaSyDNsaBBMlV-d-8vYgMiEpW7JneE1bxRtSE';
+
+const PRODUCTS_JSON_URL = 'products.json';
+const PRODUCTS_CACHE_KEY = 'productsCache';
+const PRODUCTS_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
+let _loadedExportedAt = null;
+
+function _readProductsCache() {
+  try {
+    const raw = localStorage.getItem(PRODUCTS_CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    if (!cached || !cached.savedAt || !Array.isArray(cached.products) || !cached.products.length) return null;
+    if (Date.now() - cached.savedAt > PRODUCTS_CACHE_TTL) return null;
+    return cached;
+  } catch (e) {
+    return null;
+  }
+}
+
+function _writeProductsCache(products, exportedAt) {
+  try {
+    localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      exportedAt: exportedAt || null,
+      products,
+    }));
+  } catch (e) {
+    /* storage full or unavailable — ignore */
+  }
+}
+
+/**
+ * Fetch the static products.json snapshot
+ * @param {boolean} cacheBust — append a timestamp to bypass HTTP caching
+ * @returns {Promise<{exportedAt: string, rows: Array<Object>}>}
+ */
+async function _fetchProductsJson(cacheBust) {
+  const url = cacheBust ? `${PRODUCTS_JSON_URL}?t=${Date.now()}` : PRODUCTS_JSON_URL;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`products.json HTTP ${res.status}`);
+  const payload = await res.json();
+  if (!payload || !Array.isArray(payload.rows)) throw new Error('products.json missing rows');
+  return payload;
+}
 
 /**
  * Convert a 2D array of values (first row = headers) into row objects
@@ -192,24 +237,45 @@ function _rowsToObjects(rows) {
   });
 }
 
+const SHEET_TITLE_KEY = 'productsSheetTitle';
+
+function _getCachedSheetTitle() {
+  try {
+    return localStorage.getItem(SHEET_TITLE_KEY);
+  } catch (e) {
+    return null;
+  }
+}
+
+function _setCachedSheetTitle(title) {
+  try {
+    localStorage.setItem(SHEET_TITLE_KEY, title);
+  } catch (e) { /* ignore */ }
+}
+
 /**
  * Fetch products from the Google Sheet via the Sheets API v4
+ * @param {string} [knownTitle] — cached sheet name, skips the metadata call
  * @returns {Promise<Array<Object>>}
  */
-async function _fetchProductsFromGoogleSheets() {
+async function _fetchProductsFromGoogleSheets(knownTitle) {
   if (GOOGLE_API_KEY === 'PASTE_YOUR_API_KEY_HERE') {
     throw new Error('Google Sheets API key not set. Edit GOOGLE_API_KEY in js/data.js');
   }
 
-  const metaRes = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}?key=${GOOGLE_API_KEY}`
-  );
-  if (!metaRes.ok) throw new Error('Sheets API metadata: HTTP ' + metaRes.status);
-  const meta = await metaRes.json();
+  let title = knownTitle || _getCachedSheetTitle();
+  if (!title) {
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}?key=${GOOGLE_API_KEY}`
+    );
+    if (!metaRes.ok) throw new Error('Sheets API metadata: HTTP ' + metaRes.status);
+    const meta = await metaRes.json();
 
-  const title = meta.sheets && meta.sheets[0] && meta.sheets[0].properties
-    ? meta.sheets[0].properties.title
-    : 'Sheet1';
+    title = meta.sheets && meta.sheets[0] && meta.sheets[0].properties
+      ? meta.sheets[0].properties.title
+      : 'Sheet1';
+    _setCachedSheetTitle(title);
+  }
 
   const valuesRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${encodeURIComponent(title)}?key=${GOOGLE_API_KEY}`
@@ -221,18 +287,93 @@ async function _fetchProductsFromGoogleSheets() {
 }
 
 /**
- * Load all products from the Google Sheet
- * Returns array of product objects (cached after first load)
+ * Load all products.
+ * Source priority: 1) in-memory, 2) localStorage cache (30 min TTL),
+ *                  3) static products.json, 4) live Google Sheets API.
+ * @returns {Promise<Array<Object>>}
  */
 async function loadProducts() {
   if (_allProducts.length > 0) return _allProducts;
 
-  try {
-    _allProducts = await _fetchProductsFromGoogleSheets();
+  const cached = _readProductsCache();
+  if (cached) {
+    _allProducts = cached.products;
+    _loadedExportedAt = cached.exportedAt || null;
     return _allProducts;
-  } catch (err) {
-    console.error('[data.js] Error loading products:', err);
-    return [];
+  }
+
+  try {
+    const payload = await _fetchProductsJson(false);
+    _allProducts = _parseProductsFromRows(payload.rows);
+    _loadedExportedAt = payload.exportedAt || null;
+    _writeProductsCache(_allProducts, _loadedExportedAt);
+    return _allProducts;
+  } catch (jsonErr) {
+    console.warn('[data.js] products.json load failed, falling back to Sheets API:', jsonErr);
+    try {
+      _allProducts = await _fetchProductsFromGoogleSheets();
+      _loadedExportedAt = null;
+      _writeProductsCache(_allProducts, null);
+      return _allProducts;
+    } catch (apiErr) {
+      console.error('[data.js] Error loading products:', apiErr);
+      return [];
+    }
+  }
+}
+
+/**
+ * Check whether products.json is newer than the currently-loaded snapshot.
+ * If so, reload products (memory + cache) and return true.
+ * Called in the background so sheet updates reflect without a page reload.
+ * @returns {Promise<boolean>}
+ */
+async function checkForProductUpdates() {
+  try {
+    const payload = await _fetchProductsJson(true);
+    const next = payload.exportedAt || '';
+    if (String(next) === String(_loadedExportedAt || '')) return false;
+    _allProducts = _parseProductsFromRows(payload.rows);
+    _loadedExportedAt = next;
+    _writeProductsCache(_allProducts, next);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Force-reload products from products.json, bypassing all caches.
+ * @returns {Promise<boolean>}
+ */
+async function forceReloadProducts() {
+  try {
+    const payload = await _fetchProductsJson(true);
+    _allProducts = _parseProductsFromRows(payload.rows);
+    _loadedExportedAt = payload.exportedAt || null;
+    _writeProductsCache(_allProducts, _loadedExportedAt);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Check the LIVE Google Sheet for changes.
+ * This is what makes sheet edits reflect automatically — no export script needed.
+ * If the data changed, updates memory + cache and returns true.
+ * @returns {Promise<boolean>}
+ */
+async function checkForLiveUpdates() {
+  try {
+    const live = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle());
+    if (JSON.stringify(live) === JSON.stringify(_allProducts)) return false;
+    _allProducts = live;
+    _loadedExportedAt = null;
+    _writeProductsCache(_allProducts, null);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 

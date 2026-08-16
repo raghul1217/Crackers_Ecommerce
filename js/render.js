@@ -5,19 +5,19 @@
 
 /* ── Category Image Map ──────────────────────────────── */
 const CATEGORY_IMAGES = {
-  'Gift Boxes':          'images/categories/gift-boxes.png',
-  'Sky Shots':           'images/categories/sky-shots.png',
-  'Sparklers':           'images/categories/sparklers.png',
-  'Ground Chakkars':     'images/categories/ground-chakkars.png',
-  'Flower Pots':         'images/categories/flower-pots.png',
-  'Rockets':             'images/categories/rockets.png',
-  'Sound Crackers':      'images/categories/sound-crackers.png',
-  'Fancy Crackers':      'images/categories/fancy-crackers.png',
-  'Party Crackers':      'images/categories/party-crackers.png',
-  'Kids Special':        'images/categories/kids-special.png',
-  'Garland Crackers':    'images/categories/garland-crackers.png',
-  'Repeating Fountains': 'images/categories/repeating-fountains.jpg',
-  'Deluxe Premium':      'images/categories/deluxe-premium.png',
+  'Gift Boxes':          'images/categories/gift-boxes.webp',
+  'Sky Shots':           'images/categories/sky-shots.webp',
+  'Sparklers':           'images/categories/sparklers.webp',
+  'Ground Chakkars':     'images/categories/ground-chakkars.webp',
+  'Flower Pots':         'images/categories/flower-pots.webp',
+  'Rockets':             'images/categories/rockets.webp',
+  'Sound Crackers':      'images/categories/sound-crackers.webp',
+  'Fancy Crackers':      'images/categories/fancy-crackers.webp',
+  'Party Crackers':      'images/categories/party-crackers.webp',
+  'Kids Special':        'images/categories/kids-special.webp',
+  'Garland Crackers':    'images/categories/garland-crackers.webp',
+  'Repeating Fountains': 'images/categories/repeating-fountains.webp',
+  'Deluxe Premium':      'images/categories/deluxe-premium.webp',
 };
 
 /* ── Keep CATEGORY_ICONS for sidebar chips (small icon fallback) ─ */
@@ -121,6 +121,7 @@ function renderProductCard(product) {
           src="${product.image}"
           alt="${product.name}"
           loading="lazy"
+          decoding="async"
           onerror="this.src='images/placeholder.svg'"
         />
         ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
@@ -177,7 +178,7 @@ function renderCategoryGrid(categories, containerId) {
          aria-label="Browse ${cat}"
          id="cat-grid-${slug}">
         <div class="cat-img-wrap">
-          <img src="${imgSrc}" alt="${cat}" class="cat-img" loading="lazy" />
+          <img src="${imgSrc}" alt="${cat}" class="cat-img" loading="lazy" decoding="async" />
           <div class="cat-img-overlay"></div>
         </div>
         <span class="cat-label">${cat}</span>
@@ -242,7 +243,7 @@ function renderCartItem(item) {
 
   row.innerHTML = `
     <div class="cart-item-img-wrap">
-      <img src="${item.image}" alt="${item.name}" loading="lazy"
+      <img src="${item.image}" alt="${item.name}" loading="lazy" decoding="async"
            onerror="this.src='images/placeholder.svg'" />
     </div>
     <div class="cart-item-info">
@@ -403,7 +404,7 @@ function _getGiftBoxImage(product) {
       best = { file, len: fileSlug.length };
     }
   }
-  return best ? `images/giftbox/${best.file}.png` : product.image;
+  return best ? `images/giftbox/${best.file}.webp` : product.image;
 }
 
 /**
