@@ -167,6 +167,7 @@ function initCarousel(rowId) {
 
 let _shopProducts = [];
 let _activeCategory = 'All';
+let _activeCategories = [];
 let _activeSort = 'popular';
 let _searchQuery = '';
 
@@ -179,6 +180,7 @@ async function initShop() {
   const params = new URLSearchParams(window.location.search);
   _activeCategory = params.get('category') || 'All';
   _searchQuery    = params.get('q') || '';
+  _activeCategories = _activeCategory === 'All' ? [] : [_activeCategory];
 
   const categories = getCategories().filter(c => c !== 'Gift Boxes');
 
@@ -235,7 +237,7 @@ async function initShop() {
 function _applyShopFilters() {
   let results = (_searchQuery
     ? searchProducts(_searchQuery)
-    : getByCategory(_activeCategory))
+    : getByCategories(_activeCategories))
     .filter(p => p.category !== 'Gift Boxes');
 
   results = sortProducts(results, _activeSort);

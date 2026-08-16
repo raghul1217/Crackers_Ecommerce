@@ -235,6 +235,16 @@ function getByCategory(category) {
 }
 
 /**
+ * Get products matching any of the given categories (multi-select)
+ * @param {Array<string>} categories
+ */
+function getByCategories(categories) {
+  if (!Array.isArray(categories) || categories.length === 0) return _allProducts;
+  const set = categories.map(c => c.toLowerCase());
+  return _allProducts.filter(p => set.includes(p.category.toLowerCase()));
+}
+
+/**
  * Search products by name or category
  * @param {string} query
  */

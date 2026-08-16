@@ -145,22 +145,35 @@
       const filterBtn = document.getElementById('shop-filter-btn');
       const closeBtn  = document.getElementById('filter-drawer-close');
 
+      function _isCatSelected(cat) {
+        if (cat === 'All') return _activeCategories.length === 0;
+        return _activeCategories.indexOf(cat) !== -1;
+      }
       function _renderDrawerActive() {
         document.querySelectorAll('#filter-drawer-cats .filter-cat-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.category === _activeCategory);
+          b.classList.toggle('active', _isCatSelected(b.dataset.category));
         });
         document.querySelectorAll('#filter-drawer-sort .filter-sort-btn').forEach(b => {
           b.classList.toggle('active', b.dataset.sort === _activeSort);
         });
       }
-      function _syncSidebarStates(cat) {
+      function _syncSidebarStates() {
         document.querySelectorAll('#sidebar-category-list .sidebar-cat-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.category === cat);
+          b.classList.toggle('active', _isCatSelected(b.dataset.category));
         });
       }
       function _syncSortControls(sort) {
         const ss = document.getElementById('sort-select-sidebar');
         if (ss) ss.value = sort;
+      }
+      function _clearSearch() {
+        const ds = document.getElementById('shop-search-input-desktop');
+        if (ds) ds.value = '';
+        const ms = document.getElementById('shop-search-input');
+        if (ms) ms.value = '';
+        const navS = document.getElementById('navbar-search-input');
+        if (navS) navS.value = '';
+        _searchQuery = '';
       }
       function _openDrawer() {
         if (!drawer || !overlay) return;
@@ -187,16 +200,10 @@
       const clearBtn = document.getElementById('filter-drawer-clear');
       if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-          _activeCategory = 'All';
+          _activeCategories = [];
           _activeSort = 'popular';
-          _searchQuery = '';
-          const ds = document.getElementById('shop-search-input-desktop');
-          if (ds) ds.value = '';
-          const ms = document.getElementById('shop-search-input');
-          if (ms) ms.value = '';
-          const navS = document.getElementById('navbar-search-input');
-          if (navS) navS.value = '';
-          _syncSidebarStates('All');
+          _clearSearch();
+          _syncSidebarStates();
           _syncSortControls('popular');
           _applyShopFilters();
           _renderDrawerActive();
@@ -219,46 +226,59 @@
 
         cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
           const btn = document.createElement('button');
-          btn.className = 'sidebar-cat-btn' + (cat === _activeCategory ? ' active' : '');
+          btn.className = 'sidebar-cat-btn' + (_isCatSelected(cat) ? ' active' : '');
           btn.dataset.category = cat;
           btn.setAttribute('role', 'listitem');
           btn.id = `sidebar-cat-${cat.replace(/\s+/g, '-').toLowerCase()}`;
           const iconName = CATEGORY_ICONS[cat] || 'sparkles';
-          btn.innerHTML = `<i data-lucide="${iconName}" style="width:14px;height:14px;"></i><span>${cat}</span>`;
+          btn.innerHTML = `<span class="sidebar-check"></span><i data-lucide="${iconName}" style="width:14px;height:14px;"></i><span>${cat}</span>`;
           btn.addEventListener('click', () => {
-            list.querySelectorAll('.sidebar-cat-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            _activeCategory = cat;
-            _searchQuery = '';
-            const ds = document.getElementById('shop-search-input-desktop');
-            if (ds) ds.value = '';
-            const ms = document.getElementById('shop-search-input');
-            if (ms) ms.value = '';
+            const c = btn.dataset.category;
+            if (c === 'All') {
+              _activeCategories = [];
+            } else {
+              const idx = _activeCategories.indexOf(c);
+              if (idx !== -1) {
+                _activeCategories.splice(idx, 1);
+              } else {
+                _activeCategories.push(c);
+              }
+            }
+            _clearSearch();
+            _syncSidebarStates();
+            _renderDrawerActive();
             _applyShopFilters();
           });
           list.appendChild(btn);
         });
 
-        // Populate filter drawer categories
+        // Populate filter drawer categories (multi-select with checkboxes)
         const drawerCats = document.getElementById('filter-drawer-cats');
         if (drawerCats) {
           cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
             const btn = document.createElement('button');
-            btn.className = 'filter-cat-btn' + (cat === _activeCategory ? ' active' : '');
+            btn.className = 'filter-cat-btn' + (_isCatSelected(cat) ? ' active' : '');
             btn.dataset.category = cat;
             btn.setAttribute('role', 'listitem');
+            btn.setAttribute('aria-pressed', String(_isCatSelected(cat)));
             const iconName = CATEGORY_ICONS[cat] || 'sparkles';
-            btn.innerHTML = `<i data-lucide="${iconName}" style="width:15px;height:15px;"></i><span>${cat}</span>`;
+            btn.innerHTML = `<span class="filter-check"></span><i data-lucide="${iconName}" style="width:15px;height:15px;"></i><span>${cat}</span>`;
             btn.addEventListener('click', () => {
-              _activeCategory = cat;
-              _searchQuery = '';
-              const ds = document.getElementById('shop-search-input-desktop');
-              if (ds) ds.value = '';
-              const ms = document.getElementById('shop-search-input');
-              if (ms) ms.value = '';
-              _syncSidebarStates(cat);
+              const c = btn.dataset.category;
+              if (c === 'All') {
+                _activeCategories = [];
+              } else {
+                const idx = _activeCategories.indexOf(c);
+                if (idx !== -1) {
+                  _activeCategories.splice(idx, 1);
+                } else {
+                  _activeCategories.push(c);
+                }
+              }
+              _clearSearch();
+              _syncSidebarStates();
+              _renderDrawerActive();
               _applyShopFilters();
-              _closeDrawer();
             });
             drawerCats.appendChild(btn);
           });

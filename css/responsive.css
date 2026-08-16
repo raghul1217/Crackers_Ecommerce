@@ -338,6 +338,31 @@
   .sidebar-cat-btn.active .lucide {
     color: #ffffff;
   }
+  .sidebar-check {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border: 2px solid var(--clr-border);
+    border-radius: 4px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .sidebar-cat-btn.active .sidebar-check {
+    background: var(--clr-red);
+    border-color: var(--clr-red);
+  }
+  .sidebar-cat-btn.active .sidebar-check::after {
+    content: '';
+    width: 3px;
+    height: 7px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+  }
 
   /* Dedicated Vertical Scrollbar for Product Listing */
   .shop-main {
@@ -707,6 +732,32 @@ body[data-page="cart"] .sticky-cart-bar {
 }
 .filter-cat-btn .lucide { width: 15px; height: 15px; flex-shrink: 0; }
 .filter-cat-btn.active .lucide { color: #fff; }
+
+.filter-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 2px solid var(--clr-border);
+  border-radius: 5px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.filter-cat-btn.active .filter-check {
+  background: var(--clr-red);
+  border-color: var(--clr-red);
+}
+.filter-cat-btn.active .filter-check::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
 
 .filter-drawer-sort { display: flex; flex-direction: column; gap: 6px; }
 .filter-sort-btn {
