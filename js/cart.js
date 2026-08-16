@@ -4,8 +4,8 @@
  */
 
 const CART_KEY = 'sivakasi666_cart';
-const SHOP_PHONE = '919943467824'; // Store WhatsApp number (country code + 9943467824)
-const SHOP_NAME  = 'Sivakasi666crackers';
+const SHOP_PHONE = '919843029619'; // Agni Pattasu Kadai WhatsApp order number
+const SHOP_NAME  = 'Agni Pattasu Kadai';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }
 let _cart = {};
