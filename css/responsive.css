@@ -43,6 +43,10 @@
   .hero-container {
     padding: 0 var(--space-xs);
   }
+  /* On mobile the video is behind — let text fill full width */
+  .hero-content {
+    max-width: 100%;
+  }
   .hero-banner-art {
     display: block;
     width: 100%;
@@ -55,6 +59,7 @@
     mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
   }
 }
+
 
 @media (max-width: 767px) {
   .carousel {
