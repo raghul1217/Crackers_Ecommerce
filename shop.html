@@ -10,75 +10,6 @@
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <style>
-    .desktop-shop-search { display: none; align-items: center; gap: 8px; padding: 12px; }
-    .shop-sidebar { display: none; }
-    @media(min-width:1024px) {
-      .desktop-shop-search { display: flex; }
-      .shop-toolbar { display: none !important; }
-      .chips-container.shop-chips { display: none !important; }
-      .shop-layout {
-        display: grid !important;
-        grid-template-columns: 280px 1fr !important;
-        gap: 24px !important;
-        align-items: start !important;
-        position: relative !important;
-        padding: 8px 24px 24px !important;
-      }
-      .shop-sidebar {
-        display: block !important;
-        position: sticky !important;
-        top: 70px !important;
-        align-self: flex-start !important;
-        max-height: calc(100vh - 85px) !important;
-        overflow-y: auto !important;
-        scrollbar-width: none !important;
-        width: 280px !important;
-        min-width: 280px !important;
-        z-index: 10 !important;
-      }
-      .shop-sidebar::-webkit-scrollbar { display: none !important; }
-      .shop-main {
-        max-height: calc(100vh - 120px) !important;
-        overflow-y: auto !important;
-        padding-right: 12px !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: #C1121F #f0f0f0 !important;
-      }
-      .shop-main::-webkit-scrollbar {
-        width: 6px !important;
-        display: block !important;
-      }
-      .shop-main::-webkit-scrollbar-track {
-        background: #f0f0f0 !important;
-        border-radius: 999px !important;
-      }
-      .shop-main::-webkit-scrollbar-thumb {
-        background: #C1121F !important;
-        border-radius: 999px !important;
-      }
-      .shop-main::-webkit-scrollbar-thumb:hover {
-        background: #96040F !important;
-      }
-      .shop-sidebar h3 {
-        color: #C1121F !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.8px !important;
-      }
-      .sidebar-cat-btn.active {
-        background: #C1121F !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        box-shadow: 0 3px 10px rgba(193, 18, 31, 0.3) !important;
-      }
-      .sidebar-cat-btn.active .lucide {
-        color: #ffffff !important;
-      }
-    }
-    .sidebar-sort-wrap { margin-top: 20px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
-    .sidebar-sort-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #757575; margin-bottom: 8px; display: block; }
-    .sidebar-sort-wrap select { width: 100%; }
-  </style>
 </head>
 <body data-page="shop">
 
@@ -100,21 +31,16 @@
         type="search"
         class="shop-search-input"
         id="shop-search-input"
-        placeholder="Search crackers&hellip;"
+        placeholder=" Search crackers&hellip;"
         aria-label="Search products"
         autocomplete="off"
       />
     </div>
-    <select class="sort-select" id="sort-select" aria-label="Sort products">
-      <option value="popular">Popular</option>
-      <option value="price-asc">Price &uarr;</option>
-      <option value="price-desc">Price &darr;</option>
-    </select>
-  </div>
-
-  <!-- CATEGORY CHIPS (mobile/tablet) -->
-  <div class="chips-container shop-chips" id="shop-category-chips" role="list" aria-label="Filter by category">
-    <!-- Rendered by JS -->
+    <button class="shop-filter-btn" id="shop-filter-btn" aria-label="Open filters" aria-haspopup="dialog"
+      aria-controls="filter-drawer">
+      <i data-lucide="sliders-horizontal"></i>
+      <span>Filter</span>
+    </button>
   </div>
 
   <!-- MAIN LAYOUT -->
@@ -149,6 +75,37 @@
     </div>
   </main>
 
+  <!-- FILTER DRAWER (mobile/tablet) -->
+  <div class="filter-drawer-overlay" id="filter-drawer-overlay" aria-hidden="true"></div>
+  <aside class="filter-drawer" id="filter-drawer" role="dialog" aria-modal="true" aria-label="Filter options"
+    aria-hidden="true">
+    <div class="filter-drawer-header">
+      <h3><i data-lucide="sliders-horizontal"></i> Filters</h3>
+      <button class="filter-drawer-close" id="filter-drawer-close" aria-label="Close filters">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="filter-drawer-body">
+      <div class="filter-group">
+        <span class="filter-group-label">Categories</span>
+        <div class="filter-drawer-cats" id="filter-drawer-cats" role="list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Sort by</span>
+        <div class="filter-drawer-sort" id="filter-drawer-sort">
+          <button class="filter-sort-btn" data-sort="popular">Most Popular</button>
+          <button class="filter-sort-btn" data-sort="price-asc">Price: Low to High</button>
+          <button class="filter-sort-btn" data-sort="price-desc">Price: High to Low</button>
+        </div>
+      </div>
+    </div>
+    <div class="filter-drawer-footer">
+      <button class="filter-drawer-clear" id="filter-drawer-clear">Clear All</button>
+    </div>
+  </aside>
+
   <!-- FOOTER (injected from footer.html) -->
   <div id="site-footer"></div>
 
@@ -182,6 +139,79 @@
         });
       }
 
+      // ── Filter drawer (mobile/tablet) ──────────────────────────
+      const drawer   = document.getElementById('filter-drawer');
+      const overlay  = document.getElementById('filter-drawer-overlay');
+      const filterBtn = document.getElementById('shop-filter-btn');
+      const closeBtn  = document.getElementById('filter-drawer-close');
+
+      function _renderDrawerActive() {
+        document.querySelectorAll('#filter-drawer-cats .filter-cat-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.category === _activeCategory);
+        });
+        document.querySelectorAll('#filter-drawer-sort .filter-sort-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.sort === _activeSort);
+        });
+      }
+      function _syncSidebarStates(cat) {
+        document.querySelectorAll('#sidebar-category-list .sidebar-cat-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.category === cat);
+        });
+      }
+      function _syncSortControls(sort) {
+        const ss = document.getElementById('sort-select-sidebar');
+        if (ss) ss.value = sort;
+      }
+      function _openDrawer() {
+        if (!drawer || !overlay) return;
+        overlay.classList.add('show');
+        drawer.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        _renderDrawerActive();
+      }
+      function _closeDrawer() {
+        if (!drawer || !overlay) return;
+        overlay.classList.remove('show');
+        drawer.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      if (filterBtn) filterBtn.addEventListener('click', _openDrawer);
+      if (closeBtn) closeBtn.addEventListener('click', _closeDrawer);
+      if (overlay) overlay.addEventListener('click', _closeDrawer);
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') _closeDrawer();
+      });
+
+      const clearBtn = document.getElementById('filter-drawer-clear');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          _activeCategory = 'All';
+          _activeSort = 'popular';
+          _searchQuery = '';
+          const ds = document.getElementById('shop-search-input-desktop');
+          if (ds) ds.value = '';
+          const ms = document.getElementById('shop-search-input');
+          if (ms) ms.value = '';
+          const navS = document.getElementById('navbar-search-input');
+          if (navS) navS.value = '';
+          _syncSidebarStates('All');
+          _syncSortControls('popular');
+          _applyShopFilters();
+          _renderDrawerActive();
+        });
+      }
+
+      document.querySelectorAll('#filter-drawer-sort .filter-sort-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          _activeSort = btn.dataset.sort;
+          _syncSortControls(_activeSort);
+          _applyShopFilters();
+          _renderDrawerActive();
+        });
+      });
+
       loadProducts().then(() => {
         const cats = getCategories();
         const list = document.getElementById('sidebar-category-list');
@@ -208,6 +238,31 @@
           });
           list.appendChild(btn);
         });
+
+        // Populate filter drawer categories
+        const drawerCats = document.getElementById('filter-drawer-cats');
+        if (drawerCats) {
+          cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-cat-btn' + (cat === _activeCategory ? ' active' : '');
+            btn.dataset.category = cat;
+            btn.setAttribute('role', 'listitem');
+            const iconName = CATEGORY_ICONS[cat] || 'sparkles';
+            btn.innerHTML = `<i data-lucide="${iconName}" style="width:15px;height:15px;"></i><span>${cat}</span>`;
+            btn.addEventListener('click', () => {
+              _activeCategory = cat;
+              _searchQuery = '';
+              const ds = document.getElementById('shop-search-input-desktop');
+              if (ds) ds.value = '';
+              const ms = document.getElementById('shop-search-input');
+              if (ms) ms.value = '';
+              _syncSidebarStates(cat);
+              _applyShopFilters();
+              _closeDrawer();
+            });
+            drawerCats.appendChild(btn);
+          });
+        }
 
         if (window.lucide) lucide.createIcons();
       });

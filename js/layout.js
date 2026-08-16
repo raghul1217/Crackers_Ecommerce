@@ -46,6 +46,17 @@ function _initMobileMenu() {
   });
 }
 
+function _initNoticeMarquee() {
+  const track = document.querySelector('.site-notice-track');
+  if (!track) return;
+  const items = track.querySelectorAll(':scope > .site-notice-item');
+  if (items.length === 1) {
+    const clone = items[0].cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    track.appendChild(clone);
+  }
+}
+
 function initLayout() {
   if (!_layoutPromise) {
     _layoutPromise = (async () => {
@@ -55,6 +66,7 @@ function initLayout() {
       ]);
       _setActiveNav();
       _initMobileMenu();
+      _initNoticeMarquee();
       if (window.lucide) lucide.createIcons();
       if (typeof _updateCartUI === 'function') _updateCartUI();
     })();
