@@ -394,3 +394,88 @@
     min-height: 60px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ABOUT PAGE — RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tablet (≥ 600px) ── */
+@media (min-width: 600px) {
+  /* Stats: stay row, dividers always visible */
+  .about-stat-divider { display: block; }
+
+  /* Story section: image + text stacked still, text wider */
+  .about-story-text-col { padding: 36px 36px; }
+
+  /* Two-col section: contact takes more space */
+  .about-two-col-section { grid-template-columns: 1fr; }
+}
+
+/* ── Desktop (≥ 900px) ── */
+@media (min-width: 900px) {
+  /* Hero: taller */
+  .about-hero-banner { min-height: 500px; }
+
+  /* Story: side-by-side — image left, text right */
+  .about-story-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .about-story-img-col { min-height: 380px; }
+  .about-story-img-wrap { min-height: 380px; }
+  .about-story-text-col {
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Two-col: contact | safety+legal side-by-side */
+  .about-two-col-section {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  /* CTA Banner: row layout */
+  .about-cta-banner {
+    flex-direction: row;
+    text-align: left;
+    justify-content: space-between;
+    align-items: center;
+    padding: 48px 56px;
+  }
+  .about-cta-banner-content { flex: 1; }
+  .about-cta-banner-btn { white-space: nowrap; flex-shrink: 0; }
+}
+
+/* ── Large Desktop (≥ 1200px) ── */
+@media (min-width: 1200px) {
+  .about-hero-banner { min-height: 560px; }
+  .about-story-grid { grid-template-columns: 5fr 6fr; }
+  .about-story-img-col { min-height: 440px; }
+  .about-story-img-wrap { min-height: 440px; }
+}
+
+/* ── Mobile Tweaks for About page ── */
+@media (max-width: 599px) {
+  .about-stats-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+  }
+  .about-stat {
+    padding: 14px 16px;
+    flex: 1 1 40%;
+  }
+  .about-stat-divider { display: none; }
+  .about-stat-num { font-size: 22px; }
+
+  .about-main { padding: 24px 16px 48px; gap: 24px; }
+
+  .about-hero-banner { min-height: 320px; }
+  .about-hero-content { padding: 36px 20px; }
+
+  .about-contact-card { padding: 24px 20px; }
+  .about-panel { padding: 22px 18px; }
+  .about-cta-banner { padding: 28px 20px; }
+}
+
