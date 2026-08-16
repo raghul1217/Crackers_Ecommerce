@@ -3,7 +3,24 @@
  * Icons: Lucide (https://lucide.dev) — call lucide.createIcons() after inserting HTML
  */
 
-/* ── Category Icon Map (Lucide icon names) ───────────── */
+/* ── Category Image Map ──────────────────────────────── */
+const CATEGORY_IMAGES = {
+  'Gift Boxes':          'images/categories/gift-boxes.png',
+  'Sky Shots':           'images/categories/sky-shots.png',
+  'Sparklers':           'images/categories/sparklers.png',
+  'Ground Chakkars':     'images/categories/ground-chakkars.png',
+  'Flower Pots':         'images/categories/flower-pots.png',
+  'Rockets':             'images/categories/rockets.png',
+  'Sound Crackers':      'images/categories/sound-crackers.png',
+  'Fancy Crackers':      'images/categories/fancy-crackers.png',
+  'Party Crackers':      'images/categories/party-crackers.png',
+  'Kids Special':        'images/categories/kids-special.png',
+  'Garland Crackers':    'images/categories/garland-crackers.png',
+  'Repeating Fountains': 'images/categories/repeating-fountains.jpg',
+  'Deluxe Premium':      'images/categories/deluxe-premium.png',
+};
+
+/* ── Keep CATEGORY_ICONS for sidebar chips (small icon fallback) ─ */
 const CATEGORY_ICONS = {
   'Gift Boxes':          'gift',
   'Sky Shots':           'rocket',
@@ -150,16 +167,18 @@ function renderCategoryGrid(categories, containerId) {
 
   const filtered = categories.filter(c => c !== 'All');
   container.innerHTML = filtered.map(cat => {
-    const iconName = CATEGORY_ICONS[cat] || 'sparkles';
-    const color    = CATEGORY_COLORS[cat] || '#FF6F00';
+    const imgSrc = CATEGORY_IMAGES[cat] || '';
+    const color  = CATEGORY_COLORS[cat] || '#FF6F00';
+    const slug   = cat.replace(/\s+/g, '-').toLowerCase();
     return `
       <a href="shop.html?category=${encodeURIComponent(cat)}"
          class="category-grid-item"
          style="--cat-color: ${color}"
          aria-label="Browse ${cat}"
-         id="cat-grid-${cat.replace(/\s+/g, '-').toLowerCase()}">
-        <div class="cat-icon-wrap">
-          <i data-lucide="${iconName}" class="cat-icon"></i>
+         id="cat-grid-${slug}">
+        <div class="cat-img-wrap">
+          <img src="${imgSrc}" alt="${cat}" class="cat-img" loading="lazy" />
+          <div class="cat-img-overlay"></div>
         </div>
         <span class="cat-label">${cat}</span>
       </a>
