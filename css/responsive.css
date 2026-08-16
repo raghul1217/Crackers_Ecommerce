@@ -47,16 +47,19 @@
 @media (max-width: 767px) {
   .hero-banner {
     background: var(--gradient-hero);
-    padding: calc(var(--header-height) + 16px) var(--space-md) 28px;
-    height: 100vh;
-    min-height: 100vh;
+    padding: calc(var(--header-height) + 10px) var(--space-md) 28px;
+    height: auto;
+    min-height: 0;
   }
   .hero-container {
-    padding: 0 var(--space-xs);
+    padding: 0;
   }
   /* On mobile the video is behind — let text fill full width */
   .hero-content {
     max-width: 100%;
+    justify-content: flex-start;
+    padding-top: 18px;
+    gap: 14px;
   }
   .hero-banner-art {
     display: block;
