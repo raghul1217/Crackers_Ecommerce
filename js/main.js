@@ -1,9 +1,9 @@
-/**
- * main.js — Page-specific initialization logic
+﻿/**
+ * main.js â€” Page-specific initialization logic
  * Detects current page and bootstraps the correct init function
  */
 
-/* ── Page Detection ──────────────────────────────────── */
+/* â”€â”€ Page Detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const PAGE = document.body.dataset.page;
 
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (navSearch && PAGE !== 'shop') {
     navSearch.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && navSearch.value.trim()) {
-        window.location.href = `shop.html?q=${encodeURIComponent(navSearch.value.trim())}`;
+        window.location.href = `shop?q=${encodeURIComponent(navSearch.value.trim())}`;
       }
     });
   }
@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HOME PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function initHome() {
   showLoading('bestsellers-row');
@@ -66,8 +66,8 @@ async function initHome() {
     'All',
     cat => {
       window.location.href = cat === 'Gift Boxes'
-        ? 'giftbox.html'
-        : `shop.html?category=${encodeURIComponent(cat)}`;
+        ? 'giftbox'
+        : `shop?category=${encodeURIComponent(cat)}`;
     }
   );
 
@@ -78,7 +78,7 @@ async function initHome() {
     showToast(`${product.name} added to cart!`);
   }); // _applyIcons called inside renderProductRow
 
-  // Combos row — if none found, show newest products
+  // Combos row â€” if none found, show newest products
   let combos = getCombos(10);
   if (!combos.length) {
     combos = products.filter(p => p.badge === 'New').slice(0, 8);
@@ -95,7 +95,7 @@ async function initHome() {
 /**
  * Wire up prev/next arrows for a horizontal-scroll product row.
  * Arrows appear only when the row overflows, and update with scroll position.
- * @param {string} rowId — id of the scrollable .products-row element
+ * @param {string} rowId â€” id of the scrollable .products-row element
  */
 function initCarousel(rowId) {
   const row = document.getElementById(rowId);
@@ -168,9 +168,9 @@ function initCarousel(rowId) {
   start();
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SHOP PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 let _shopProducts = [];
 let _activeCategory = 'All';
@@ -278,7 +278,7 @@ function _applyShopFilters() {
   _saveShopState();
 }
 
-/* ── Shop state persistence (for "Continue Shopping") ── */
+/* â”€â”€ Shop state persistence (for "Continue Shopping") â”€â”€ */
 
 const SHOP_STATE_KEY = 'shopState';
 
@@ -302,12 +302,12 @@ function _buildShopUrl(state) {
   if (state.q) params.set('q', state.q);
   if (state.sort && state.sort !== 'popular') params.set('sort', state.sort);
   const qs = params.toString();
-  return qs ? `shop.html?${qs}` : 'shop.html';
+  return qs ? `shop?${qs}` : 'shop';
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PRODUCT AUTO-REFRESH (reflect sheet re-exports live)
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function _refreshHome() {
   const all = getByCategories([]);
@@ -318,8 +318,8 @@ function _refreshHome() {
     'All',
     cat => {
       window.location.href = cat === 'Gift Boxes'
-        ? 'giftbox.html'
-        : `shop.html?category=${encodeURIComponent(cat)}`;
+        ? 'giftbox'
+        : `shop?category=${encodeURIComponent(cat)}`;
     }
   );
   renderProductRow(getBestsellers(10), 'bestsellers-row', product => {
@@ -382,9 +382,9 @@ async function _forceRefresh() {
   showToast('Products updated');
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    GIFT BOXES PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function initGiftbox() {
   showLoading('giftbox-grid');
@@ -397,9 +397,75 @@ async function initGiftbox() {
   });
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PRODUCT DETAIL PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+function updateProductSeo(product) {
+  const SITE = 'https://sivakasi666crackers.com';
+  const url = `${SITE}/product?id=${encodeURIComponent(product.id)}`;
+  const desc = `${product.name} â€” â‚¹${product.price.toLocaleString('en-IN')}. ${product.description || ''} Order via WhatsApp or call. Direct from Sivakasi.`.replace(/\s+/g, ' ').slice(0, 160);
+  const img = new URL(product.image, window.location.href).href;
+  const set = (id, attr, value) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute(attr, value);
+  };
+  const meta = (name, value) => {
+    let el = document.querySelector(`meta[name="${name}"]`);
+    if (el) el.setAttribute('content', value);
+  };
+  set('seo-canonical', 'href', url);
+  set('og-url', 'content', url);
+  set('og-title', 'content', document.title);
+  set('og-description', 'content', desc);
+  set('og-image', 'content', img);
+  set('twitter-title', 'content', document.title);
+  set('twitter-description', 'content', desc);
+  set('twitter-image', 'content', img);
+  meta('description', desc);
+
+  const ldId = 'product-jsonld';
+  let script = document.getElementById(ldId);
+  if (!script) {
+    script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = ldId;
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: product.name,
+        image: img,
+        description: product.description || `${product.name} from Sivakasi666crackers.`,
+        category: product.category,
+        sku: String(product.id),
+        brand: { '@type': 'Brand', name: 'Sivakasi666crackers' },
+        offers: {
+          '@type': 'Offer',
+          url,
+          priceCurrency: 'INR',
+          price: product.price,
+          availability: product.inStock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition'
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+          { '@type': 'ListItem', position: 2, name: 'Shop', item: `${SITE}/shop` },
+          { '@type': 'ListItem', position: 3, name: product.category, item: `${SITE}/shop?category=${encodeURIComponent(product.category)}` },
+          { '@type': 'ListItem', position: 4, name: product.name }
+        ]
+      }
+    ]
+  });
+}
 
 async function initProduct() {
   const params = new URLSearchParams(window.location.search);
@@ -410,7 +476,7 @@ async function initProduct() {
       <div class="empty-state" style="padding:3rem;">
         <div class="empty-icon"><i data-lucide="package-search"></i></div>
         <h3>Product not found</h3>
-        <a href="shop.html" class="btn-primary">Browse Products</a>
+        <a href="shop" class="btn-primary">Browse Products</a>
       </div>
     `;
     if (window.lucide) lucide.createIcons();
@@ -425,7 +491,7 @@ async function initProduct() {
       <div class="empty-state" style="padding:3rem;">
         <div class="empty-icon"><i data-lucide="package-search"></i></div>
         <h3>Product not found</h3>
-        <a href="shop.html" class="btn-primary">Browse Products</a>
+        <a href="shop" class="btn-primary">Browse Products</a>
       </div>
     `;
     if (window.lucide) lucide.createIcons();
@@ -433,7 +499,8 @@ async function initProduct() {
   }
 
   // Populate product detail
-  document.title = `${product.name} — Sivakasi666crackers`;
+  document.title = `${product.name} â€” Sivakasi666crackers`;
+  updateProductSeo(product);
 
   const detail = document.getElementById('product-detail');
   if (!detail) return;
@@ -478,7 +545,7 @@ async function initProduct() {
         <div class="pd-qty-row">
           <label for="pd-qty-input" class="pd-qty-label">Quantity:</label>
           <div class="qty-stepper">
-            <button class="qty-btn" id="pd-qty-minus" aria-label="Decrease quantity">−</button>
+            <button class="qty-btn" id="pd-qty-minus" aria-label="Decrease quantity">âˆ’</button>
             <input type="number" id="pd-qty-input" value="1" min="1" max="99" aria-label="Quantity" />
             <button class="qty-btn" id="pd-qty-plus" aria-label="Increase quantity">+</button>
           </div>
@@ -527,11 +594,11 @@ async function initProduct() {
     }
   });
 
-  // Buy Now — add then redirect to cart
+  // Buy Now â€” add then redirect to cart
   document.getElementById('pd-buy-now-btn').addEventListener('click', () => {
     const qty = parseInt(qtyInput.value) || 1;
     addToCart(product, qty);
-    window.location.href = 'cart.html';
+    window.location.href = 'cart';
   });
 
   // Related products
@@ -546,14 +613,14 @@ async function initProduct() {
   });
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CART PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function initCart() {
   _renderCartPage();
 
-  // Continue Shopping → restore last shop filters
+  // Continue Shopping â†’ restore last shop filters
   const contLink = document.getElementById('cart-continue-link');
   if (contLink) {
     let state = null;
@@ -647,15 +714,15 @@ function _renderCartPage() {
   if (totalEl)     totalEl.textContent     = `\u20B9${total.toLocaleString('en-IN')}`;
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    ABOUT PAGE
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function initAbout() {
   animateStatCounters();
 }
 
-/* ── Animated stat counters ─────────────────────────── */
+/* â”€â”€ Animated stat counters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function animateStatCounters() {
   const counters = document.querySelectorAll('.stat-count');
@@ -695,9 +762,9 @@ function animateStatCounters() {
   }
 }
 
-/* ══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    TOAST NOTIFICATION
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 let _toastTimer = null;
 

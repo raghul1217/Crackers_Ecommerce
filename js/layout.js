@@ -1,5 +1,5 @@
-/**
- * layout.js — Injects the shared header.html / footer.html partials
+﻿/**
+ * layout.js â€” Injects the shared header.html / footer.html partials
  * into the #site-header / #site-footer placeholders on every page,
  * then wires up the mobile nav toggle, active page highlighting
  * and the cart UI sync.
@@ -11,7 +11,9 @@ async function _loadPartial(id, url) {
   const mount = document.getElementById(id);
   if (!mount) return;
   try {
-    const res = await fetch(url);
+    // Extensionless URL first (Vercel cleanUrls); fall back to .html for plain static servers
+    let res = await fetch(url);
+    if (!res.ok && !url.endsWith('.html')) res = await fetch(`${url}.html`);
     if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
     mount.innerHTML = await res.text();
   } catch (err) {
@@ -20,7 +22,7 @@ async function _loadPartial(id, url) {
 }
 
 function _setActiveNav() {
-  const map = { home: 'index.html', shop: 'shop.html', product: 'shop.html', about: 'about.html', giftbox: 'giftbox.html' };
+  const map = { home: '/', shop: 'shop', product: 'shop', about: 'about', giftbox: 'giftbox' };
   const target = map[document.body.dataset.page];
   if (!target) return;
   document.querySelectorAll('.desktop-nav a, .mobile-nav-menu a').forEach(a => {
@@ -61,8 +63,8 @@ function initLayout() {
   if (!_layoutPromise) {
     _layoutPromise = (async () => {
       await Promise.all([
-        _loadPartial('site-header', 'header.html'),
-        _loadPartial('site-footer', 'footer.html'),
+        _loadPartial('site-header', 'header'),
+        _loadPartial('site-footer', 'footer'),
       ]);
       _setActiveNav();
       _initMobileMenu();

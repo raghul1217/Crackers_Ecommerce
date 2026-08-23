@@ -1,11 +1,28 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product Detail &mdash; Sivakasi666crackers</title>
-  <meta name="description" content="View product details, pricing, and add to cart. Place your order via WhatsApp or call." />
+  <meta name="description" content="View full details, contents &amp; live pricing for this firecracker. Order easily via WhatsApp or call. Direct from Sivakasi at wholesale prices." />
   <meta name="theme-color" content="#C1121F" />
+
+  <!-- SEO (per-product values are updated by js/main.js at runtime) -->
+  <link rel="canonical" href="https://sivakasi666crackers.com/product" id="seo-canonical" />
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="Sivakasi666crackers" />
+  <meta property="og:url" content="https://sivakasi666crackers.com/product" id="og-url" />
+  <meta property="og:title" content="Product Detail &mdash; Sivakasi666crackers" id="og-title" />
+  <meta property="og:description" content="View full details, contents &amp; live pricing for this firecracker. Order via WhatsApp or call." id="og-description" />
+  <meta property="og:image" content="https://sivakasi666crackers.com/images/hero-banner.jpg" id="og-image" />
+  <meta property="og:locale" content="en_IN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Product Detail &mdash; Sivakasi666crackers" id="twitter-title" />
+  <meta name="twitter:description" content="View full details, contents &amp; live pricing for this firecracker." id="twitter-description" />
+  <meta name="twitter:image" content="https://sivakasi666crackers.com/images/hero-banner.jpg" id="twitter-image" />
+
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,9 +35,9 @@
 
   <!-- BREADCRUMB (updated dynamically) -->
   <nav class="breadcrumb" id="product-breadcrumb" aria-label="Breadcrumb">
-    <a href="index.html">Home</a>
+    <a href="/">Home</a>
     <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
-    <a href="shop.html">Shop</a>
+    <a href="shop">Shop</a>
     <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
     <span id="breadcrumb-product-name">Product</span>
   </nav>
@@ -39,7 +56,7 @@
     <section class="page-section" aria-labelledby="related-heading" style="margin-top:2rem;">
       <div class="section-header">
         <h2 class="section-title" id="related-heading">Related Products</h2>
-        <a href="shop.html" class="section-see-all">See All &rarr;</a>
+        <a href="shop" class="section-see-all">See All &rarr;</a>
       </div>
       <div class="section-body">
         <div class="products-row" id="related-products-row" role="list" aria-label="Related products">
@@ -71,9 +88,9 @@
             const nav = document.getElementById('product-breadcrumb');
             if (nav) {
               nav.innerHTML = `
-                <a href="index.html">Home</a>
+                <a href="/">Home</a>
                 <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
-                <a href="shop.html?category=${encodeURIComponent(p.category)}">${p.category}</a>
+                <a href="shop?category=${encodeURIComponent(p.category)}">${p.category}</a>
                 <i data-lucide="chevron-right" style="width:12px;height:12px;"></i>
                 <span>${p.name}</span>
               `;

@@ -1,9 +1,9 @@
-/**
- * render.js — DOM rendering helpers for product cards, categories, cart items
- * Icons: Lucide (https://lucide.dev) — call lucide.createIcons() after inserting HTML
+﻿/**
+ * render.js â€” DOM rendering helpers for product cards, categories, cart items
+ * Icons: Lucide (https://lucide.dev) â€” call lucide.createIcons() after inserting HTML
  */
 
-/* ── Category Image Map ──────────────────────────────── */
+/* â”€â”€ Category Image Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const CATEGORY_IMAGES = {
   'Gift Boxes':          'images/categories/gift-boxes.webp',
   'Sky Shots':           'images/categories/sky-shots.webp',
@@ -20,7 +20,7 @@ const CATEGORY_IMAGES = {
   'Deluxe Premium':      'images/categories/deluxe-premium.webp',
 };
 
-/* ── Keep CATEGORY_ICONS for sidebar chips (small icon fallback) ─ */
+/* â”€â”€ Keep CATEGORY_ICONS for sidebar chips (small icon fallback) â”€ */
 const CATEGORY_ICONS = {
   'Gift Boxes':          'gift',
   'Sky Shots':           'rocket',
@@ -53,18 +53,18 @@ const CATEGORY_COLORS = {
   'Deluxe Premium':      '#827717',
 };
 
-/* ── Lucide helper ─────────────────────────────────────── */
+/* â”€â”€ Lucide helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/** Trigger Lucide icon rendering (safe — no-op if not loaded yet) */
+/** Trigger Lucide icon rendering (safe â€” no-op if not loaded yet) */
 function _applyIcons() {
   if (window.lucide) lucide.createIcons();
 }
 
-/* ── Star Rating ─────────────────────────────────────── */
+/* â”€â”€ Star Rating â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Generate star rating HTML using Lucide star icons
- * @param {number} rating — 0 to 5
+ * @param {number} rating â€” 0 to 5
  */
 function renderStars(rating) {
   const full  = Math.floor(rating);
@@ -78,7 +78,7 @@ function renderStars(rating) {
   return html;
 }
 
-/* ── Badge ───────────────────────────────────────────── */
+/* â”€â”€ Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function renderBadge(badge) {
   if (!badge) return '';
@@ -92,7 +92,7 @@ function renderBadge(badge) {
   return `<span class="product-badge ${cls}">${badge}</span>`;
 }
 
-/* ── Product Card ────────────────────────────────────── */
+/* â”€â”€ Product Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render a product card element
@@ -114,7 +114,7 @@ function renderProductCard(product) {
   const btnClass  = inCartQty > 0 ? 'btn-add-cart in-cart' : 'btn-add-cart';
 
   card.innerHTML = `
-    <a href="product.html?id=${product.id}" class="card-img-link" aria-label="View ${product.name}">
+    <a href="product?id=${product.id}" class="card-img-link" aria-label="View ${product.name}">
       <div class="card-img-wrap">
         ${discountBadge}
         <img
@@ -128,7 +128,7 @@ function renderProductCard(product) {
       </div>
     </a>
     <div class="card-body">
-      <a href="product.html?id=${product.id}" class="card-name-link">
+      <a href="product?id=${product.id}" class="card-name-link">
         <h3 class="card-name">${product.name}</h3>
       </a>
       <div class="card-meta">
@@ -154,11 +154,11 @@ function renderProductCard(product) {
   return card;
 }
 
-/* ── Category Grid ───────────────────────────────────── */
+/* â”€â”€ Category Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render a category icon grid
- * @param {Array<string>} categories — list of category names
+ * @param {Array<string>} categories â€” list of category names
  * @param {string} containerId
  */
 function renderCategoryGrid(categories, containerId) {
@@ -170,7 +170,7 @@ function renderCategoryGrid(categories, containerId) {
     const imgSrc = CATEGORY_IMAGES[cat] || '';
     const color  = CATEGORY_COLORS[cat] || '#FF6F00';
     const slug   = cat.replace(/\s+/g, '-').toLowerCase();
-    const href   = cat === 'Gift Boxes' ? 'giftbox.html' : `shop.html?category=${encodeURIComponent(cat)}`;
+    const href   = cat === 'Gift Boxes' ? 'giftbox' : `shop?category=${encodeURIComponent(cat)}`;
     return `
       <a href="${href}"
          class="category-grid-item"
@@ -189,7 +189,7 @@ function renderCategoryGrid(categories, containerId) {
   _applyIcons();
 }
 
-/* ── Category Chips ──────────────────────────────────── */
+/* â”€â”€ Category Chips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render horizontal scrollable category filter chips
@@ -227,11 +227,11 @@ function renderCategoryChips(categories, containerId, activeCategory, onSelect) 
   });
 }
 
-/* ── Cart Item Row ───────────────────────────────────── */
+/* â”€â”€ Cart Item Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
- * Render a cart item row for cart.html
- * @param {Object} item — cart item { id, name, price, image, qty }
+ * Render a cart item row for cart
+ * @param {Object} item â€” cart item { id, name, price, image, qty }
  * @returns {HTMLElement}
  */
 function renderCartItem(item) {
@@ -247,7 +247,7 @@ function renderCartItem(item) {
            onerror="this.src='images/placeholder.svg'" />
     </div>
     <div class="cart-item-info">
-      <a href="product.html?id=${item.id}" class="cart-item-name">${item.name}</a>
+      <a href="product?id=${item.id}" class="cart-item-name">${item.name}</a>
       <div class="cart-item-price">&#8377;${item.price.toLocaleString('en-IN')} each</div>
       <div class="cart-item-controls">
         <button class="qty-btn qty-minus" data-id="${item.id}"
@@ -273,7 +273,7 @@ function renderCartItem(item) {
   return row;
 }
 
-/* ── Product Grid Renderer ───────────────────────────── */
+/* â”€â”€ Product Grid Renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render a list of products into a grid container
@@ -293,7 +293,7 @@ function renderProductGrid(products, containerId, onAddToCart) {
         <div class="empty-icon"><i data-lucide="search-x"></i></div>
         <h3>No products found</h3>
         <p>Try a different search term or category.</p>
-        <a href="shop.html" class="btn-primary">Browse All Products</a>
+        <a href="shop" class="btn-primary">Browse All Products</a>
       </div>
     `;
     _applyIcons();
@@ -325,7 +325,7 @@ function renderProductGrid(products, containerId, onAddToCart) {
   _applyIcons();
 }
 
-/* ── Horizontal Scroll Row ───────────────────────────── */
+/* â”€â”€ Horizontal Scroll Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render a horizontal scrolling product row (home page sections)
@@ -362,7 +362,7 @@ function renderProductRow(products, containerId, onAddToCart) {
   _applyIcons();
 }
 
-/* ── Gift Box Card ───────────────────────────────────── */
+/* â”€â”€ Gift Box Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Available gift box artwork files in images/giftbox (basenames).
@@ -381,7 +381,7 @@ const GIFTBOX_IMAGE_FILES = [
 
 /**
  * Compact lowercase slug: removes spaces/punctuation.
- * "Tuk Tuk (20 Items)" → "tuktuk20items"
+ * "Tuk Tuk (20 Items)" â†’ "tuktuk20items"
  * @param {*} value
  * @returns {string}
  */
@@ -447,7 +447,7 @@ function renderGiftBoxCard(product) {
 
   card.innerHTML = `
     <div class="giftbox-media">
-      <a href="product.html?id=${product.id}" class="giftbox-img-link" aria-label="View ${product.name}">
+      <a href="product?id=${product.id}" class="giftbox-img-link" aria-label="View ${product.name}">
         <div class="giftbox-img-wrap" style="background-image:url('${boxImg}');"
              role="img" aria-label="Gift box artwork for ${product.name}">
           ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
@@ -457,7 +457,7 @@ function renderGiftBoxCard(product) {
     <div class="giftbox-body">
       <div class="giftbox-head">
         <div style="min-width:0;">
-          <a href="product.html?id=${product.id}" class="giftbox-name-link">
+          <a href="product?id=${product.id}" class="giftbox-name-link">
             <h3 class="giftbox-name">${product.name}</h3>
           </a>
         </div>
@@ -481,7 +481,7 @@ function renderGiftBoxCard(product) {
         ` : ''}
       </div>
       <div class="giftbox-footer">
-        <a href="product.html?id=${product.id}" class="giftbox-details-link">
+        <a href="product?id=${product.id}" class="giftbox-details-link">
           View Details <i data-lucide="arrow-right"></i>
         </a>
         <button class="btn-add-cart" data-product-id="${product.id}"
@@ -511,7 +511,7 @@ function renderGiftBoxCard(product) {
   return card;
 }
 
-/* ── Gift Box Grid Renderer ──────────────────────────── */
+/* â”€â”€ Gift Box Grid Renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Render a list of gift boxes into a grid container
@@ -531,7 +531,7 @@ function renderGiftBoxGrid(products, containerId, onAddToCart) {
         <div class="empty-icon"><i data-lucide="gift"></i></div>
         <h3>No gift boxes found</h3>
         <p>Check back soon &mdash; new combos are being added!</p>
-        <a href="shop.html?category=Gift%20Boxes" class="btn-primary">Browse Shop</a>
+        <a href="shop?category=Gift%20Boxes" class="btn-primary">Browse Shop</a>
       </div>
     `;
     _applyIcons();
@@ -560,7 +560,7 @@ function renderGiftBoxGrid(products, containerId, onAddToCart) {
   _applyIcons();
 }
 
-/* ── Loading Spinner ─────────────────────────────────── */
+/* â”€â”€ Loading Spinner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function showLoading(containerId) {
   const el = document.getElementById(containerId);
@@ -574,5 +574,5 @@ function showLoading(containerId) {
 }
 
 function hideLoading(containerId) {
-  // Replaced by actual content render — no-op placeholder
+  // Replaced by actual content render â€” no-op placeholder
 }

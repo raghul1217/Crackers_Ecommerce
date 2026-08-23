@@ -10,5 +10,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 echo.
-echo Done! products.json is updated. The website picks up changes automatically.
+echo Regenerating sitemap.xml...
+node scripts/generate-sitemap.js
+if %errorlevel% neq 0 (
+    echo.
+    echo WARNING: Sitemap generation failed, products.json was still updated.
+)
+echo.
+echo Done! products.json and sitemap.xml are updated. The website picks up changes automatically.
 pause
