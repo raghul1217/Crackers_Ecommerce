@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /cart
 
-Sitemap: https://sivakasi666crackers.com/sitemap.xml
+Sitemap: https://www.sivakasi666crackers.com/sitemap.xml

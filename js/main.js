@@ -1,4 +1,4 @@
-﻿/**
+/**
  * main.js â€” Page-specific initialization logic
  * Detects current page and bootstraps the correct init function
  */
@@ -402,7 +402,7 @@ async function initGiftbox() {
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function updateProductSeo(product) {
-  const SITE = 'https://sivakasi666crackers.com';
+  const SITE = 'https://www.sivakasi666crackers.com';
   const url = `${SITE}/product?id=${encodeURIComponent(product.id)}`;
   const desc = `${product.name} â€” â‚¹${product.price.toLocaleString('en-IN')}. ${product.description || ''} Order via WhatsApp or call. Direct from Sivakasi.`.replace(/\s+/g, ' ').slice(0, 160);
   const img = new URL(product.image, window.location.href).href;
