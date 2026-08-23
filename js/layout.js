@@ -11,9 +11,10 @@ async function _loadPartial(id, url) {
   const mount = document.getElementById(id);
   if (!mount) return;
   try {
-    // Extensionless URL first (Vercel cleanUrls); fall back to .html for plain static servers
-    let res = await fetch(url);
-    if (!res.ok && !url.endsWith('.html')) res = await fetch(`${url}.html`);
+    // .html URL first; works both with and without Vercel cleanUrls
+    // (with cleanUrls enabled, /header.html 308-redirects to /header and fetch follows it)
+    let res = await fetch(`${url}.html`);
+    if (!res.ok && url.endsWith('.html')) res = await fetch(url.replace(/\.html$/, ''));
     if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
     mount.innerHTML = await res.text();
   } catch (err) {

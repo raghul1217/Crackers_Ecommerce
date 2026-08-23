@@ -1,0 +1,6 @@
+# Never deploy local tooling to production
+# (export-products.js contains a Google API key)
+scripts/
+update-data.cmd
+*.cmd
+*.bat
