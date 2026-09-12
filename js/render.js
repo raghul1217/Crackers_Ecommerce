@@ -567,7 +567,8 @@ function showLoading(containerId) {
    ------------------------------------------------------------------- */
 
 /**
- * Render products as a price-list table.
+ * Render products as a price-list table grouped by category.
+ * Each category gets a heading row, then its product rows.
  * Columns: Item | Name | Actual Price | Discount | Offer Price | Qty | Final Price.
  * Entering a quantity >= 1 auto-adds/updates the item in the cart.
  * @param {Array} products
@@ -595,56 +596,81 @@ function renderProductTable(products, containerId) {
 
   const fmt = n => `&#8377;${Math.round(n).toLocaleString('en-IN')}`;
 
-  const rows = products.map(product => {
-    const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
-    const discount = product.discountPercent
-      ? `<span class="discount-badge pt-discount">-${product.discountPercent}%</span>`
-      : '';
+  // Group products by category, preserving sort order within each group
+  const groups = [];
+  const byCat = {};
+  for (const product of products) {
+    const cat = product.category;
+    if (!byCat[cat]) {
+      byCat[cat] = { category: cat, items: [] };
+      groups.push(byCat[cat]);
+    }
+    byCat[cat].items.push(product);
+  }
+
+  const sections = groups.map(group => {
+    const icon = CATEGORY_ICONS[group.category] || 'sparkles';
+    const color = CATEGORY_COLORS[group.category] || 'var(--clr-red)';
+    const catRows = group.items.map(product => {
+      const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
+      const discount = product.discountPercent
+        ? `<span class="discount-badge pt-discount">-${product.discountPercent}%</span>`
+        : '';
+      return `
+        <tr data-product-id="${product.id}">
+          <td class="pt-img-cell" data-label="Item">
+            <div class="pt-thumb">
+              ${discount}
+              <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async"
+                   onerror="this.src='images/placeholder.svg'" />
+            </div>
+          </td>
+          <td class="pt-name" data-label="Name">
+            <span class="pt-name-text">${product.name}</span>
+            ${renderBadge(product.badge)}
+          </td>
+          <td class="pt-mrp" data-label="Actual Price">${product.mrp ? fmt(product.mrp) : '&mdash;'}</td>
+          <td class="pt-disc" data-label="Discount">${product.discountPercent ? `-${product.discountPercent}%` : '&mdash;'}</td>
+          <td class="pt-price" data-label="Offer Price">${fmt(product.price)}</td>
+          <td class="pt-qty-cell" data-label="Qty">
+            <input class="pt-qty-input" type="number" min="0" step="1" inputmode="numeric"
+                   value="${inCart || ''}" data-product-id="${product.id}"
+                   aria-label="Quantity of ${product.name}" />
+          </td>
+          <td class="pt-final" data-label="Final Price" data-product-id="${product.id}">${inCart ? fmt(product.price * inCart) : '&mdash;'}</td>
+        </tr>
+      `;
+    }).join('');
+
     return `
-      <tr data-product-id="${product.id}">
-        <td class="pt-img-cell">
-          <div class="pt-thumb">
-            ${discount}
-            <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async"
-                 onerror="this.src='images/placeholder.svg'" />
-          </div>
-        </td>
-        <td class="pt-name">
-          <span class="pt-name-text">${product.name}</span>
-          ${renderBadge(product.badge)}
-        </td>
-        <td class="pt-mrp">${product.mrp ? fmt(product.mrp) : '&mdash;'}</td>
-        <td class="pt-disc">${product.discountPercent ? `-${product.discountPercent}%` : '&mdash;'}</td>
-        <td class="pt-price">${fmt(product.price)}</td>
-        <td class="pt-qty-cell">
-          <input class="pt-qty-input" type="number" min="0" step="1" inputmode="numeric"
-                 value="${inCart || ''}" data-product-id="${product.id}"
-                 aria-label="Quantity of ${product.name}" />
-        </td>
-        <td class="pt-final" data-product-id="${product.id}">${inCart ? fmt(product.price * inCart) : '&mdash;'}</td>
-      </tr>
+      <div class="pt-cat-section">
+        <div class="pt-cat-heading" style="border-left-color:${color}">
+          <i data-lucide="${icon}" style="width:18px;height:18px;color:inherit;"></i>
+          <span>${group.category}</span>
+          <span class="pt-cat-count">${group.items.length} items</span>
+        </div>
+        <div class="product-table-wrap">
+          <table class="product-table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Name</th>
+                <th scope="col">Actual Price</th>
+                <th scope="col">Discount</th>
+                <th scope="col">Offer Price</th>
+                <th scope="col">Qty</th>
+                <th scope="col">Final Price</th>
+              </tr>
+            </thead>
+            <tbody>${catRows}</tbody>
+          </table>
+        </div>
+      </div>
     `;
   }).join('');
 
   container.classList.add('table-mode');
-  container.innerHTML = `
-    <div class="product-table-wrap">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th scope="col">Item</th>
-            <th scope="col">Name</th>
-            <th scope="col">Actual Price</th>
-            <th scope="col">Discount</th>
-            <th scope="col">Offer Price</th>
-            <th scope="col">Qty</th>
-            <th scope="col">Final Price</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+  container.innerHTML = sections;
 
   // Quantity input: auto-syncs the cart (qty >= 1 adds/updates, 0/empty removes).
   // Final Price updates live from the quantity.
@@ -682,7 +708,69 @@ function renderProductTable(products, containerId) {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
   });
 
+  // Full-size image preview on thumbnail click
+  container.querySelectorAll('.pt-thumb').forEach(thumb => {
+    thumb.setAttribute('tabindex', '0');
+    thumb.setAttribute('role', 'button');
+    thumb.setAttribute('aria-label', 'View full size image');
+    thumb.addEventListener('click', () => {
+      const row = thumb.closest('tr');
+      const product = row && getProductById(row.dataset.productId);
+      if (product) openImageModal(product);
+    });
+    thumb.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        thumb.click();
+      }
+    });
+  });
+
   _applyIcons();
+}
+
+let _ptModalKeydown = null;
+
+/**
+ * Open a full-size product image preview modal.
+ * @param {Object} product
+ */
+function openImageModal(product) {
+  if (!product) return;
+  closeImageModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'pt-modal-overlay';
+  overlay.innerHTML = `
+    <div class="pt-modal" role="dialog" aria-modal="true" aria-label="${product.name}">
+      <button class="pt-modal-close" type="button" aria-label="Close image">&times;</button>
+      <img class="pt-modal-img" src="${product.image}" alt="${product.name}" />
+      <div class="pt-modal-caption">
+        <span class="pt-modal-name">${product.name}</span>
+        <span class="pt-modal-prices">
+          <span class="pt-modal-offer">&#8377;${product.price.toLocaleString('en-IN')}</span>
+          ${product.mrp ? `<span class="pt-modal-mrp">&#8377;${product.mrp.toLocaleString('en-IN')}</span>` : ''}
+        </span>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeImageModal(); });
+  overlay.querySelector('.pt-modal-close').addEventListener('click', closeImageModal);
+  _ptModalKeydown = e => { if (e.key === 'Escape') closeImageModal(); };
+  document.addEventListener('keydown', _ptModalKeydown);
+}
+
+/** Close the product image preview modal if open */
+function closeImageModal() {
+  const overlay = document.querySelector('.pt-modal-overlay');
+  if (overlay) overlay.remove();
+  document.body.style.overflow = '';
+  if (_ptModalKeydown) {
+    document.removeEventListener('keydown', _ptModalKeydown);
+    _ptModalKeydown = null;
+  }
 }
 
 function hideLoading(containerId) {
