@@ -23,7 +23,7 @@ async function _loadPartial(id, url) {
 }
 
 function _setActiveNav() {
-  const map = { home: '/', shop: 'shop', product: 'shop', about: 'about', giftbox: 'giftbox' };
+  const map = { home: '/', shop: 'shop', about: 'about', giftbox: 'giftbox' };
   const target = map[document.body.dataset.page];
   if (!target) return;
   document.querySelectorAll('.desktop-nav a, .mobile-nav-menu a').forEach(a => {

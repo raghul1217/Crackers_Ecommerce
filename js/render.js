@@ -114,23 +114,19 @@ function renderProductCard(product) {
   const btnClass  = inCartQty > 0 ? 'btn-add-cart in-cart' : 'btn-add-cart';
 
   card.innerHTML = `
-    <a href="product?id=${product.id}" class="card-img-link" aria-label="View ${product.name}">
-      <div class="card-img-wrap">
-        ${discountBadge}
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-          loading="lazy"
-          decoding="async"
-          onerror="this.src='images/placeholder.svg'"
-        />
-        ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
-      </div>
-    </a>
+    <div class="card-img-wrap">
+      ${discountBadge}
+      <img
+        src="${product.image}"
+        alt="${product.name}"
+        loading="lazy"
+        decoding="async"
+        onerror="this.src='images/placeholder.svg'"
+      />
+      ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
+    </div>
     <div class="card-body">
-      <a href="product?id=${product.id}" class="card-name-link">
-        <h3 class="card-name">${product.name}</h3>
-      </a>
+      <h3 class="card-name">${product.name}</h3>
       <div class="card-meta">
         ${renderStars(product.rating)}
       </div>
@@ -247,7 +243,7 @@ function renderCartItem(item) {
            onerror="this.src='images/placeholder.svg'" />
     </div>
     <div class="cart-item-info">
-      <a href="product?id=${item.id}" class="cart-item-name">${item.name}</a>
+      <span class="cart-item-name">${item.name}</span>
       <div class="cart-item-price">&#8377;${item.price.toLocaleString('en-IN')} each</div>
       <div class="cart-item-controls">
         <button class="qty-btn qty-minus" data-id="${item.id}"
@@ -447,19 +443,15 @@ function renderGiftBoxCard(product) {
 
   card.innerHTML = `
     <div class="giftbox-media">
-      <a href="product?id=${product.id}" class="giftbox-img-link" aria-label="View ${product.name}">
-        <div class="giftbox-img-wrap" style="background-image:url('${boxImg}');"
-             role="img" aria-label="Gift box artwork for ${product.name}">
+      <div class="giftbox-img-wrap" style="background-image:url('${boxImg}');"
+           role="img" aria-label="Gift box artwork for ${product.name}">
           ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
         </div>
-      </a>
     </div>
     <div class="giftbox-body">
       <div class="giftbox-head">
         <div style="min-width:0;">
-          <a href="product?id=${product.id}" class="giftbox-name-link">
-            <h3 class="giftbox-name">${product.name}</h3>
-          </a>
+          <h3 class="giftbox-name">${product.name}</h3>
         </div>
         <div class="giftbox-pricing">
           <span class="giftbox-price">&#8377;${product.price.toLocaleString('en-IN')}</span>
@@ -481,9 +473,6 @@ function renderGiftBoxCard(product) {
         ` : ''}
       </div>
       <div class="giftbox-footer">
-        <a href="product?id=${product.id}" class="giftbox-details-link">
-          View Details <i data-lucide="arrow-right"></i>
-        </a>
         <button class="btn-add-cart" data-product-id="${product.id}"
                 id="add-to-cart-${product.id}"
                 ${!product.inStock ? 'disabled' : ''}

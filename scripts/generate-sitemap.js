@@ -52,38 +52,18 @@ function main() {
   const productsPath = path.join(root, 'products.json');
 
   let lastmod = new Date().toISOString().slice(0, 10);
-  let productUrls = [];
 
   if (fs.existsSync(productsPath)) {
     const raw = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
     if (raw.exportedAt) {
       lastmod = new Date(raw.exportedAt).toISOString().slice(0, 10);
     }
-    for (const row of raw.rows || []) {
-      const name = row['Item Name'];
-      const category = row['Category'];
-      const sno = row['S.No'];
-      if (!name || !category || sno == null) continue;
-      const price = parseMoney(row['Final Price (â‚¹)']);
-      if (!isFinite(price)) continue;
-      const code = CATEGORY_CODE[category] || 'P';
-      const id = `${code}${String(sno).padStart(3, '0')}`;
-      productUrls.push({
-        loc: `${SITE}/product?id=${encodeURIComponent(id)}`,
-        lastmod,
-        priority: '0.7',
-        changefreq: 'weekly',
-      });
-    }
-    console.log(`Found ${productUrls.length} products in products.json`);
+    console.log('products.json found â€” generating static pages only');
   } else {
     console.log('products.json not found â€” generating static pages only');
   }
 
-  const urls = [
-    ...STATIC_PAGES.map((p) => ({ ...p, lastmod })),
-    ...productUrls,
-  ];
+  const urls = STATIC_PAGES.map((p) => ({ ...p, lastmod }));
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
