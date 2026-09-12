@@ -562,6 +562,129 @@ function showLoading(containerId) {
   `;
 }
 
+/* -------------------------------------------------------------------
+   Price-list table (shop page)
+   ------------------------------------------------------------------- */
+
+/**
+ * Render products as a price-list table.
+ * Columns: Item | Name | Actual Price | Discount | Offer Price | Qty | Final Price.
+ * Entering a quantity >= 1 auto-adds/updates the item in the cart.
+ * @param {Array} products
+ * @param {string} containerId
+ */
+function renderProductTable(products, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = '';
+  container.classList.remove('table-mode');
+
+  if (!products || products.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon"><i data-lucide="search-x"></i></div>
+        <h3>No products found</h3>
+        <p>Try a different search term or category.</p>
+        <a href="shop" class="btn-primary">Browse All Products</a>
+      </div>
+    `;
+    _applyIcons();
+    return;
+  }
+
+  const fmt = n => `&#8377;${Math.round(n).toLocaleString('en-IN')}`;
+
+  const rows = products.map(product => {
+    const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
+    const discount = product.discountPercent
+      ? `<span class="discount-badge pt-discount">-${product.discountPercent}%</span>`
+      : '';
+    return `
+      <tr data-product-id="${product.id}">
+        <td class="pt-img-cell">
+          <div class="pt-thumb">
+            ${discount}
+            <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async"
+                 onerror="this.src='images/placeholder.svg'" />
+          </div>
+        </td>
+        <td class="pt-name">
+          <span class="pt-name-text">${product.name}</span>
+          ${renderBadge(product.badge)}
+        </td>
+        <td class="pt-mrp">${product.mrp ? fmt(product.mrp) : '&mdash;'}</td>
+        <td class="pt-disc">${product.discountPercent ? `-${product.discountPercent}%` : '&mdash;'}</td>
+        <td class="pt-price">${fmt(product.price)}</td>
+        <td class="pt-qty-cell">
+          <input class="pt-qty-input" type="number" min="0" step="1" inputmode="numeric"
+                 value="${inCart || ''}" data-product-id="${product.id}"
+                 aria-label="Quantity of ${product.name}" />
+        </td>
+        <td class="pt-final" data-product-id="${product.id}">${inCart ? fmt(product.price * inCart) : '&mdash;'}</td>
+      </tr>
+    `;
+  }).join('');
+
+  container.classList.add('table-mode');
+  container.innerHTML = `
+    <div class="product-table-wrap">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Name</th>
+            <th scope="col">Actual Price</th>
+            <th scope="col">Discount</th>
+            <th scope="col">Offer Price</th>
+            <th scope="col">Qty</th>
+            <th scope="col">Final Price</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+
+  // Quantity input: auto-syncs the cart (qty >= 1 adds/updates, 0/empty removes).
+  // Final Price updates live from the quantity.
+  container.querySelectorAll('.pt-qty-input').forEach(input => {
+    const product = getProductById(input.dataset.productId);
+    if (!product) return;
+    const cell = container.querySelector(`.pt-final[data-product-id="${product.id}"]`);
+
+    const applyToCart = qty => {
+      if (qty >= 1) {
+        if (typeof getCartItemQty === 'function' && getCartItemQty(product.id) > 0) {
+          updateCartQty(product.id, qty);
+        } else {
+          addToCart(product, qty);
+        }
+      } else {
+        removeFromCart(product.id);
+      }
+    };
+
+    const sync = () => {
+      const raw = input.value.trim();
+      const qty = raw === '' ? 0 : Math.min(Math.max(parseInt(raw, 10) || 0, 0), 99);
+      if (qty >= 1 && String(qty) !== raw) input.value = qty;
+      applyToCart(qty);
+      cell.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
+    };
+
+    input.addEventListener('input', () => {
+      const qty = Math.min(Math.max(parseInt(input.value, 10) || 0, 0), 99);
+      applyToCart(qty);
+      cell.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
+    });
+    input.addEventListener('change', sync);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+  });
+
+  _applyIcons();
+}
+
 function hideLoading(containerId) {
   // Replaced by actual content render â€” no-op placeholder
 }

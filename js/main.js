@@ -269,10 +269,7 @@ function _applyShopFilters() {
     countEl.textContent = `${results.length} product${results.length !== 1 ? 's' : ''} found`;
   }
 
-  renderProductGrid(results, 'products-grid', product => {
-    addToCart(product);
-    showToast(`${product.name} added to cart!`);
-  }); // _applyIcons called inside renderProductGrid
+  renderProductTable(results, 'products-grid'); // _applyIcons called inside renderProductTable
 
   _saveShopState();
 }
