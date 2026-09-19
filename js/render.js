@@ -95,6 +95,14 @@ function renderBadge(badge) {
 /* â”€â”€ Product Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
+ * Build an onerror handler that falls back from a per-item image
+ * to the category fallback image, then to the neutral placeholder.
+ */
+function _imgOnError(fallbackImage) {
+  return `if(!this.dataset.fb){this.dataset.fb='1';this.src='${fallbackImage}'}else{this.src='images/placeholder.svg'}`;
+}
+
+/**
  * Render a product card element
  * @param {Object} product
  * @returns {HTMLElement}
@@ -116,7 +124,7 @@ function renderProductCard(product) {
         alt="${product.name}"
         loading="lazy"
         decoding="async"
-        onerror="this.src='images/placeholder.svg'"
+        onerror="${_imgOnError(product.fallbackImage)}"
       />
       ${!product.inStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : ''}
     </div>
@@ -613,7 +621,7 @@ function renderProductTable(products, containerId) {
           <td class="pt-img-cell" data-label="Item">
             <div class="pt-thumb">
               <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async"
-                   onerror="this.src='images/placeholder.svg'" />
+                   onerror="${_imgOnError(product.fallbackImage)}" />
             </div>
           </td>
           <td class="pt-name" data-label="Name">

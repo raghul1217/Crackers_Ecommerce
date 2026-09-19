@@ -125,6 +125,19 @@ function _parsePercent(value) {
 }
 
 /**
+ * Convert a product name into a safe image-01 filename stem,
+ * e.g. "Tuk Tuk (20 Items)" -> "tuk-tuk-20-items"
+ */
+function _slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
  * Parse spreadsheet rows into product objects
  * @param {Array<Object>} rows — objects keyed by header names
  * @returns {Array<Object>}
@@ -153,6 +166,17 @@ function _parseProductsFromRows(rows) {
     const count = CATEGORY_IMAGE_COUNT[category] || 1;
     const idx = (perCat[category] = (perCat[category] || 0) + 1);
 
+    const fallbackImage = `images/${base}-${((idx - 1) % count) + 1}.webp`;
+
+    let image = fallbackImage;
+    const explicitImg = row['Image'] || row['image'] || row['Image URL'];
+    if (explicitImg && String(explicitImg).trim()) {
+      const v = String(explicitImg).trim();
+      image = /^https?:\/\//i.test(v) ? v : (v.startsWith('images/') ? v : `images/${v}`);
+    } else {
+      image = `images/${_slugify(name)}.webp`;
+    }
+
     products.push({
       id: `${CATEGORY_CODE[category] || 'P'}${String(sno).padStart(3, '0')}`,
       name,
@@ -160,7 +184,8 @@ function _parseProductsFromRows(rows) {
       price: _round2(price),
       mrp: _round2(mrp),
       discountPercent,
-      image: `images/${base}-${((idx - 1) % count) + 1}.webp`,
+      image,
+      fallbackImage,
       description: `${contents || 'Premium quality product'}. A best-value pick from our ${category} collection, priced for the festive season.`,
       unit: contents || '1 box',
       rating: sheetRating != null ? _round2(sheetRating) : (TAG_RATING[tag] || 4.2),
