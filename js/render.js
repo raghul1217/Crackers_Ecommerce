@@ -99,7 +99,7 @@ function renderBadge(badge) {
  * to the category fallback image, then to the neutral placeholder.
  */
 function _imgOnError(fallbackImage) {
-  return `if(!this.dataset.fb){this.dataset.fb='1';this.src='${fallbackImage}'}else{this.src='images/placeholder.svg'}`;
+  return `if(!this.dataset.fb){this.dataset.fb='1';this.src='${fallbackImage}'}else{this.src='images/placeholder.webp'}`;
 }
 
 /**
@@ -243,7 +243,7 @@ function renderCartItem(item) {
   row.innerHTML = `
     <div class="cart-item-img-wrap">
       <img src="${item.image}" alt="${item.name}" loading="lazy" decoding="async"
-           onerror="this.src='images/placeholder.svg'" />
+           onerror="this.src='images/placeholder.webp'" />
     </div>
     <div class="cart-item-info">
       <span class="cart-item-name">${item.name}</span>
