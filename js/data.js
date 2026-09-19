@@ -8,36 +8,41 @@ let _allProducts = [];
 
 /* ── Sheet → Product schema mapping ─────────────────── */
 
-const CATEGORY_IMAGE_BASE = {
-  'Gift Boxes': 'gift-box',
-  'Sky Shots': 'sky-shot',
-  'Sparklers': 'sparklers',
-  'Ground Chakkars': 'chakkar',
-  'Flower Pots': 'flower-pot',
-  'Rockets': 'rocket',
-  'Sound Crackers': 'sound-cracker',
-  'Fancy Crackers': 'fancy',
-  'Party Crackers': 'party',
-  'Kids Special': 'kids',
-  'Garland Crackers': 'garland',
-  'Repeating Fountains': 'fountain',
-  'Deluxe Premium': 'deluxe',
-};
-
-const CATEGORY_IMAGE_COUNT = {
-  'Gift Boxes': 5,
-  'Sky Shots': 5,
-  'Sparklers': 4,
-  'Ground Chakkars': 2,
-  'Flower Pots': 3,
-  'Rockets': 2,
-  'Sound Crackers': 3,
-  'Fancy Crackers': 4,
-  'Party Crackers': 3,
-  'Kids Special': 3,
-  'Garland Crackers': 2,
-  'Repeating Fountains': 3,
-  'Deluxe Premium': 3,
+/**
+ * Category → category artwork in images/categories/ (used as the product
+ * image fallback and for the category grid). New sheet categories are
+ * grouped onto the closest visual family that has artwork.
+ */
+const CATEGORY_FALLBACK_IMAGES = {
+  'Gift Boxes':          'images/categories/gift-boxes.webp',
+  'Sky Shots':           'images/categories/sky-shots.webp',
+  'Sparklers':           'images/categories/sparklers.webp',
+  'Ground Chakkars':     'images/categories/ground-chakkars.webp',
+  'Flower Pots':         'images/categories/flower-pots.webp',
+  'Rockets':             'images/categories/rockets.webp',
+  'Sound Crackers':      'images/categories/sound-crackers.webp',
+  'Fancy Crackers':      'images/categories/fancy-crackers.webp',
+  'Party Crackers':      'images/categories/party-crackers.webp',
+  'Kids Special':        'images/categories/kids-special.webp',
+  'Garland Crackers':    'images/categories/garland-crackers.webp',
+  'Repeating Fountains': 'images/categories/repeating-fountains.webp',
+  'Deluxe Premium':      'images/categories/deluxe-premium.webp',
+  'Single Sound Crackers': 'images/categories/sound-crackers.webp',
+  'Bombs':               'images/categories/sound-crackers.webp',
+  'Bijili':              'images/categories/sparklers.webp',
+  'Color Matches':       'images/categories/sparklers.webp',
+  'Chakkaram - Spinners':'images/categories/ground-chakkars.webp',
+  'Mini Fountains':      'images/categories/repeating-fountains.webp',
+  'Mega Fountains':      'images/categories/repeating-fountains.webp',
+  'Special Fountains':   'images/categories/repeating-fountains.webp',
+  'Fountain with Bomb':  'images/categories/repeating-fountains.webp',
+  'Fancy Novelties':     'images/categories/fancy-crackers.webp',
+  'Ariel Shots Continuous Functions': 'images/categories/sky-shots.webp',
+  'Rider Shots':         'images/categories/sky-shots.webp',
+  'Musical Shots':       'images/categories/sky-shots.webp',
+  'Special Function Shots': 'images/categories/sky-shots.webp',
+  '2026 Special':        'images/categories/deluxe-premium.webp',
+  'Festival Crackers':   'images/categories/deluxe-premium.webp',
 };
 
 const CATEGORY_CODE = {
@@ -54,6 +59,22 @@ const CATEGORY_CODE = {
   'Garland Crackers': 'GL',
   'Repeating Fountains': 'RF',
   'Deluxe Premium': 'DP',
+  'Single Sound Crackers': 'CSC',
+  'Bombs': 'BMB',
+  'Bijili': 'BJI',
+  'Color Matches': 'CLM',
+  'Chakkaram - Spinners': 'CHK',
+  'Mini Fountains': 'MNF',
+  'Mega Fountains': 'MGF',
+  'Special Fountains': 'SPF',
+  'Fountain with Bomb': 'FWB',
+  'Fancy Novelties': 'FNC',
+  'Ariel Shots Continuous Functions': 'ARS',
+  'Rider Shots': 'RDS',
+  'Musical Shots': 'MSC',
+  'Special Function Shots': 'SFN',
+  '2026 Special': 'N26',
+  'Festival Crackers': 'FES',
 };
 
 const TAG_BADGE = {
@@ -124,26 +145,144 @@ function _parsePercent(value) {
   return isFinite(n) ? n : 0;
 }
 
+/* ── Image manifest (list of real files under images/) ── */
+
+const IMAGE_MANIFEST_URL = 'image-manifest.json';
+
+let _imageManifestPromise = null;
+
 /**
- * Convert a product name into a safe image-01 filename stem,
- * e.g. "Tuk Tuk (20 Items)" -> "tuk-tuk-20-items"
+ * Fetch the manifest of actual image files (images/products, images/giftbox)
+ * so products only ever reference files that exist. Resolves to null on any
+ * failure, in which case products fall back to category images.
+ * @returns {Promise<Object|null>}
  */
-function _slugify(value) {
-  return String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/['’]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+function _loadImageManifest() {
+  if (!_imageManifestPromise) {
+    _imageManifestPromise = fetch(IMAGE_MANIFEST_URL)
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => (data && Array.isArray(data.products) ? data : null))
+      .catch(() => null);
+  }
+  return _imageManifestPromise;
+}
+
+function _norm(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function _tokenize(value) {
+  return String(value).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+}
+
+function _stripExt(file) {
+  return String(file).replace(/(?:\.[a-z0-9]+)+$/i, '');
+}
+
+/**
+ * Match a gift box by name against the giftbox images folder.
+ * Uses the same "contains" logic as the giftbox page (longest match wins).
+ * @param {string} name
+ * @param {Array<string>} files
+ * @returns {string|null}
+ */
+function _matchGiftBoxImage(name, files) {
+  const nameSlug = _norm(name);
+  let best = null;
+  for (const file of files || []) {
+    if (!file.toLowerCase().endsWith('.webp')) continue;
+    const fileSlug = _norm(_stripExt(file));
+    if (nameSlug.includes(fileSlug) && (!best || fileSlug.length > best.len)) {
+      best = { file, len: fileSlug.length };
+    }
+  }
+  return best ? `images/giftbox/${best.file}` : null;
+}
+
+function _wordStem(token) {
+  return token.replace(/\d+$/, '');
+}
+
+/**
+ * Match a product name to a file in images/products by token overlap.
+ * Keeps false positives out: needs at least 2 shared tokens and a strong ratio.
+ * Example "Rocket Bomb" -> "rocket-bomb1.jpg.jpeg" (bomb1 stems to "bomb").
+ * @param {string} name
+ * @param {Array<string>} files
+ * @returns {string|null}
+ */
+function _matchProductImage(name, files) {
+  const itemTokens = _tokenize(name);
+  if (!itemTokens.length) return null;
+  const itemNorm = itemTokens.join('');
+  const itemSet = new Set(itemTokens);
+  let best = null;
+
+  for (const file of files || []) {
+    const base = _stripExt(file);
+    const baseNorm = _norm(base);
+    const baseTokens = _tokenize(base);
+
+    if (baseTokens.length === 1) {
+      const t = baseTokens[0];
+      const stem = _wordStem(t);
+      if (itemSet.has(t) || itemSet.has(stem)) {
+        const s = baseNorm === itemNorm ? 1 : 0.9;
+        if (!best || s > best.score) best = { file, score: s, tokens: 1 };
+      }
+      continue;
+    }
+
+    let overlap = 0;
+    for (const bt of baseTokens) {
+      const stem = _wordStem(bt);
+      if (itemSet.has(bt) || itemSet.has(stem)) overlap++;
+    }
+    if (overlap < 2) continue;
+
+    const exact = baseNorm === itemNorm || baseNorm.includes(itemNorm);
+    const score = exact ? 1 : overlap / Math.max(baseTokens.length, itemTokens.length);
+    if (!best || score > best.score || (score === best.score && baseTokens.length > best.tokens)) {
+      best = { file, score, tokens: baseTokens.length };
+    }
+  }
+
+  return best && best.score >= 0.6 ? `images/products/${best.file}` : null;
+}
+
+/**
+ * Resolve the primary image for a product.
+ * Priority: explicit Image column > name-matched file > category artwork.
+ * @param {Object|null} manifest
+ * @param {Array<Object>} row
+ * @param {string} name
+ * @param {string} category
+ * @returns {{image: string, fallbackImage: string}}
+ */
+function _resolveProductImage(manifest, row, name, category) {
+  const fallbackImage = CATEGORY_FALLBACK_IMAGES[category] || 'images/placeholder.webp';
+
+  const explicitImg = row['Image'] || row['image'] || row['Image URL'];
+  if (explicitImg && String(explicitImg).trim()) {
+    const v = String(explicitImg).trim();
+    const image = /^https?:\/\//i.test(v) ? v : (v.startsWith('images/') ? v : `images/${v}`);
+    return { image, fallbackImage };
+  }
+
+  const matched = category === 'Gift Boxes'
+    ? (manifest && _matchGiftBoxImage(name, manifest.giftbox))
+    : (manifest && _matchProductImage(name, manifest.products));
+
+  return { image: matched || fallbackImage, fallbackImage };
 }
 
 /**
  * Parse spreadsheet rows into product objects
  * @param {Array<Object>} rows — objects keyed by header names
+ * @param {Object|null} [manifest] — image file manifest
  * @returns {Array<Object>}
  */
-function _parseProductsFromRows(rows) {
-  const perCat = {};
+function _parseProductsFromRows(rows, manifest) {
   const products = [];
 
   for (const row of rows) {
@@ -162,20 +301,7 @@ function _parseProductsFromRows(rows) {
     const discountPercent = Math.round(_parsePercent(row['Discount (%)']));
     const sheetRating = _getRowRating(row);
 
-    const base = CATEGORY_IMAGE_BASE[category] || 'placeholder';
-    const count = CATEGORY_IMAGE_COUNT[category] || 1;
-    const idx = (perCat[category] = (perCat[category] || 0) + 1);
-
-    const fallbackImage = `images/${base}-${((idx - 1) % count) + 1}.webp`;
-
-    let image = fallbackImage;
-    const explicitImg = row['Image'] || row['image'] || row['Image URL'];
-    if (explicitImg && String(explicitImg).trim()) {
-      const v = String(explicitImg).trim();
-      image = /^https?:\/\//i.test(v) ? v : (v.startsWith('images/') ? v : `images/${v}`);
-    } else {
-      image = `images/${_slugify(name)}.webp`;
-    }
+    const { image, fallbackImage } = _resolveProductImage(manifest, row, name, category);
 
     products.push({
       id: `${CATEGORY_CODE[category] || 'P'}${String(sno).padStart(3, '0')}`,
@@ -281,9 +407,10 @@ function _setCachedSheetTitle(title) {
 /**
  * Fetch products from the Google Sheet via the Sheets API v4
  * @param {string} [knownTitle] — cached sheet name, skips the metadata call
+ * @param {Object|null} [manifest] — image file manifest
  * @returns {Promise<Array<Object>>}
  */
-async function _fetchProductsFromGoogleSheets(knownTitle) {
+async function _fetchProductsFromGoogleSheets(knownTitle, manifest) {
   if (GOOGLE_API_KEY === 'PASTE_YOUR_API_KEY_HERE') {
     throw new Error('Google Sheets API key not set. Edit GOOGLE_API_KEY in js/data.js');
   }
@@ -308,7 +435,7 @@ async function _fetchProductsFromGoogleSheets(knownTitle) {
   if (!valuesRes.ok) throw new Error('Sheets API values: HTTP ' + valuesRes.status);
   const data = await valuesRes.json();
 
-  return _parseProductsFromRows(_rowsToObjects(data.values));
+  return _parseProductsFromRows(_rowsToObjects(data.values), manifest);
 }
 
 /**
@@ -319,8 +446,9 @@ async function _fetchProductsFromGoogleSheets(knownTitle) {
  * @returns {Promise<Array<Object>>}
  */
 async function loadProducts() {
+  const manifest = await _loadImageManifest();
   try {
-    _allProducts = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle());
+    _allProducts = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle(), manifest);
     _loadedExportedAt = null;
     _writeProductsCache(_allProducts, null);
     return _allProducts;
@@ -332,7 +460,7 @@ async function loadProducts() {
 
   try {
     const payload = await _fetchProductsJson(false);
-    _allProducts = _parseProductsFromRows(payload.rows);
+    _allProducts = _parseProductsFromRows(payload.rows, manifest);
     _loadedExportedAt = payload.exportedAt || null;
     _writeProductsCache(_allProducts, _loadedExportedAt);
     return _allProducts;
@@ -362,7 +490,8 @@ async function checkForProductUpdates() {
     const payload = await _fetchProductsJson(true);
     const next = payload.exportedAt || '';
     if (String(next) === String(_loadedExportedAt || '')) return false;
-    _allProducts = _parseProductsFromRows(payload.rows);
+    const manifest = await _loadImageManifest();
+    _allProducts = _parseProductsFromRows(payload.rows, manifest);
     _loadedExportedAt = next;
     _writeProductsCache(_allProducts, next);
     return true;
@@ -378,7 +507,8 @@ async function checkForProductUpdates() {
 async function forceReloadProducts() {
   try {
     const payload = await _fetchProductsJson(true);
-    _allProducts = _parseProductsFromRows(payload.rows);
+    const manifest = await _loadImageManifest();
+    _allProducts = _parseProductsFromRows(payload.rows, manifest);
     _loadedExportedAt = payload.exportedAt || null;
     _writeProductsCache(_allProducts, _loadedExportedAt);
     return true;
@@ -395,7 +525,8 @@ async function forceReloadProducts() {
  */
 async function checkForLiveUpdates() {
   try {
-    const live = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle());
+    const manifest = await _loadImageManifest();
+    const live = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle(), manifest);
     if (JSON.stringify(live) === JSON.stringify(_allProducts)) return false;
     _allProducts = live;
     _loadedExportedAt = null;

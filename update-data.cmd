@@ -1,6 +1,13 @@
 @echo off
 title Update products.json from Google Sheet
 cd /d "%~dp0"
+echo Updating image manifest (images/products, images/giftbox)...
+node scripts/generate-image-manifest.js
+if %errorlevel% neq 0 (
+    echo.
+    echo WARNING: Image manifest generation failed, products.json will use the last manifest.
+)
+echo.
 echo Fetching the latest data from the Google Sheet...
 node scripts/export-products.js
 if %errorlevel% neq 0 (
@@ -17,5 +24,5 @@ if %errorlevel% neq 0 (
     echo WARNING: Sitemap generation failed, products.json was still updated.
 )
 echo.
-echo Done! products.json and sitemap.xml are updated. The website picks up changes automatically.
+echo Done! image-manifest.json, products.json and sitemap.xml are updated. The website picks up changes automatically.
 pause
