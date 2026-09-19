@@ -469,11 +469,15 @@ function sortProducts(products, sortBy) {
 }
 
 /**
- * Get unique category list from all products
+ * Get unique category list from all products (alphabetical, "All" first)
  */
 function getCategories() {
   const cats = _allProducts.map(p => p.category);
-  return ['All', ...new Set(cats)];
+  return ['All', ...new Set(cats)].sort((a, b) => {
+    if (a === 'All') return -1;
+    if (b === 'All') return 1;
+    return a.localeCompare(b, undefined, { sensitivity: 'base' });
+  });
 }
 
 /**

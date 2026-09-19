@@ -192,7 +192,7 @@ async function initShop() {
   const ss = document.getElementById('sort-select-sidebar');
   if (ss) ss.value = _activeSort;
 
-  const categories = getCategories().filter(c => c !== 'Gift Boxes');
+  const categories = getCategories();
 
   // Category chips
   renderCategoryChips(
@@ -258,8 +258,7 @@ async function initShop() {
 function _applyShopFilters() {
   let results = (_searchQuery
     ? searchProducts(_searchQuery)
-    : getByCategories(_activeCategories))
-    .filter(p => p.category !== 'Gift Boxes');
+    : getByCategories(_activeCategories));
 
   results = sortProducts(results, _activeSort);
 

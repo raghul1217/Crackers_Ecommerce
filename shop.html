@@ -282,7 +282,7 @@
         const list = document.getElementById('sidebar-category-list');
         if (!list) return;
 
-        cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
+        cats.forEach(cat => {
           const btn = document.createElement('button');
           btn.className = 'sidebar-cat-btn' + (_isCatSelected(cat) ? ' active' : '');
           btn.dataset.category = cat;
@@ -313,7 +313,7 @@
         // Populate filter drawer categories (multi-select with checkboxes)
         const drawerCats = document.getElementById('filter-drawer-cats');
         if (drawerCats) {
-          cats.filter(c => c !== 'Gift Boxes').forEach(cat => {
+          cats.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = 'filter-cat-btn' + (_isCatSelected(cat) ? ' active' : '');
             btn.dataset.category = cat;
