@@ -105,17 +105,12 @@ function renderProductCard(product) {
   card.setAttribute('data-product-id', product.id);
   card.setAttribute('tabindex', '0');
 
-  const discountBadge = product.discountPercent
-    ? `<span class="discount-badge">-${product.discountPercent}%</span>`
-    : '';
-
   const inCartQty = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
   const btnLabel  = inCartQty > 0 ? `In Cart (${inCartQty})` : 'Add to Cart';
   const btnClass  = inCartQty > 0 ? 'btn-add-cart in-cart' : 'btn-add-cart';
 
   card.innerHTML = `
     <div class="card-img-wrap">
-      ${discountBadge}
       <img
         src="${product.image}"
         alt="${product.name}"
