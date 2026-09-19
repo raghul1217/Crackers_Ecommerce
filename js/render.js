@@ -608,14 +608,10 @@ function renderProductTable(products, containerId) {
     const color = CATEGORY_COLORS[group.category] || 'var(--clr-red)';
     const catRows = group.items.map(product => {
       const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
-      const discount = product.discountPercent
-        ? `<span class="discount-badge pt-discount">-${product.discountPercent}%</span>`
-        : '';
       return `
         <tr data-product-id="${product.id}">
           <td class="pt-img-cell" data-label="Item">
             <div class="pt-thumb">
-              ${discount}
               <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async"
                    onerror="this.src='images/placeholder.svg'" />
             </div>
