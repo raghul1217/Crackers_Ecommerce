@@ -356,11 +356,10 @@ async function _refreshCurrentPage() {
 
 async function _checkAndRefresh() {
   try {
-    let updated = await checkForLiveUpdates();
-    if (!updated) updated = await checkForProductUpdates();
-    if (!updated) return;
-    await _refreshCurrentPage();
-    showToast('Products updated');
+    if (await checkForLiveUpdates()) {
+      await _refreshCurrentPage();
+      showToast('Products updated');
+    }
   } catch (e) { /* ignore */ }
 }
 

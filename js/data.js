@@ -288,19 +288,22 @@ async function _fetchProductsFromGoogleSheets(knownTitle) {
 
 /**
  * Load all products.
- * Source priority: 1) in-memory, 2) localStorage cache (30 min TTL),
- *                  3) static products.json, 4) live Google Sheets API.
+ * Source priority: 1) live Google Sheets API (always fresh),
+ *                  2) in-memory (if live is unavailable),
+ *                  3) static products.json, 4) localStorage cache.
  * @returns {Promise<Array<Object>>}
  */
 async function loadProducts() {
-  if (_allProducts.length > 0) return _allProducts;
-
-  const cached = _readProductsCache();
-  if (cached) {
-    _allProducts = cached.products;
-    _loadedExportedAt = cached.exportedAt || null;
+  try {
+    _allProducts = await _fetchProductsFromGoogleSheets(_getCachedSheetTitle());
+    _loadedExportedAt = null;
+    _writeProductsCache(_allProducts, null);
     return _allProducts;
+  } catch (apiErr) {
+    console.warn('[data.js] Google Sheets load failed, using local snapshot:', apiErr);
   }
+
+  if (_allProducts.length > 0) return _allProducts;
 
   try {
     const payload = await _fetchProductsJson(false);
@@ -309,17 +312,18 @@ async function loadProducts() {
     _writeProductsCache(_allProducts, _loadedExportedAt);
     return _allProducts;
   } catch (jsonErr) {
-    console.warn('[data.js] products.json load failed, falling back to Sheets API:', jsonErr);
-    try {
-      _allProducts = await _fetchProductsFromGoogleSheets();
-      _loadedExportedAt = null;
-      _writeProductsCache(_allProducts, null);
-      return _allProducts;
-    } catch (apiErr) {
-      console.error('[data.js] Error loading products:', apiErr);
-      return [];
-    }
+    console.warn('[data.js] products.json load failed, using cache:', jsonErr);
   }
+
+  const cached = _readProductsCache();
+  if (cached) {
+    _allProducts = cached.products;
+    _loadedExportedAt = cached.exportedAt || null;
+    return _allProducts;
+  }
+
+  _allProducts = [];
+  return _allProducts;
 }
 
 /**
