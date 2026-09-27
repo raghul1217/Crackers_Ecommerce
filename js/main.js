@@ -405,20 +405,23 @@ function initCart() {
     contLink.href = _buildShopUrl(state || { categories: [] });
   }
 
-  // Customer details fields (name + mobile) — required to record the order
+  // Customer details fields (name + mobile + address) — required to record the order
   const nameInput = document.getElementById('cust-name');
   const mobileInput = document.getElementById('cust-mobile');
+  const addressInput = document.getElementById('cust-address');
   const custErr = document.getElementById('cart-cust-err');
   const savedCustomer = getCustomer();
   if (nameInput && savedCustomer.name) nameInput.value = savedCustomer.name;
   if (mobileInput && savedCustomer.mobile) mobileInput.value = savedCustomer.mobile;
+  if (addressInput && savedCustomer.address) addressInput.value = savedCustomer.address;
 
   const showCustError = (msg) => {
     if (!custErr) return;
     custErr.textContent = msg;
     custErr.hidden = !msg;
   };
-  [nameInput, mobileInput].forEach(el => {
+  const custFields = [nameInput, mobileInput, addressInput];
+  custFields.forEach(el => {
     if (!el) return;
     el.addEventListener('input', () => showCustError(''));
   });
@@ -434,15 +437,16 @@ function initCart() {
 
       const customer = validateCustomer(
         nameInput ? nameInput.value : '',
-        mobileInput ? mobileInput.value : ''
+        mobileInput ? mobileInput.value : '',
+        addressInput ? addressInput.value : ''
       );
       if (!customer.ok) {
         showCustError(customer.error);
-        if (nameInput && !nameInput.value) nameInput.focus();
-        else if (mobileInput) mobileInput.focus();
+        const firstEmpty = custFields.find(el => el && !String(el.value).trim());
+        (firstEmpty || nameInput || addressInput || {}).focus?.();
         return;
       }
-      saveCustomer(customer.name, customer.mobile);
+      saveCustomer(customer.name, customer.mobile, customer.address);
 
       const originalHtml = waBtn.innerHTML;
       waBtn.disabled = true;
@@ -460,7 +464,12 @@ function initCart() {
       // Never block the sale on the API — WhatsApp still opens either way.
       if (!result.ok) showToast(result.error + ' Opening WhatsApp anyway...', 'error');
 
-      const url = buildWhatsAppURL({ name: customer.name, mobile: customer.mobile, orderId: result.orderId });
+      const url = buildWhatsAppURL({
+        name: customer.name,
+        mobile: customer.mobile,
+        address: customer.address,
+        orderId: result.orderId,
+      });
       if (url) window.open(url, '_blank');
     });
   }

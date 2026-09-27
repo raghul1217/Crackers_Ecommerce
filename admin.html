@@ -362,6 +362,13 @@
         .order-items { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
         .order-items b { color: var(--text); }
         .order-meta { font-size: 0.74rem; color: #999; margin-top: 2px; }
+        .order-address {
+            font-size: 0.72rem;
+            color: var(--muted);
+            line-height: 1.4;
+            margin-top: 3px;
+            font-style: normal;
+        }
         .order-more {
             display: inline-block;
             margin-top: 4px;
@@ -451,6 +458,12 @@
         .item-name { font-weight: 600; color: var(--dark); margin-bottom: 4px; }
         .item-details { font-size: 0.85rem; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
         .item-details span { display: flex; gap: 4px; }
+        .item-address {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-top: 6px;
+            line-height: 1.45;
+        }
 
         .empty {
             text-align: center;
@@ -1202,6 +1215,7 @@
                         String(o.customerName || '').toLowerCase().includes(q) ||
                         String(o.mobile || '').toLowerCase().includes(q) ||
                         String(o.id || '').toLowerCase().includes(q) ||
+                        String(o.address || '').toLowerCase().includes(q) ||
                         (o.items || []).some(it => String(it.name || '').toLowerCase().includes(q));
                     return statusOk && qOk;
                 })
@@ -1216,7 +1230,13 @@
             const order = orders.find(o => String(o.id) === String(orderId));
             if (!order) return;
             const items = order.items || [];
-            $('items-list').innerHTML = items.map(it => `
+            const deliverTo = order.address
+                ? '<div class="item-row"><div class="item-name">Deliver To</div>' +
+                  '<div class="item-details"><span>' + escapeHtml(order.customerName || '') + '</span>' +
+                  '<span>+91 ' + escapeHtml(order.mobile || '') + '</span></div>' +
+                  '<div class="item-address">' + escapeHtml(order.address) + '</div></div>'
+                : '';
+            const itemRows = items.map(it => `
                 <div class="item-row">
                     <div class="item-name">${escapeHtml(it.name)}</div>
                     <div class="item-details">
@@ -1227,7 +1247,8 @@
                         ${it.content ? `<span>Content: <strong>${escapeHtml(it.content)}</strong></span>` : ''}
                     </div>
                 </div>
-            `).join('') || '<div class="empty">No items in this order.</div>';
+            `).join('');
+            $('items-list').innerHTML = deliverTo + (itemRows || '<div class="empty">No items in this order.</div>');
             $('items-modal').classList.add('active');
         }
 
@@ -1260,7 +1281,10 @@
                 return `
                 <tr>
                     <td data-label="ID">${escapeHtml(o.id)}</td>
-                    <td data-label="Customer"><strong>${escapeHtml(o.customerName)}</strong></td>
+                    <td data-label="Customer">
+                        <strong>${escapeHtml(o.customerName)}</strong>
+                        ${o.address ? `<div class="order-address">${escapeHtml(o.address)}</div>` : ''}
+                    </td>
                     <td data-label="Mobile">${escapeHtml(o.mobile)}</td>
                     <td data-label="Items">
                         <div class="order-items">${visibleItems}</div>${extraHtml}<div class="order-meta">${escNum(totalQty)} items</div>
@@ -1442,7 +1466,12 @@
 
             // ---- Meta box ----
             let y = 78;
-            const boxH = 72;
+            const billName = order.customerName || 'Walk-in / Retail';
+            const billMobile = order.mobile ? 'Mob : +91 ' + order.mobile : '';
+            const billAddress = order.address ? abbrev(String(order.address).replace(/\s+/g, ' '), 64) : '';
+            // Grow the box only when there is an extra address line to fit.
+            const boxH = billAddress ? 86 : 72;
+
             doc.setFillColor(249, 249, 251);
             doc.setDrawColor(LIGHT_BORDER[0], LIGHT_BORDER[1], LIGHT_BORDER[2]);
             doc.roundedRect(margin, y, contentWidth, boxH, 5, 5, 'FD');
@@ -1451,8 +1480,7 @@
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.text('BILL TO', margin + 14, y + 12);
-            const billName = order.customerName || 'Walk-in / Retail';
-            const billMobile = order.mobile ? 'Mob : +91 ' + order.mobile : '';
+
             doc.setFontSize(10);
             doc.setTextColor(40, 40, 40);
             doc.text(abbrev(billName, 34), margin + 14, y + 28);
@@ -1462,9 +1490,14 @@
                 doc.setTextColor(90, 90, 95);
                 doc.text(billMobile, margin + 14, y + 40);
             }
+            if (billAddress) {
+                doc.setFontSize(7.5);
+                doc.setTextColor(120, 120, 125);
+                doc.text(billAddress, margin + 14, y + 51);
+            }
             doc.setFontSize(8);
             doc.setTextColor(120, 120, 125);
-            doc.text('Order : ' + invoiceNo, margin + 14, y + 58);
+            doc.text('Order : ' + invoiceNo, margin + 14, y + (billAddress ? 68 : 58));
 
             const rightCol = pageWidth - margin - 100;
             doc.setFont('helvetica', 'bold');

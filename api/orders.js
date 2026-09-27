@@ -87,8 +87,10 @@ module.exports = async (req, res) => {
             const body = parseBody(req);
             const customerName = cleanText(body.customerName, 'name');
             const mobile = String(body.mobile || '').replace(/\D/g, '').slice(0, 10);
+            const address = cleanText(body.address, 'address');
             if (!customerName) return sendError(res, 500, 'Customer name is required');
             if (!MOBILE_RE.test(mobile)) return sendError(res, 500, 'Enter a valid 10-digit Indian mobile number');
+            if (address.length < 6) return sendError(res, 500, 'Delivery address is required');
 
             const rawItems = Array.isArray(body.items) ? body.items.slice(0, 200) : [];
             if (!rawItems.length) return sendError(res, 500, 'Order has no items');
@@ -106,6 +108,7 @@ module.exports = async (req, res) => {
                     id: nextOrderId(list),
                     customerName,
                     mobile,
+                    address,
                     items,
                     total,
                     savings,

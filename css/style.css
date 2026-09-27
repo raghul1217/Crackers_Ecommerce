@@ -1877,6 +1877,12 @@ select option,
   background: #fff;
   transition: var(--transition);
 }
+.cart-cust-textarea {
+  resize: vertical;
+  min-height: 68px;
+  line-height: 1.45;
+  margin-bottom: 4px;
+}
 .cart-cust-input:focus {
   outline: none;
   border-color: var(--clr-red);

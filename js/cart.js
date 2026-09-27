@@ -134,10 +134,10 @@ function getCustomer() {
   }
 }
 
-/** Persist the customer name + mobile so they only type it once. */
-function saveCustomer(name, mobile) {
+/** Persist the customer name, mobile and address so they only type it once. */
+function saveCustomer(name, mobile, address) {
   try {
-    localStorage.setItem(CUSTOMER_KEY, JSON.stringify({ name, mobile }));
+    localStorage.setItem(CUSTOMER_KEY, JSON.stringify({ name, mobile, address }));
   } catch { /* ignore */ }
 }
 
@@ -145,23 +145,28 @@ const MOBILE_RE = /^[6-9]\d{9}$/;
 
 /**
  * Validate the customer details needed to record an order.
- * @returns {{ok: boolean, name: string, mobile: string, error: string}}
+ * @returns {{ok: boolean, name: string, mobile: string, address: string, error: string}}
  */
-function validateCustomer(name, mobile) {
-  const cleanName = String(name || '').trim();
+function validateCustomer(name, mobile, address) {
+  const cleanName = String(name || '').trim().replace(/\s+/g, ' ');
   const cleanMobile = String(mobile || '').replace(/\D/g, '').slice(0, 10);
-  if (!cleanName) return { ok: false, name: '', mobile: '', error: 'Please enter your name.' };
-  if (cleanName.length > 120) return { ok: false, name: '', mobile: '', error: 'Name is too long.' };
+  const cleanAddress = String(address || '').trim().replace(/\s+/g, ' ').slice(0, 250);
+
+  if (!cleanName) return { ok: false, name: '', mobile: '', address: '', error: 'Please enter your name.' };
+  if (cleanName.length > 120) return { ok: false, name: '', mobile: '', address: '', error: 'Name is too long.' };
   if (!MOBILE_RE.test(cleanMobile)) {
-    return { ok: false, name: '', mobile: '', error: 'Enter a valid 10-digit Indian mobile number.' };
+    return { ok: false, name: '', mobile: '', address: '', error: 'Enter a valid 10-digit Indian mobile number.' };
   }
-  return { ok: true, name: cleanName, mobile: cleanMobile, error: '' };
+  if (cleanAddress.length < 6) {
+    return { ok: false, name: '', mobile: '', address: '', error: 'Please enter your delivery address.' };
+  }
+  return { ok: true, name: cleanName, mobile: cleanMobile, address: cleanAddress, error: '' };
 }
 
 /**
  * Record the order in orders.json via the API so it shows up in the admin panel.
  * Never throws — a failed submission must not block the WhatsApp sale.
- * @param {{name: string, mobile: string}} customer
+ * @param {{name: string, mobile: string, address: string}} customer
  * @returns {Promise<{ok: boolean, orderId: string|null, error: string}>}
  */
 async function submitOrder(customer) {
@@ -175,13 +180,20 @@ async function submitOrder(customer) {
   }));
   if (!items.length) return { ok: false, orderId: null, error: 'Your cart is empty!' };
 
+  const payload = {
+    customerName: customer.name,
+    mobile: customer.mobile,
+    address: customer.address,
+    items,
+  };
+
   // One retry: the server re-reads orders.json on every call, so a replay is safe.
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(ORDERS_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerName: customer.name, mobile: customer.mobile, items }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.order) return { ok: true, orderId: data.order.id, error: '' };
@@ -200,7 +212,7 @@ async function submitOrder(customer) {
 
 /**
  * Build a WhatsApp-ready pre-filled message URL
- * @param {{name?: string, mobile?: string, orderId?: string}} [customer]
+ * @param {{name?: string, mobile?: string, address?: string, orderId?: string}} [customer]
  */
 function buildWhatsAppURL(customer) {
   const items = getCart();
@@ -209,9 +221,10 @@ function buildWhatsAppURL(customer) {
   const who = customer || getCustomer();
 
   let msg = `*${SHOP_NAME} -- New Order*\n\n`;
-  if (who.orderId) msg += `*Order No: ${who.orderId}*\n`;
+  if (who.orderId) msg += `*Order No:* ${who.orderId}\n`;
   if (who.name) msg += `*Name:* ${who.name}\n`;
   if (who.mobile) msg += `*Mobile:* +91 ${who.mobile}\n`;
+  if (who.address) msg += `*Address:* ${who.address}\n`;
   msg += `\n*Order Summary:*\n`;
   msg += `-------------------\n`;
 

@@ -43,7 +43,7 @@ function handleError(res, err) {
     return sendError(res, 500, msg);
 }
 
-const MAX_LEN = { name: 120, category: 80, content: 60, image: 200, tag: 40 };
+const MAX_LEN = { name: 120, category: 80, content: 60, image: 200, tag: 40, address: 250 };
 
 /** Trims and length-caps a free-text field. */
 function cleanText(v, field) {
