@@ -209,6 +209,19 @@
         .btn-secondary { background: #e9e9ee; color: var(--text); }
         .btn-secondary:hover { background: #dcdce3; }
 
+        /* ============ ICONS ============ */
+        .icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .icon-sm { width: 16px; height: 16px; stroke-width: 2; }
+
         /* ============ SIDEBAR LAYOUT ============ */
         .layout {
             display: flex;
@@ -652,8 +665,24 @@
             <aside class="sidebar">
                 <div class="sidebar-title">Menu</div>
                 <nav class="sidebar-nav">
-                    <button class="nav-item active" data-view="products">&#128230; Products</button>
-                    <button class="nav-item" data-view="orders">&#128221; Orders</button>
+                    <button class="nav-item active" data-view="products">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m7.5 4.27 9 5.15"/>
+                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                            <path d="m3.3 7 8.7 5 8.7-5"/>
+                            <path d="M12 22V12"/>
+                        </svg>
+                        Products
+                    </button>
+                    <button class="nav-item" data-view="orders">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                            <path d="M12 11h4"/><path d="M12 16h4"/>
+                            <path d="M8 11h.01"/><path d="M8 16h.01"/>
+                        </svg>
+                        Orders
+                    </button>
                 </nav>
             </aside>
 
@@ -670,7 +699,7 @@
 
             <!-- Add / Edit Product Form -->
             <div class="card">
-                <h2 id="form-title">&#10133; Add New Product</h2>
+                <h2 id="form-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span>Add New Product</span></h2>
                 <form id="product-form" novalidate>
                     <div class="form-grid">
                         <input type="hidden" id="product-id">
@@ -731,7 +760,7 @@
 
             <!-- Products Table -->
             <div class="card">
-                <h2>&#128230; Manage Products</h2>
+                <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg><span>Manage Products</span></h2>
                 <div class="form-grid" style="margin-bottom:16px;">
                     <div class="field">
                         <input type="text" id="search" placeholder="Search products...">
@@ -775,7 +804,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>&#128221; Orders</h2>
+                    <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg><span>Orders</span></h2>
                     <div class="form-grid" style="margin-bottom:16px;">
                         <div class="field">
                             <input type="text" id="order-search" placeholder="Search by name, mobile or item...">
@@ -851,6 +880,25 @@
 
         /* ============ DOM ============ */
         const $ = (id) => document.getElementById(id);
+
+        /* ============ ICONS ============ */
+        /* Inline stroke paths (Lucide geometry) — the panel loads no icon library,
+           so icons ship as markup and inherit colour via currentColor. */
+        const ICON_PATHS = {
+            pencil: '<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+            trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+            eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+            plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+        };
+
+        /**
+         * Render a named icon as an inline SVG string.
+         * @param {keyof ICON_PATHS} name
+         * @param {string} [size] extra class, e.g. 'icon-sm' for 32px icon buttons
+         */
+        function icon(name, size) {
+            return `<svg class="icon ${size || 'icon-sm'}" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
+        }
 
         /* ============ HELPERS ============ */
         function formatPrice(v) {
@@ -1016,8 +1064,8 @@
                     <td><strong>${formatPrice(finalRate)}</strong></td>
                     <td>
                         <div class="row-actions">
-                            <button class="icon-btn icon-edit" data-edit="${id}" title="Edit">&nbsp;&#9998;&nbsp;</button>
-                            <button class="icon-btn icon-del" data-del="${id}" title="Delete">&#128465;</button>
+                            <button class="icon-btn icon-edit" data-edit="${id}" title="Edit" aria-label="Edit ${escapeAttr(p.name)}">${icon('pencil')}</button>
+                            <button class="icon-btn icon-del" data-del="${id}" title="Delete" aria-label="Delete ${escapeAttr(p.name)}">${icon('trash')}</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1063,7 +1111,7 @@
             $('p-rating').value = p.rating != null ? p.rating : '';
             $('p-image').value = p.image || '';
             recalcFinal();
-            $('form-title').textContent = '\u270F\uFE0F Edit Product';
+            $('form-title').innerHTML = icon('pencil') + '<span>Edit Product</span>';
             $('submit-btn').textContent = 'Update Product';
             $('cancel-edit').style.display = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1074,7 +1122,7 @@
             $('product-form').reset();
             $('product-id').value = '';
             $('p-finalrate').value = '';
-            $('form-title').textContent = '\u2795 Add New Product';
+            $('form-title').innerHTML = icon('plus') + '<span>Add New Product</span>';
             $('submit-btn').textContent = 'Add Product';
             $('cancel-edit').style.display = 'none';
         }
@@ -1300,7 +1348,7 @@
                     <td data-label="Date">${formatDate(o.createdAt)}</td>
                     <td class="row-actions-cell">
                         <div class="row-actions">
-                            <button class="icon-btn icon-view-items" data-view-items="${oid}" title="View Items">&#128065;</button>
+                            <button class="icon-btn icon-view-items" data-view-items="${oid}" title="View Items" aria-label="View items in order ${oid}">${icon('eye')}</button>
                             <button class="icon-btn icon-download" data-download-invoice="${oid}" title="Download Invoice">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1309,7 +1357,7 @@
                                     <path d="M8 18h8"/>
                                 </svg>
                             </button>
-                            <button class="icon-btn icon-del" data-del-order="${oid}" title="Delete Order">&#128465;</button>
+                            <button class="icon-btn icon-del" data-del-order="${oid}" title="Delete Order" aria-label="Delete order ${oid}">${icon('trash')}</button>
                         </div>
                     </td>
                 </tr>`;

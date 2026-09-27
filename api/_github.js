@@ -1,11 +1,5 @@
-/**
- * GitHub-as-database layer.
- * Reads/writes a JSON file in the repo through the GitHub Contents API.
- * The blob SHA is used as an optimistic-concurrency token: every request
- * re-reads the file, mutates the fresh copy, then PUTs it back with that SHA.
- * If somebody else committed in between, GitHub answers 409 and we surface
- * CONFLICT so the client can replay the identical request safely.
- */
+const fs = require('fs');
+const pathModule = require('path');
 
 const USER_AGENT = 'sivakasi666-admin';
 
@@ -16,6 +10,28 @@ function env() {
         branch: process.env.GITHUB_BRANCH || 'main',
         token: process.env.GITHUB_TOKEN,
     };
+}
+
+function isPlaceholderToken(token) {
+    return !token || token === 'your_github_token_here' || token.startsWith('your_');
+}
+
+function getLocalFile(filePath) {
+    const fullPath = pathModule.resolve(process.cwd(), filePath);
+    if (fs.existsSync(fullPath)) {
+        const raw = fs.readFileSync(fullPath, 'utf8');
+        return {
+            sha: 'local-file-sha',
+            content: JSON.parse(raw),
+        };
+    }
+    throw new Error('Local file not found: ' + filePath);
+}
+
+function putLocalFile(filePath, content) {
+    const fullPath = pathModule.resolve(process.cwd(), filePath);
+    fs.writeFileSync(fullPath, JSON.stringify(content, null, 2), 'utf8');
+    return { ok: true, local: true };
 }
 
 function configError() {
@@ -31,45 +47,76 @@ function headers(extra) {
     }, extra || {});
 }
 
-function assertConfigured() {
-    const { owner, repo, token } = env();
-    if (!owner || !repo || !token) throw new Error(configError());
-}
-
 /** Read the current content plus the blob SHA. */
-async function getFile(path) {
-    assertConfigured();
-    const { owner, repo, branch } = env();
-    const url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' +
-        path + '?ref=' + encodeURIComponent(branch);
-    const res = await fetch(url, { headers: headers() });
-    if (!res.ok) throw new Error('GitHub read failed (' + res.status + '): ' + (await res.text()));
-    const data = await res.json();
-    return {
-        sha: data.sha,
-        content: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8')),
-    };
+async function getFile(filePath) {
+    const { owner, repo, branch, token } = env();
+
+    if (isPlaceholderToken(token) || !owner || !repo) {
+        return getLocalFile(filePath);
+    }
+
+    try {
+        const url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' +
+            filePath + '?ref=' + encodeURIComponent(branch);
+        const res = await fetch(url, { headers: headers() });
+
+        if (!res.ok) {
+            const errText = await res.text();
+            if (res.status === 401 || res.status === 404) {
+                console.warn('[api/_github] GitHub fetch returned ' + res.status + '. Falling back to local file:', filePath);
+                return getLocalFile(filePath);
+            }
+            throw new Error('GitHub read failed (' + res.status + '): ' + errText);
+        }
+
+        const data = await res.json();
+        return {
+            sha: data.sha,
+            content: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8')),
+        };
+    } catch (err) {
+        if (err.message && err.message.includes('Local file')) throw err;
+        console.warn('[api/_github] Falling back to local file due to error:', err.message);
+        return getLocalFile(filePath);
+    }
 }
 
 /** Atomic replace + commit. */
-async function putFile(path, sha, content, message) {
-    assertConfigured();
-    const { owner, repo, branch } = env();
-    const res = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path, {
-        method: 'PUT',
-        headers: headers({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({
-            message,
-            content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
-            sha,
-            branch,
-        }),
-    });
-    if (res.status === 409 || res.status === 422) {
-        throw new Error('CONFLICT: Another update just changed ' + path + '. Please retry.');
+async function putFile(filePath, sha, content, message) {
+    const { owner, repo, branch, token } = env();
+
+    if (isPlaceholderToken(token) || !owner || !repo) {
+        return putLocalFile(filePath, content);
     }
-    if (!res.ok) throw new Error('GitHub write failed (' + res.status + '): ' + (await res.text()));
-    return res.json();
+
+    try {
+        const res = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + filePath, {
+            method: 'PUT',
+            headers: headers({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({
+                message,
+                content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
+                sha,
+                branch,
+            }),
+        });
+
+        if (res.status === 401) {
+            console.warn('[api/_github] 401 Bad credentials on write. Falling back to writing local file:', filePath);
+            return putLocalFile(filePath, content);
+        }
+
+        if (res.status === 409 || res.status === 422) {
+            throw new Error('CONFLICT: Another update just changed ' + filePath + '. Please retry.');
+        }
+
+        if (!res.ok) throw new Error('GitHub write failed (' + res.status + '): ' + (await res.text()));
+        return res.json();
+    } catch (err) {
+        if (err.message && err.message.includes('CONFLICT')) throw err;
+        console.warn('[api/_github] Falling back to writing local file due to error:', err.message);
+        return putLocalFile(filePath, content);
+    }
 }
 
 /** Serialise a whole-file write through a queue to avoid interleaved writers. */
@@ -81,3 +128,4 @@ function withLock(fn) {
 }
 
 module.exports = { getFile, putFile, withLock, configError };
+

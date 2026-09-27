@@ -1,5 +1,26 @@
 {
-  "orders": [],
-  "count": 0,
+  "orders": [
+    {
+      "id": "SVC-0001",
+      "customerName": "raghulragmaa",
+      "mobile": "9345546946",
+      "address": "hfkhdjkf",
+      "items": [
+        {
+          "name": "Red / Striped Bijili (100 Pcs)",
+          "content": "1 BOX",
+          "qty": 10,
+          "rate": 36,
+          "finalRate": 28.8,
+          "lineTotal": 288
+        }
+      ],
+      "total": 288,
+      "savings": 72,
+      "status": "pending",
+      "createdAt": "2026-09-27T14:49:39.231Z"
+    }
+  ],
+  "count": 1,
   "updatedAt": "2026-09-27T00:00:00.000Z"
 }

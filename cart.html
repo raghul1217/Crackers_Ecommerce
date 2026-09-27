@@ -76,14 +76,22 @@
       <div class="cart-cust-fields" id="cart-cust-fields">
         <h3 class="cart-cust-title">Your Details</h3>
         <label class="cart-cust-label" for="cust-name">Name <span aria-hidden="true">*</span></label>
-        <input class="cart-cust-input" type="text" id="cust-name" autocomplete="name" placeholder="Your full name">
+        <input class="cart-cust-input" type="text" id="cust-name" name="name" maxlength="120"
+               autocomplete="name" required aria-describedby="cust-name-err" placeholder="Your full name">
+        <p class="cart-cust-err" id="cust-name-err" role="alert" hidden></p>
+
         <label class="cart-cust-label" for="cust-mobile">Mobile Number <span aria-hidden="true">*</span></label>
-        <input class="cart-cust-input" type="tel" id="cust-mobile" inputmode="numeric" maxlength="10"
-               autocomplete="tel-national" placeholder="10-digit mobile number">
+        <input class="cart-cust-input" type="tel" id="cust-mobile" name="mobile" inputmode="tel" maxlength="17"
+               autocomplete="tel-national" required aria-describedby="cust-mobile-hint cust-mobile-err"
+               placeholder="10-digit mobile number">
+        <p class="cart-cust-hint" id="cust-mobile-hint">10 digits, starting with 6&ndash;9. Pasting <strong>+91</strong> or spaces is fine &mdash; we clean it up.</p>
+        <p class="cart-cust-err" id="cust-mobile-err" role="alert" hidden></p>
+
         <label class="cart-cust-label" for="cust-address">Delivery Address <span aria-hidden="true">*</span></label>
-        <textarea class="cart-cust-input cart-cust-textarea" id="cust-address" rows="3" maxlength="250"
-                  autocomplete="street-address" placeholder="House / Street, Area, Town, District, PIN"></textarea>
-        <p class="cart-cust-err" id="cart-cust-err" role="alert" hidden></p>
+        <textarea class="cart-cust-input cart-cust-textarea" id="cust-address" name="address" rows="3" maxlength="250"
+                  autocomplete="street-address" required aria-describedby="cust-address-err"
+                  placeholder="House / Street, Area, Town, District, PIN"></textarea>
+        <p class="cart-cust-err" id="cust-address-err" role="alert" hidden></p>
       </div>
 
       <!-- Info note -->

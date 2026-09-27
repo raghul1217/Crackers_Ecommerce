@@ -406,25 +406,49 @@ function initCart() {
   }
 
   // Customer details fields (name + mobile + address) — required to record the order
-  const nameInput = document.getElementById('cust-name');
-  const mobileInput = document.getElementById('cust-mobile');
-  const addressInput = document.getElementById('cust-address');
-  const custErr = document.getElementById('cart-cust-err');
-  const savedCustomer = getCustomer();
-  if (nameInput && savedCustomer.name) nameInput.value = savedCustomer.name;
-  if (mobileInput && savedCustomer.mobile) mobileInput.value = savedCustomer.mobile;
-  if (addressInput && savedCustomer.address) addressInput.value = savedCustomer.address;
-
-  const showCustError = (msg) => {
-    if (!custErr) return;
-    custErr.textContent = msg;
-    custErr.hidden = !msg;
+  const custFields = {
+    name: document.getElementById('cust-name'),
+    mobile: document.getElementById('cust-mobile'),
+    address: document.getElementById('cust-address'),
   };
-  const custFields = [nameInput, mobileInput, addressInput];
-  custFields.forEach(el => {
-    if (!el) return;
-    el.addEventListener('input', () => showCustError(''));
+  const custErrEls = {
+    name: document.getElementById('cust-name-err'),
+    mobile: document.getElementById('cust-mobile-err'),
+    address: document.getElementById('cust-address-err'),
+  };
+  const CUST_KEYS = Object.keys(custFields);
+
+  const savedCustomer = getCustomer();
+  if (custFields.name && savedCustomer.name) custFields.name.value = savedCustomer.name;
+  if (custFields.mobile && savedCustomer.mobile) custFields.mobile.value = savedCustomer.mobile;
+  if (custFields.address && savedCustomer.address) custFields.address.value = savedCustomer.address;
+
+  // Show/clear the inline message + red border for a single field.
+  const setFieldError = (key, msg) => {
+    const errEl = custErrEls[key];
+    const input = custFields[key];
+    if (errEl) {
+      errEl.textContent = msg || '';
+      errEl.hidden = !msg;
+    }
+    if (!input) return;
+    input.classList.toggle('has-error', !!msg);
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  };
+  const clearCustErrors = () => CUST_KEYS.forEach(key => setFieldError(key, ''));
+
+  CUST_KEYS.forEach(key => {
+    const el = custFields[key];
+    if (el) el.addEventListener('input', () => setFieldError(key, ''));
   });
+
+  // Tidy the mobile field on blur so +91 / spaces never look like a failed entry.
+  if (custFields.mobile) {
+    custFields.mobile.addEventListener('blur', () => {
+      const digits = normalizeMobile(custFields.mobile.value);
+      if (digits) custFields.mobile.value = digits;
+    });
+  }
 
   // Place Order: record the order, then hand off to WhatsApp.
   const waBtn = document.getElementById('whatsapp-order-btn');
@@ -436,16 +460,22 @@ function initCart() {
       }
 
       const customer = validateCustomer(
-        nameInput ? nameInput.value : '',
-        mobileInput ? mobileInput.value : '',
-        addressInput ? addressInput.value : ''
+        custFields.name ? custFields.name.value : '',
+        custFields.mobile ? custFields.mobile.value : '',
+        custFields.address ? custFields.address.value : ''
       );
       if (!customer.ok) {
-        showCustError(customer.error);
-        const firstEmpty = custFields.find(el => el && !String(el.value).trim());
-        (firstEmpty || nameInput || addressInput || {}).focus?.();
+        clearCustErrors();
+        setFieldError(customer.field, customer.error);
+        // Scroll the offending field into view — the message sits right under it,
+        // so the reason is always visible instead of the name box taking the blame.
+        const bad = custFields[customer.field];
+        const badErr = custErrEls[customer.field];
+        (bad || badErr)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        bad?.focus({ preventScroll: true });
         return;
       }
+      clearCustErrors();
       saveCustomer(customer.name, customer.mobile, customer.address);
 
       const originalHtml = waBtn.innerHTML;

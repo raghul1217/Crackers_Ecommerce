@@ -1888,11 +1888,26 @@ select option,
   border-color: var(--clr-red);
   box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.12);
 }
+.cart-cust-input.has-error {
+  border-color: var(--clr-danger);
+  box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.12);
+}
+.cart-cust-textarea.has-error {
+  box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.12);
+}
+.cart-cust-hint {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+  margin: -4px 0 10px;
+}
+.cart-cust-hint strong {
+  font-weight: 700;
+}
 .cart-cust-err {
   font-size: 0.78rem;
   color: var(--clr-danger);
   font-weight: 600;
-  margin: 0;
+  margin: -4px 0 10px;
 }
 
 .cart-pay-note {

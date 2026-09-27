@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-27T05:18:59.738Z",
+  "exportedAt": "2026-09-27T14:36:18.129Z",
   "count": 140,
   "products": [
     {
@@ -8,11 +8,11 @@
       "category": "Single Sound Crackers",
       "tag": null,
       "content": "1 PKT",
-      "rate": 9,
+      "rate": 12,
       "discount": 0.8,
-      "finalRate": 7.2,
+      "finalRate": 9.6,
       "image": "images/categories/sound-crackers.webp",
-      "fallbackImage": "images/categories/sound-crackers.webp",
+      "fallbackImage": "images/placeholder.webp",
       "rating": 4,
       "inStock": true
     },

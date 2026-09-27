@@ -6,7 +6,7 @@
 const CART_KEY = 'sivakasi666_cart';
 const CUSTOMER_KEY = 'sivakasi666_customer';
 const ORDERS_API = '/api/orders';
-const SHOP_PHONE = '919843029619'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
+const SHOP_PHONE = '919345546946'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
 const SHOP_NAME  = 'sivakasi666crackers Pattasu Kadai';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }
@@ -144,23 +144,48 @@ function saveCustomer(name, mobile, address) {
 const MOBILE_RE = /^[6-9]\d{9}$/;
 
 /**
+ * Reduce whatever the customer pasted into a bare 10-digit mobile number.
+ * Tolerates +91 / 0091 / 091 prefixes, spaces, dashes and brackets, e.g.
+ * "+91 98430-29619" -> "9843029619".
+ * @param {string} raw
+ * @returns {string} digits only, capped at 10
+ */
+function normalizeMobile(raw) {
+  const digits = String(raw || '').replace(/\D/g, '');
+  if (digits.length <= 10) return digits;
+  // Longer than 10: strip a 00/0/091 country-code prefix, else a stray trunk 0.
+  const trimmed = digits.replace(/^0+/, '');
+  if (trimmed.length === 12 && trimmed.startsWith('91')) return trimmed.slice(2);
+  return trimmed.length === 10 ? trimmed : digits.slice(0, 10);
+}
+
+/**
  * Validate the customer details needed to record an order.
- * @returns {{ok: boolean, name: string, mobile: string, address: string, error: string}}
+ * On failure, `field` names the offending input so the UI can point at it.
+ * @returns {{ok: boolean, name: string, mobile: string, address: string, field: string|null, error: string}}
  */
 function validateCustomer(name, mobile, address) {
   const cleanName = String(name || '').trim().replace(/\s+/g, ' ');
-  const cleanMobile = String(mobile || '').replace(/\D/g, '').slice(0, 10);
+  const cleanMobile = normalizeMobile(mobile);
   const cleanAddress = String(address || '').trim().replace(/\s+/g, ' ').slice(0, 250);
 
-  if (!cleanName) return { ok: false, name: '', mobile: '', address: '', error: 'Please enter your name.' };
-  if (cleanName.length > 120) return { ok: false, name: '', mobile: '', address: '', error: 'Name is too long.' };
+  const fail = (field, error) => ({
+    ok: false, name: '', mobile: '', address: '', field, error,
+  });
+
+  if (!cleanName) return fail('name', 'Please enter your name.');
+  if (cleanName.length > 120) return fail('name', 'Name is too long (120 characters max).');
+  if (!cleanMobile) return fail('mobile', 'Please enter your mobile number.');
   if (!MOBILE_RE.test(cleanMobile)) {
-    return { ok: false, name: '', mobile: '', address: '', error: 'Enter a valid 10-digit Indian mobile number.' };
+    return fail('mobile', 'Enter a 10-digit mobile number starting with 6-9.');
   }
+  if (!cleanAddress) return fail('address', 'Please enter your delivery address.');
   if (cleanAddress.length < 6) {
-    return { ok: false, name: '', mobile: '', address: '', error: 'Please enter your delivery address.' };
+    return fail('address', 'Address is too short — add your street, area and town.');
   }
-  return { ok: true, name: cleanName, mobile: cleanMobile, address: cleanAddress, error: '' };
+  return {
+    ok: true, name: cleanName, mobile: cleanMobile, address: cleanAddress, field: null, error: '',
+  };
 }
 
 /**
