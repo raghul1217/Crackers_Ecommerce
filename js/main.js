@@ -405,16 +405,63 @@ function initCart() {
     contLink.href = _buildShopUrl(state || { categories: [] });
   }
 
-  // WhatsApp button
+  // Customer details fields (name + mobile) — required to record the order
+  const nameInput = document.getElementById('cust-name');
+  const mobileInput = document.getElementById('cust-mobile');
+  const custErr = document.getElementById('cart-cust-err');
+  const savedCustomer = getCustomer();
+  if (nameInput && savedCustomer.name) nameInput.value = savedCustomer.name;
+  if (mobileInput && savedCustomer.mobile) mobileInput.value = savedCustomer.mobile;
+
+  const showCustError = (msg) => {
+    if (!custErr) return;
+    custErr.textContent = msg;
+    custErr.hidden = !msg;
+  };
+  [nameInput, mobileInput].forEach(el => {
+    if (!el) return;
+    el.addEventListener('input', () => showCustError(''));
+  });
+
+  // Place Order: record the order, then hand off to WhatsApp.
   const waBtn = document.getElementById('whatsapp-order-btn');
   if (waBtn) {
-    waBtn.addEventListener('click', () => {
-      const url = buildWhatsAppURL();
-      if (url) {
-        window.open(url, '_blank');
-      } else {
+    waBtn.addEventListener('click', async () => {
+      if (!getCart().length) {
         showToast('Your cart is empty!');
+        return;
       }
+
+      const customer = validateCustomer(
+        nameInput ? nameInput.value : '',
+        mobileInput ? mobileInput.value : ''
+      );
+      if (!customer.ok) {
+        showCustError(customer.error);
+        if (nameInput && !nameInput.value) nameInput.focus();
+        else if (mobileInput) mobileInput.focus();
+        return;
+      }
+      saveCustomer(customer.name, customer.mobile);
+
+      const originalHtml = waBtn.innerHTML;
+      waBtn.disabled = true;
+      waBtn.textContent = 'Saving your order...';
+      let result = { ok: false, orderId: null, error: '' };
+      try {
+        result = await submitOrder(customer);
+      } catch (e) {
+        result = { ok: false, orderId: null, error: 'Could not save order.' };
+      } finally {
+        waBtn.disabled = false;
+        waBtn.innerHTML = originalHtml;
+      }
+
+      // Never block the sale on the API — WhatsApp still opens either way.
+      if (!result.ok) showToast(result.error + ' Opening WhatsApp anyway...', 'error');
+
+      const url = buildWhatsAppURL({ name: customer.name, mobile: customer.mobile, orderId: result.orderId });
+      if (url) window.open(url, '_blank');
     });
   }
 

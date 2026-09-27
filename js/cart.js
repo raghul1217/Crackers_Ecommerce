@@ -4,6 +4,8 @@
  */
 
 const CART_KEY = 'sivakasi666_cart';
+const CUSTOMER_KEY = 'sivakasi666_customer';
+const ORDERS_API = '/api/orders';
 const SHOP_PHONE = '919843029619'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
 const SHOP_NAME  = 'sivakasi666crackers Pattasu Kadai';
 
@@ -47,7 +49,9 @@ function addToCart(product, qty = 1) {
       id:    product.id,
       name:  product.name,
       price: product.price,
+      mrp:   product.mrp,
       image: product.image,
+      unit:  product.unit,
       qty:   qty,
     };
   }
@@ -119,17 +123,96 @@ function getCartItemQty(productId) {
   return _cart[productId]?.qty || 0;
 }
 
+/* ── Customer details ────────────────────────────────── */
+
+/** Read the saved customer name + mobile. */
+function getCustomer() {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOMER_KEY) || '{}') || {};
+  } catch {
+    return {};
+  }
+}
+
+/** Persist the customer name + mobile so they only type it once. */
+function saveCustomer(name, mobile) {
+  try {
+    localStorage.setItem(CUSTOMER_KEY, JSON.stringify({ name, mobile }));
+  } catch { /* ignore */ }
+}
+
+const MOBILE_RE = /^[6-9]\d{9}$/;
+
+/**
+ * Validate the customer details needed to record an order.
+ * @returns {{ok: boolean, name: string, mobile: string, error: string}}
+ */
+function validateCustomer(name, mobile) {
+  const cleanName = String(name || '').trim();
+  const cleanMobile = String(mobile || '').replace(/\D/g, '').slice(0, 10);
+  if (!cleanName) return { ok: false, name: '', mobile: '', error: 'Please enter your name.' };
+  if (cleanName.length > 120) return { ok: false, name: '', mobile: '', error: 'Name is too long.' };
+  if (!MOBILE_RE.test(cleanMobile)) {
+    return { ok: false, name: '', mobile: '', error: 'Enter a valid 10-digit Indian mobile number.' };
+  }
+  return { ok: true, name: cleanName, mobile: cleanMobile, error: '' };
+}
+
+/**
+ * Record the order in orders.json via the API so it shows up in the admin panel.
+ * Never throws — a failed submission must not block the WhatsApp sale.
+ * @param {{name: string, mobile: string}} customer
+ * @returns {Promise<{ok: boolean, orderId: string|null, error: string}>}
+ */
+async function submitOrder(customer) {
+  const items = getCart().map(item => ({
+    id: item.id,
+    name: item.name,
+    content: item.unit || '',
+    qty: item.qty,
+    rate: item.mrp || item.price,
+    finalRate: item.price,
+  }));
+  if (!items.length) return { ok: false, orderId: null, error: 'Your cart is empty!' };
+
+  // One retry: the server re-reads orders.json on every call, so a replay is safe.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(ORDERS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerName: customer.name, mobile: customer.mobile, items }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.order) return { ok: true, orderId: data.order.id, error: '' };
+
+      const msg = data.error || ('Could not save order (' + res.status + ')');
+      // 409 = GitHub SHA clash, worth one replay. Anything else is not.
+      if (res.status !== 409) return { ok: false, orderId: null, error: msg };
+    } catch (err) {
+      return { ok: false, orderId: null, error: 'Could not reach the server.' };
+    }
+  }
+  return { ok: false, orderId: null, error: 'Could not save order. Please try again.' };
+}
+
 /* ── WhatsApp / Call ────────────────────────────────── */
 
 /**
  * Build a WhatsApp-ready pre-filled message URL
+ * @param {{name?: string, mobile?: string, orderId?: string}} [customer]
  */
-function buildWhatsAppURL() {
+function buildWhatsAppURL(customer) {
   const items = getCart();
   if (!items.length) return null;
 
+  const who = customer || getCustomer();
+
   let msg = `*${SHOP_NAME} -- New Order*\n\n`;
-  msg += `*Order Summary:*\n`;
+  if (who.orderId) msg += `*Order No: ${who.orderId}*\n`;
+  if (who.name) msg += `*Name:* ${who.name}\n`;
+  if (who.mobile) msg += `*Mobile:* +91 ${who.mobile}\n`;
+  msg += `\n*Order Summary:*\n`;
   msg += `-------------------\n`;
 
   items.forEach((item, i) => {

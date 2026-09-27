@@ -1844,6 +1844,51 @@ select option,
   font-size: 20px;
 }
 
+.cart-cust-fields {
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: var(--space-md);
+  background: var(--clr-bg-card);
+}
+.cart-cust-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  margin-bottom: 10px;
+}
+.cart-cust-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  margin-bottom: 4px;
+}
+.cart-cust-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--clr-text);
+  background: #fff;
+  transition: var(--transition);
+}
+.cart-cust-input:focus {
+  outline: none;
+  border-color: var(--clr-red);
+  box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.12);
+}
+.cart-cust-err {
+  font-size: 0.78rem;
+  color: var(--clr-danger);
+  font-weight: 600;
+  margin: 0;
+}
+
 .cart-pay-note {
   display: flex;
   align-items: flex-start;

@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /cart
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://www.sivakasi666crackers.com/sitemap.xml
