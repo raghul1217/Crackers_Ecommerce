@@ -17,21 +17,49 @@ function isPlaceholderToken(token) {
 }
 
 function getLocalFile(filePath) {
-    const fullPath = pathModule.resolve(process.cwd(), filePath);
-    if (fs.existsSync(fullPath)) {
-        const raw = fs.readFileSync(fullPath, 'utf8');
+    // 1. Try __dirname relative path (Vercel NFT bundles this)
+    const relPath = pathModule.resolve(__dirname, '..', filePath);
+    if (fs.existsSync(relPath)) {
+        const raw = fs.readFileSync(relPath, 'utf8');
         return {
             sha: 'local-file-sha',
             content: JSON.parse(raw),
         };
     }
-    throw new Error('Local file not found: ' + filePath);
+    // 2. Try process.cwd()
+    const cwdPath = pathModule.resolve(process.cwd(), filePath);
+    if (fs.existsSync(cwdPath)) {
+        const raw = fs.readFileSync(cwdPath, 'utf8');
+        return {
+            sha: 'local-file-sha',
+            content: JSON.parse(raw),
+        };
+    }
+    // 3. Fallback to dynamic require for bundled JSON files
+    try {
+        const cleanName = filePath.replace(/^\.\//, '').replace(/\.json$/, '');
+        const content = require('../' + cleanName + '.json');
+        return {
+            sha: 'local-file-sha',
+            content,
+        };
+    } catch (e) {
+        // Fallthrough
+    }
+
+    throw new Error('GitHub storage is not configured. Please set GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO in Vercel Environment Variables.');
 }
 
 function putLocalFile(filePath, content) {
-    const fullPath = pathModule.resolve(process.cwd(), filePath);
-    fs.writeFileSync(fullPath, JSON.stringify(content, null, 2), 'utf8');
-    return { ok: true, local: true };
+    try {
+        const relPath = pathModule.resolve(__dirname, '..', filePath);
+        fs.writeFileSync(relPath, JSON.stringify(content, null, 2), 'utf8');
+        return { ok: true, local: true };
+    } catch (e) {
+        const cwdPath = pathModule.resolve(process.cwd(), filePath);
+        fs.writeFileSync(cwdPath, JSON.stringify(content, null, 2), 'utf8');
+        return { ok: true, local: true };
+    }
 }
 
 function configError() {
