@@ -1,80 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════
    style.css — Sivakasi666crackers
-   Mobile-first, festive e-commerce design system
+   Mobile-first, festive e-commerce design system.
+   Design tokens, reset and base element defaults live in
+   css/base.css, which is linked before this file.
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ──────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
-/* ── Design Tokens ─────────────────────────────────────────────── */
-:root {
-  /* Brand colors */
-  --clr-red:       #C1121F;
-  --clr-red-dark:  #96040F;
-  --clr-orange:    #FF6F00;
-  --clr-amber:     #FFA000;
-  --clr-gold:      #FFC107;
-  --clr-teal:      #00897B;
-  --clr-teal-dark: #00695C;
-  --clr-magenta:   #D81B60;
-  --clr-magenta-dk:#AD1457;
-
-  /* Header gradient */
-  --gradient-brand: linear-gradient(135deg, #96040F 0%, #C1121F 30%, #FF6F00 65%, #FFC107 100%);
-  --gradient-gold:  linear-gradient(135deg, #FFC107, #FF6F00);
-  --gradient-hero:  linear-gradient(135deg, #6A0000 0%, #C1121F 40%, #FF6F00 75%, #FFC107 100%);
-
-  /* Neutrals */
-  --clr-bg:        #FAFAFA;
-  --clr-bg-card:   #FFFFFF;
-  --clr-text:      #212121;
-  --clr-text-muted:#757575;
-  --clr-border:    #E0E0E0;
-  --clr-divider:   #F0F0F0;
-
-  /* Status colors */
-  --clr-green:     #2E7D32;
-  --clr-danger:    #B71C1C;
-
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 24px;
-  --space-2xl:32px;
-
-  /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body:    'Inter', sans-serif;
-
-  /* Radii */
-  --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  16px;
-  --radius-pill:999px;
-
-  /* Shadows */
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-hover: 0 8px 24px rgba(0,0,0,0.14);
-  --shadow-btn:   0 4px 12px rgba(193,18,31,0.35);
-
-  /* Transitions */
-  --transition: 0.2s ease;
-  --transition-slow: 0.35s ease;
-
-  /* Header height */
-  --notice-height: 34px;
-  --header-height: calc(56px + var(--notice-height));
-}
-
-/* ── Reset & Base ──────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+/* ── Page Shell ────────────────────────────────────────────────── */
 html {
   font-size: 14px;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
@@ -100,11 +36,8 @@ main, .page-container, .shop-layout, .cart-page, .about-page, .product-detail-pa
   min-width: 0;
 }
 
-a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; height: auto; }
-button { cursor: pointer; font-family: var(--font-body); border: none; background: none; }
+button { font-family: var(--font-body); }
 input, select { font-family: var(--font-body); }
-ul, ol { list-style: none; }
 h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
 
 /* ── Scrollbar ─────────────────────────────────────────────────── */
