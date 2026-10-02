@@ -229,30 +229,30 @@ button, input, select, textarea { font-family: var(--font-ui); }
     min-height: calc(100vh - 60px);
 }
 .sidebar {
-    width: 230px;
+    width: 180px;
     flex-shrink: 0;
     background: var(--dark);
-    padding: 22px 14px;
+    padding: 20px 10px;
 }
 .sidebar-title {
     color: #d09a9a;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin: 0 10px 12px;
+    margin: 0 8px 10px;
 }
 .sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    padding: 12px 14px;
+    padding: 10px 12px;
     border: none;
-    border-radius: 9px;
+    border-radius: 8px;
     background: transparent;
     color: #e6cfcf;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
     text-align: left;
@@ -264,9 +264,8 @@ button, input, select, textarea { font-family: var(--font-ui); }
 .container-admin {
     flex: 1;
     min-width: 0;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 28px 24px 60px;
+    max-width: 100%;
+    padding: 24px 28px 60px;
 }
 
 .card {
@@ -337,11 +336,16 @@ button, input, select, textarea { font-family: var(--font-ui); }
 .form-actions .btn { min-width: 130px; justify-content: center; }
 
 /* Table */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+}
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 thead th {
     text-align: left;
@@ -349,13 +353,14 @@ thead th {
     color: var(--muted);
     text-transform: uppercase;
     font-size: 0.75rem;
+    font-weight: 700;
     letter-spacing: 0.4px;
     padding: 12px 10px;
     border-bottom: 2px solid var(--border);
     white-space: nowrap;
 }
 tbody td {
-    padding: 11px 10px;
+    padding: 12px 10px;
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
 }
@@ -377,32 +382,36 @@ tbody tr:hover { background: #fafafa; }
 #view-orders table { table-layout: fixed; }
 
 /* ID | Name | Category | Content | MRP | Disc % | Rate | Actions */
-#view-products thead th:nth-child(1) { width: 6.5%; }
-#view-products thead th:nth-child(2) { width: 30.5%; }
-#view-products thead th:nth-child(3) { width: 21%; }
-#view-products thead th:nth-child(4) { width: 8%; }
+#view-products thead th:nth-child(1) { width: 7%; }
+#view-products thead th:nth-child(2) { width: 29%; }
+#view-products thead th:nth-child(3) { width: 18%; }
+#view-products thead th:nth-child(4) { width: 10%; }
 #view-products thead th:nth-child(5) { width: 8.5%; }
-#view-products thead th:nth-child(6) { width: 7%; }
-#view-products thead th:nth-child(7) { width: 8.5%; }
-#view-products thead th:nth-child(8) { width: 10%; }
+#view-products thead th:nth-child(6) { width: 7.5%; }
+#view-products thead th:nth-child(7) { width: 9%; }
+#view-products thead th:nth-child(8) { width: 11%; }
 
 /* ID | Customer | Mobile | Items | Total | Status | Date | Actions */
-#view-orders thead th:nth-child(1) { width: 6.5%; }
-#view-orders thead th:nth-child(2) { width: 19%; }
-#view-orders thead th:nth-child(3) { width: 9.5%; }
-#view-orders thead th:nth-child(4) { width: 20.5%; }
+#view-orders thead th:nth-child(1) { width: 7.5%; }
+#view-orders thead th:nth-child(2) { width: 18.5%; }
+#view-orders thead th:nth-child(3) { width: 10%; }
+#view-orders thead th:nth-child(4) { width: 20%; }
 #view-orders thead th:nth-child(5) { width: 8.5%; }
 #view-orders thead th:nth-child(6) { width: 11.5%; }
-#view-orders thead th:nth-child(7) { width: 12.5%; }
-#view-orders thead th:nth-child(8) { width: 12%; }
+#view-orders thead th:nth-child(7) { width: 13.5%; }
+#view-orders thead th:nth-child(8) { width: 10.5%; }
 
-/* Money and discount are numbers: right-align header and cell so the
-   decimal points line up down the column. */
+/* Align numbers right, actions center */
 #view-products thead th:nth-child(5), #view-products tbody td:nth-child(5),
 #view-products thead th:nth-child(6), #view-products tbody td:nth-child(6),
 #view-products thead th:nth-child(7), #view-products tbody td:nth-child(7),
 #view-orders thead th:nth-child(5), #view-orders tbody td:nth-child(5) {
     text-align: right;
+}
+
+#view-products thead th:nth-child(8), #view-products tbody td:nth-child(8),
+#view-orders thead th:nth-child(8), #view-orders tbody td:nth-child(8) {
+    text-align: center;
 }
 
 /* Fixed layout never grows a column, so anything wider than its share
@@ -529,7 +538,7 @@ tbody tr:hover { background: #fafafa; }
     cursor: pointer;
 }
 .order-more:hover { text-decoration: underline; }
-.row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.row-actions { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: nowrap; }
 .status-select {
     padding: 5px 8px;
     border: 1px solid var(--border);
