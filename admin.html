@@ -182,6 +182,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="mobile-cards-list" id="products-mobile-list"></div>
             </div>
 
             </section>
@@ -229,6 +230,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mobile-cards-list" id="orders-mobile-list"></div>
                 </div>
             </section>
 
@@ -435,9 +437,11 @@
 
         function renderTable() {
             const tbody = $('product-tbody');
+            const mobileList = $('products-mobile-list');
             const filtered = getFilteredProducts();
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="empty">No products found.</td></tr>';
+                if (mobileList) mobileList.innerHTML = '<div class="empty">No products found.</div>';
                 return;
             }
             tbody.innerHTML = filtered.map(p => {
@@ -449,7 +453,7 @@
                 const content = String(p.content || '');
                 return `
                 <tr>
-                    <td>${escapeHtml(p.id)}</td>
+                    <td><span class="id-badge">${escapeHtml(p.id)}</span></td>
                     <td><div class="cell-clip"><strong title="${escapeAttr(name)}">${escapeHtml(name)}</strong>${p.tag ? `<span class="pill pill-cat">${escapeHtml(p.tag)}</span>` : ''}</div></td>
                     <td><span class="pill pill-cat">${escapeHtml(p.category)}</span></td>
                     <td title="${escapeAttr(content)}">${escapeHtml(content || '\u2014')}</td>
@@ -465,10 +469,40 @@
                 </tr>`;
             }).join('');
 
-            tbody.querySelectorAll('[data-edit]').forEach(b => {
+            if (mobileList) {
+                mobileList.innerHTML = filtered.map(p => {
+                    const rate = Number(p.rate) || 0;
+                    const finalRate = Number(p.finalRate) || 0;
+                    const discPct = rate > 0 ? Math.round((1 - finalRate / rate) * 100) : 0;
+                    const id = escapeAttr(p.id);
+                    const name = String(p.name || '');
+                    const content = String(p.content || '');
+                    return `
+                    <div class="admin-mobile-card">
+                        <div class="amc-top">
+                            <span class="id-badge">#${escapeHtml(p.id)}</span>
+                            <span class="pill pill-cat">${escapeHtml(p.category)}</span>
+                            ${p.tag ? `<span class="pill pill-cat" style="background:#fef3c7;color:#b45309;">${escapeHtml(p.tag)}</span>` : ''}
+                        </div>
+                        <div class="amc-title">${escapeHtml(name)}</div>
+                        ${content ? `<div class="amc-sub">Pack: <strong>${escapeHtml(content)}</strong></div>` : ''}
+                        <div class="amc-price-row">
+                            ${discPct > 0 ? `<span class="amc-mrp">${formatPrice(rate)}</span> <span class="amc-disc">${discPct}% OFF</span>` : ''}
+                            <span class="amc-final">${formatPrice(finalRate)}</span>
+                        </div>
+                        <div class="amc-actions">
+                            <button class="btn btn-sm btn-edit" data-edit="${id}">${icon('pencil')} Edit</button>
+                            <button class="btn btn-sm btn-del" data-del="${id}">${icon('trash')} Delete</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            const section = $('view-products');
+            section.querySelectorAll('[data-edit]').forEach(b => {
                 b.addEventListener('click', () => startEdit(b.dataset.edit));
             });
-            tbody.querySelectorAll('[data-del]').forEach(b => {
+            section.querySelectorAll('[data-del]').forEach(b => {
                 b.addEventListener('click', () => deleteProduct(b.dataset.del));
             });
         }
@@ -700,21 +734,23 @@
 
         function renderOrders() {
             const tbody = $('orders-tbody');
+            const mobileList = $('orders-mobile-list');
             const filtered = getFilteredOrders();
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="empty">No orders found.</td></tr>';
+                if (mobileList) mobileList.innerHTML = '<div class="empty">No orders found.</div>';
                 return;
             }
+
+            const ITEM_PREVIEW = 3;
+            const itemLineHtml = (it) => {
+                const label = (it.name || '') + (it.content ? ' (' + it.content + ') ' : ' ') + '\u00D7 ' + escNum(it.qty);
+                return `<div class="clip-line" title="${escapeAttr(label)}"><b>${escapeHtml(it.name)}</b>${it.content ? ' (' + escapeHtml(it.content) + ')' : ''} \u00D7 ${escNum(it.qty)}</div>`;
+            };
+
+            // Desktop Table HTML
             tbody.innerHTML = filtered.map(o => {
                 const items = o.items || [];
-                const ITEM_PREVIEW = 3;
-                /* Each preview line is clipped to one line, so the tooltip carries
-                   the full "name (content) x qty" label. Bundle products carry the
-                   full item list in `content`, which can run past 1000 characters. */
-                const itemLineHtml = (it) => {
-                    const label = (it.name || '') + (it.content ? ' (' + it.content + ') ' : ' ') + '\u00D7 ' + escNum(it.qty);
-                    return `<div class="clip-line" title="${escapeAttr(label)}"><b>${escapeHtml(it.name)}</b>${it.content ? ' (' + escapeHtml(it.content) + ')' : ''} \u00D7 ${escNum(it.qty)}</div>`;
-                };
                 const visibleItems = items.slice(0, ITEM_PREVIEW).map(itemLineHtml).join('');
                 const extraItems = items.slice(ITEM_PREVIEW);
                 const moreLabel = 'View ' + extraItems.length + ' more...';
@@ -727,18 +763,20 @@
                 const oid = escapeAttr(o.id);
                 return `
                 <tr>
-                    <td data-label="ID">${escapeHtml(o.id)}</td>
+                    <td data-label="ID"><span class="id-badge">${escapeHtml(o.id)}</span></td>
                     <td data-label="Customer">
                         <strong class="clip-line" title="${escapeAttr(o.customerName)}">${escapeHtml(o.customerName)}</strong>
                         ${o.address ? `<div class="order-address clip-line" title="${escapeAttr(o.address)}">${escapeHtml(o.address)}</div>` : ''}
                     </td>
-                    <td data-label="Mobile">${escapeHtml(o.mobile)}</td>
+                    <td data-label="Mobile">
+                        ${o.mobile ? `<a href="tel:${escapeAttr(o.mobile)}" class="phone-link">${escapeHtml(o.mobile)}</a>` : '\u2014'}
+                    </td>
                     <td data-label="Items">
                         <div class="order-items">${visibleItems}</div>${extraHtml}<div class="order-meta">${escNum(totalQty)} items</div>
                     </td>
                     <td data-label="Total"><strong>${formatPrice(o.total)}</strong></td>
                     <td data-label="Status">
-                        <select class="status-select" data-order-id="${oid}">
+                        <select class="status-select status-${statusVal}" data-order-id="${oid}">
                             <option value="pending" ${statusVal === 'pending' ? 'selected' : ''}>Pending</option>
                             <option value="confirmed" ${statusVal === 'confirmed' ? 'selected' : ''}>Confirmed</option>
                             <option value="delivered" ${statusVal === 'delivered' ? 'selected' : ''}>Delivered</option>
@@ -762,21 +800,80 @@
                 </tr>`;
             }).join('');
 
-            tbody.querySelectorAll('.status-select').forEach(sel => {
-                sel.addEventListener('change', () => updateOrderStatus(sel.dataset.orderId, sel.value));
+            // Mobile Cards HTML
+            if (mobileList) {
+                mobileList.innerHTML = filtered.map(o => {
+                    const items = o.items || [];
+                    const visibleItems = items.slice(0, ITEM_PREVIEW).map(itemLineHtml).join('');
+                    const extraItems = items.slice(ITEM_PREVIEW);
+                    const moreLabel = 'View ' + extraItems.length + ' more...';
+                    const extraHtml = extraItems.length > 0
+                        ? `<div class="order-items-extra" style="display:none;">${extraItems.map(itemLineHtml).join('')}</div>` +
+                          `<button type="button" class="order-more" data-order-more="1" data-more-label="${escapeAttr(moreLabel)}">${escapeHtml(moreLabel)}</button>`
+                        : '';
+                    const totalQty = items.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+                    const statusVal = o.status || 'pending';
+                    const oid = escapeAttr(o.id);
+
+                    return `
+                    <div class="admin-mobile-card order-card-${statusVal}">
+                        <div class="amc-top">
+                            <div>
+                                <span class="id-badge">${escapeHtml(o.id)}</span>
+                                <span class="amc-date">${formatDate(o.createdAt)}</span>
+                            </div>
+                            <select class="status-select status-${statusVal}" data-order-id="${oid}">
+                                <option value="pending" ${statusVal === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="confirmed" ${statusVal === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="delivered" ${statusVal === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            </select>
+                        </div>
+                        <div class="amc-customer">
+                            <div class="amc-cust-name">${escapeHtml(o.customerName || 'Customer')}</div>
+                            ${o.mobile ? `<a href="tel:${escapeAttr(o.mobile)}" class="amc-phone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +91 ${escapeHtml(o.mobile)}</a>` : ''}
+                            ${o.address ? `<div class="amc-address">${escapeHtml(o.address)}</div>` : ''}
+                        </div>
+                        <div class="amc-items-box">
+                            <div class="amc-items-hdr">Order Items (${escNum(totalQty)})</div>
+                            <div class="order-items">${visibleItems}</div>
+                            ${extraHtml}
+                        </div>
+                        <div class="amc-bottom">
+                            <div class="amc-total-wrap">
+                                <span class="lbl">Total</span>
+                                <span class="val">${formatPrice(o.total)}</span>
+                            </div>
+                            <div class="amc-btn-group">
+                                <button class="btn btn-sm btn-view-items" data-view-items="${oid}">${icon('eye')} Items</button>
+                                <button class="btn btn-sm btn-pdf" data-download-invoice="${oid}">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><path d="M8 18h8"/></svg> PDF
+                                </button>
+                                <button class="btn btn-sm btn-del" data-del-order="${oid}">${icon('trash')}</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            const section = $('view-orders');
+            section.querySelectorAll('.status-select').forEach(sel => {
+                sel.addEventListener('change', () => {
+                    updateOrderStatus(sel.dataset.orderId, sel.value);
+                    sel.className = `status-select status-${sel.value}`;
+                });
             });
-            tbody.querySelectorAll('[data-view-items]').forEach(b => {
+            section.querySelectorAll('[data-view-items]').forEach(b => {
                 b.addEventListener('click', () => showItemsModal(b.dataset.viewItems));
             });
-            tbody.querySelectorAll('[data-download-invoice]').forEach(b => {
+            section.querySelectorAll('[data-download-invoice]').forEach(b => {
                 b.addEventListener('click', () => downloadOrderInvoice(b.dataset.downloadInvoice));
             });
-            tbody.querySelectorAll('[data-del-order]').forEach(b => {
+            section.querySelectorAll('[data-del-order]').forEach(b => {
                 b.addEventListener('click', () => deleteOrder(b.dataset.delOrder));
             });
-            tbody.querySelectorAll('[data-order-more]').forEach(b => {
+            section.querySelectorAll('[data-order-more]').forEach(b => {
                 b.addEventListener('click', () => {
-                    const wrap = b.closest('td');
+                    const wrap = b.closest('.order-items') || (b.closest('td') ? b.closest('td') : b.closest('.amc-items-box'));
                     const extraEl = wrap && wrap.querySelector('.order-items-extra');
                     if (!extraEl) return;
                     const isHidden = extraEl.style.display === 'none';

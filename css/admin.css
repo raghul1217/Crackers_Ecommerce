@@ -539,36 +539,83 @@ tbody tr:hover { background: #fafafa; }
 }
 .order-more:hover { text-decoration: underline; }
 .row-actions { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: nowrap; }
+
+/* Status dropdown dynamic pill styling */
 .status-select {
-    padding: 5px 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
     font-size: 0.8rem;
-    font-weight: 600;
-    background: #fff;
+    font-weight: 700;
     cursor: pointer;
-    color: var(--text);
-    max-width: 110px;
-}
-.status-select:focus {
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(193,18,31,0.15);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 24px;
+    background-color: #fff;
+    color: var(--text);
 }
+.status-select.status-pending {
+    background-color: #FEF3C7;
+    color: #92400E;
+    border-color: #FCD34D;
+}
+.status-select.status-confirmed {
+    background-color: #E0E7FF;
+    color: #3730A3;
+    border-color: #A5B4FC;
+}
+.status-select.status-delivered {
+    background-color: #D1FAE5;
+    color: #065F46;
+    border-color: #6EE7B7;
+}
+
+/* Monospace ID Badge & Phone links */
+.id-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #F1F5F9;
+    color: #334155;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+    display: inline-block;
+    letter-spacing: 0.3px;
+}
+.phone-link {
+    color: #2563EB;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+.phone-link:hover { text-decoration: underline; }
+
 .icon-btn {
     border: none; border-radius: 6px;
     width: 32px; height: 32px;
     cursor: pointer; font-size: 0.85rem;
     display: inline-flex; align-items: center; justify-content: center;
+    transition: background-color 0.2s, transform 0.1s;
 }
+.icon-btn:hover { transform: translateY(-1px); }
 .icon-edit { background: #dbeafe; color: #1d4ed8; }
 .icon-edit:hover { background: #bfdbfe; }
 .icon-del { background: #fee2e2; color: #b91c1c; }
 .icon-del:hover { background: #fecaca; }
-.icon-view-items { display: none; background: #dbeafe; color: #1d4ed8; }
+.icon-view-items { display: inline-flex; background: #dbeafe; color: #1d4ed8; }
 .icon-view-items:hover { background: #bfdbfe; }
 .icon-download { background: #dcfce7; color: #15803d; }
 .icon-download:hover { background: #bbf7d0; }
+
+/* Mobile Cards Container */
+.mobile-cards-list { display: none; }
 
 /* Items Modal */
 .modal-overlay {
@@ -650,7 +697,7 @@ tbody tr:hover { background: #fafafa; }
 #toast.error { background: var(--danger); }
 #toast.warn { background: var(--secondary); color: var(--dark); }
 
-/* Responsive - Tablet & below */
+/* Responsive - Tablet & Mobile Overhaul */
 @media (max-width: 768px) {
     .layout { flex-direction: column; }
     .sidebar { width: 100%; padding: 8px 10px; }
@@ -662,150 +709,149 @@ tbody tr:hover { background: #fafafa; }
     .topbar .brand { font-size: 0.92rem; }
     .btn { padding: 8px 12px; font-size: 0.85rem; }
 
-    .container-admin { padding: 18px 14px 40px; }
-    .card { padding: 18px; margin-bottom: 18px; }
+    .container-admin { padding: 16px 12px 40px; }
+    .card { padding: 16px 14px; margin-bottom: 16px; }
     .card h2 { font-size: 1rem; }
 
-    .stats-grid { gap: 12px; }
-    .stat { padding: 14px 16px; }
-    .stat .num { font-size: 1.4rem; }
-
-    .form-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-grid .full { grid-column: 1 / -1; }
-
-    .table-wrap table { font-size: 0.82rem; }
-    .table-wrap table thead th { padding: 10px 8px; font-size: 0.7rem; }
-    .table-wrap table tbody td { padding: 9px 8px; }
-
-    /* Products table - hide content column on tablet (4th of 8) */
-    #view-products .table-wrap table thead th:nth-child(4),
-    #view-products .table-wrap table tbody td:nth-child(4) { display: none; }
-
-    /* Orders table - hide Date column on tablet (7th of 8) */
-    #view-orders .table-wrap table thead th:nth-child(7),
-    #view-orders .table-wrap table tbody td:nth-child(7) { display: none; }
-
-    /* Column widths for the reduced column sets - the visible columns
-       must sum to exactly 100% under table-layout:fixed. */
-    #view-products thead th:nth-child(1) { width: 8.5%; }   /* ID */
-    #view-products thead th:nth-child(2) { width: 24%; }    /* Name */
-    #view-products thead th:nth-child(3) { width: 25%; }    /* Category */
-    #view-products thead th:nth-child(5) { width: 10.5%; }  /* MRP */
-    #view-products thead th:nth-child(6) { width: 9%; }     /* Disc % */
-    #view-products thead th:nth-child(7) { width: 10.5%; }  /* Rate */
-    #view-products thead th:nth-child(8) { width: 12.5%; }  /* Actions */
-
-    #view-orders thead th:nth-child(1) { width: 8.5%; }     /* ID */
-    #view-orders thead th:nth-child(2) { width: 19.5%; }   /* Customer */
-    #view-orders thead th:nth-child(3) { width: 12%; }     /* Mobile */
-    #view-orders thead th:nth-child(4) { width: 20%; }     /* Items */
-    #view-orders thead th:nth-child(5) { width: 11.5%; }   /* Total */
-    #view-orders thead th:nth-child(6) { width: 16%; }     /* Status */
-    #view-orders thead th:nth-child(8) { width: 12.5%; }   /* Actions */
-
-    /* Keep the status dropdown inside its 16% share. */
-    .status-select { max-width: 96px; }
-
-    #toast { top: 14px; right: 14px; left: 14px; font-size: 0.85rem; text-align: center; }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 480px) {
-    .login-card { padding: 28px 20px; max-width: 320px; }
-
-    .topbar { padding: 0 10px; height: 50px; }
-    .topbar .brand { font-size: 0.82rem; }
-    .topbar .brand span { font-size: 0.78rem; }
-    .btn { padding: 7px 10px; font-size: 0.8rem; gap: 5px; }
-
-    .container-admin { padding: 12px 10px 32px; }
-    .card { padding: 14px 12px; border-radius: 10px; }
-    .card h2 { font-size: 0.92rem; margin-bottom: 12px; }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 16px;
-    }
-    .stat { padding: 12px; border-radius: 8px; min-height: 70px; }
-    .stat .num { font-size: 1.25rem; }
-    .stat .lbl { font-size: 0.72rem; }
+    .stats-grid { gap: 10px; }
+    .stat { padding: 12px 14px; }
+    .stat .num { font-size: 1.3rem; }
 
     .form-grid { grid-template-columns: 1fr; gap: 10px; }
-    .form-actions { flex-direction: column; }
-    .form-actions .btn { width: 100%; min-width: 0; }
+    .form-grid .full { grid-column: 1 / -1; }
 
-    .table-wrap table { font-size: 0.78rem; min-width: 0; }
-    .table-wrap table thead th {
-        padding: 8px 6px;
-        font-size: 0.65rem;
-        letter-spacing: 0.3px;
+    /* Hide horizontal tables on mobile screens and reveal smooth mobile cards */
+    .table-wrap { display: none !important; }
+    .mobile-cards-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .admin-mobile-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
-    .table-wrap table tbody td { padding: 8px 6px; font-size: 0.78rem; }
-
-    /* Products table - show only ID, name, rate, actions */
-    #view-products .table-wrap table thead th:nth-child(3),
-    #view-products .table-wrap table tbody td:nth-child(3),
-    #view-products .table-wrap table thead th:nth-child(4),
-    #view-products .table-wrap table tbody td:nth-child(4),
-    #view-products .table-wrap table thead th:nth-child(5),
-    #view-products .table-wrap table tbody td:nth-child(5),
-    #view-products .table-wrap table thead th:nth-child(6),
-    #view-products .table-wrap table tbody td:nth-child(6) { display: none; }
-    #view-products .table-wrap table tbody td:last-child { white-space: nowrap; }
-
-    /* Name still ellipsis-truncates here; no word-break override, or it
-       would wrap to many lines instead of clipping to one. */
-
-    /* Column widths for the reduced column sets - the visible columns
-       must sum to exactly 100% under table-layout:fixed. */
-    #view-products thead th:nth-child(1) { width: 12.5%; }  /* ID */
-    #view-products thead th:nth-child(2) { width: 55%; }    /* Name */
-    #view-products thead th:nth-child(7) { width: 15%; }    /* Rate */
-    #view-products thead th:nth-child(8) { width: 17.5%; }  /* Actions */
-
-    /* Orders table - hide Mobile, Items, Date; items open via modal */
-    #view-orders .table-wrap table thead th:nth-child(3),
-    #view-orders .table-wrap table tbody td:nth-child(3),
-    #view-orders .table-wrap table thead th:nth-child(4),
-    #view-orders .table-wrap table tbody td:nth-child(4),
-    #view-orders .table-wrap table thead th:nth-child(7),
-    #view-orders .table-wrap table tbody td:nth-child(7) { display: none; }
-    #view-orders .row-actions .icon-view-items { display: inline-flex; }
-    #view-orders .table-wrap table tbody td:nth-child(2) {
-        overflow-wrap: anywhere;
-        word-break: break-word;
+    .amc-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f1f5f9;
+        flex-wrap: wrap;
     }
-    #view-orders .table-wrap table tbody td:last-child { white-space: nowrap; }
-
-    #view-orders thead th:nth-child(1) { width: 12.5%; }   /* ID */
-    #view-orders thead th:nth-child(2) { width: 25.5%; }   /* Customer */
-    #view-orders thead th:nth-child(5) { width: 14.5%; }   /* Total */
-    #view-orders thead th:nth-child(6) { width: 22%; }     /* Status */
-    #view-orders thead th:nth-child(8) { width: 25.5%; }   /* Actions */
-
-    /* Keep the status dropdown inside its 22% share. */
-    .status-select { max-width: 84px; }
-
-    .icon-btn { width: 30px; height: 30px; font-size: 0.8rem; }
-    .row-actions { gap: 4px; }
-
-    .pill { font-size: 0.68rem; padding: 2px 7px; }
-    .order-items { font-size: 0.72rem; }
-
-    /* Customer is 25.5% here, which is only ~69px of text once the cell
-       padding is off - a single clipped line would show a name and
-       nothing else. Two bounded lines is the better trade, and it beats
-       the old behaviour where a 250-char address wrapped to five lines
-       and blew the row height out. Touch has no hover, so the title
-       tooltip cannot be relied on to reveal the rest. */
-    #view-orders tbody td:nth-child(2) .clip-line {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        white-space: normal;
-        overflow-wrap: break-word;
+    .amc-date {
+        font-size: 0.74rem;
+        color: #64748b;
+        margin-left: 6px;
     }
+    .amc-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .amc-sub {
+        font-size: 0.82rem;
+        color: #64748b;
+    }
+    .amc-price-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+    .amc-mrp { text-decoration: line-through; color: #94a3b8; font-size: 0.82rem; }
+    .amc-disc { background: #fef3c7; color: #b45309; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
+    .amc-final { font-weight: 800; color: #0f172a; font-size: 1.05rem; }
+    .amc-customer {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .amc-cust-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .amc-phone {
+        font-size: 0.82rem;
+        color: #2563eb;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .amc-address {
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.4;
+        background: #f8fafc;
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-top: 4px;
+    }
+    .amc-items-box {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 8px;
+        padding: 8px 10px;
+    }
+    .amc-items-hdr {
+        font-size: 0.72rem;
+        color: #475569;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        font-weight: 700;
+    }
+    .amc-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .amc-total-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+    .amc-total-wrap .lbl {
+        font-size: 0.68rem;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+    .amc-total-wrap .val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .amc-btn-group, .amc-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-view-items { background: #eff6ff; color: #1d4ed8; }
+    .btn-pdf { background: #ecfdf5; color: #047857; }
+    .btn-del { background: #fef2f2; color: #b91c1c; }
+    .btn-edit { background: #eff6ff; color: #1d4ed8; }
 
     #toast { top: 10px; right: 10px; left: 10px; padding: 11px 14px; border-radius: 6px; font-size: 0.82rem; }
 }
