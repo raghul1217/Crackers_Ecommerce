@@ -132,6 +132,28 @@
 
   </main>
 
+  <!-- CLEAR CART CONFIRMATION MODAL -->
+  <div class="cart-modal-backdrop" id="clear-cart-modal" role="dialog" aria-modal="true" aria-labelledby="clear-modal-title" aria-describedby="clear-modal-desc" hidden>
+    <div class="cart-modal-box">
+      <button class="cart-modal-close" type="button" id="clear-modal-close-btn" aria-label="Close dialog">&times;</button>
+      <div class="cart-modal-icon-wrap" aria-hidden="true">
+        <i data-lucide="trash-2"></i>
+      </div>
+      <h3 class="cart-modal-title" id="clear-modal-title">Clear Entire Cart?</h3>
+      <p class="cart-modal-desc" id="clear-modal-desc">
+        Are you sure you want to remove all items from your cart? This action cannot be undone.
+      </p>
+      <div class="cart-modal-actions">
+        <button type="button" class="cart-modal-btn btn-cancel" id="clear-modal-cancel-btn">
+          Keep Items
+        </button>
+        <button type="button" class="cart-modal-btn btn-confirm-clear" id="clear-modal-confirm-btn">
+          <i data-lucide="trash-2"></i> Yes, Clear Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER (injected from footer.html) -->
   <div id="site-footer"></div>
 

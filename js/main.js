@@ -510,14 +510,72 @@ function initCart() {
     callBtn.href = getCallURL();
   }
 
-  // Clear cart
+  // Clear cart modal handling
   const clearBtn = document.getElementById('clear-cart-btn');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      if (confirm('Clear your entire cart?')) {
-        clearCart();
-        _renderCartPage();
+  const clearModal = document.getElementById('clear-cart-modal');
+  const closeBtn = document.getElementById('clear-modal-close-btn');
+  const cancelBtn = document.getElementById('clear-modal-cancel-btn');
+  const confirmBtn = document.getElementById('clear-modal-confirm-btn');
+
+  function openClearModal() {
+    if (!clearModal) return;
+    clearModal.removeAttribute('hidden');
+    void clearModal.offsetWidth; // trigger reflow for smooth transition
+    clearModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (window.lucide) lucide.createIcons();
+    if (cancelBtn) cancelBtn.focus();
+    document.addEventListener('keydown', handleModalKeydown);
+  }
+
+  function closeClearModal() {
+    if (!clearModal) return;
+    clearModal.classList.remove('active');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleModalKeydown);
+    setTimeout(() => {
+      if (!clearModal.classList.contains('active')) {
+        clearModal.setAttribute('hidden', '');
       }
+    }, 220);
+    if (clearBtn) clearBtn.focus();
+  }
+
+  function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+      closeClearModal();
+    }
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openClearModal();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeClearModal);
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeClearModal);
+  }
+
+  if (clearModal) {
+    clearModal.addEventListener('click', (e) => {
+      if (e.target === clearModal) {
+        closeClearModal();
+      }
+    });
+  }
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      clearCart();
+      closeClearModal();
+      _renderCartPage();
+      showToast('Your cart has been cleared');
     });
   }
 
