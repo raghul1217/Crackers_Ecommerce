@@ -214,7 +214,7 @@ function renderCategoryGrid(categories, containerId) {
 
   const filtered = categories.filter(c => c !== 'All');
   container.innerHTML = filtered.map(cat => {
-    const imgSrc = CATEGORY_IMAGES[cat] || '';
+    const imgSrc = CATEGORY_IMAGES[cat] || 'images/placeholder.webp';
     const color  = CATEGORY_COLORS[cat] || '#FF6F00';
     const slug   = cat.replace(/\s+/g, '-').toLowerCase();
     const href   = cat === 'Gift Boxes' ? 'giftbox' : `shop?category=${encodeURIComponent(cat)}`;
@@ -223,12 +223,13 @@ function renderCategoryGrid(categories, containerId) {
          class="category-grid-item"
          style="--cat-color: ${color}"
          aria-label="Browse ${cat}"
+         title="${cat}"
          id="cat-grid-${slug}">
         <div class="cat-img-wrap">
-          <img src="${imgSrc}" alt="${cat}" class="cat-img" loading="lazy" decoding="async" />
+          <img src="${imgSrc}" alt="${cat}" class="cat-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/placeholder.webp';" />
           <div class="cat-img-overlay"></div>
         </div>
-        <span class="cat-label">${cat}</span>
+        <span class="cat-label" title="${cat}">${cat}</span>
       </a>
     `;
   }).join('');

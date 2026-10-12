@@ -1110,16 +1110,17 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
 .cat-section {
   background: linear-gradient(180deg, rgba(255,111,0,0.03) 0%, rgba(255,255,255,0) 100%);
   border-radius: 20px;
-  padding: 24px 20px 12px;
+  padding: 24px 20px 16px;
   margin-left: -20px;
   margin-right: -20px;
-  margin-bottom: 40px !important;
+  margin-bottom: 36px !important;
 }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 16px 10px;
+  justify-content: center;
 }
 
 .category-grid-item {
@@ -1128,95 +1129,89 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  border-radius: 18px;
-  background: #fff;
-  border: 1.5px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
+  padding: 8px 4px 6px;
+  border-radius: 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  overflow: hidden;
-  gap: 0;
+  width: 100%;
+  max-width: 104px;
+  margin: 0 auto;
 }
 .category-grid-item:hover {
-  transform: translateY(-6px) scale(1.02);
-  border-color: color-mix(in srgb, var(--cat-color) 35%, transparent);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.13), 0 0 0 3px color-mix(in srgb, var(--cat-color) 12%, transparent);
+  transform: translateY(-4px);
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
 }
 
-/* Image container */
+/* Circular Category Avatar */
 .cat-img-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
   overflow: hidden;
-  border-radius: 14px 14px 0 0;
-  background: color-mix(in srgb, var(--cat-color) 8%, #f8f8f8);
+  background: radial-gradient(circle at 35% 35%, #ffffff 25%, color-mix(in srgb, var(--cat-color) 12%, #f8f9fa) 100%);
+  border: 2px solid color-mix(in srgb, var(--cat-color) 35%, rgba(0,0,0,0.08));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .cat-img {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.5s cubic-bezier(.25,.46,.45,.94), filter 0.3s ease;
+  transition: transform 0.4s ease, filter 0.2s ease;
   display: block;
 }
+.category-grid-item:hover .cat-img-wrap {
+  border-color: var(--cat-color);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--cat-color) 38%, transparent), 0 0 0 2px var(--cat-color);
+  transform: scale(1.05);
+}
 .category-grid-item:hover .cat-img {
-  transform: scale(1.1);
-  filter: brightness(0.88);
+  transform: scale(1.12);
 }
 
-/* Overlay shimmer on hover */
+/* Subtle overlay shimmer on hover */
 .cat-img-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--cat-color) 0%, transparent) 0%,
-    color-mix(in srgb, var(--cat-color) 0%, transparent) 100%
-  );
+  border-radius: 50%;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
+  background: radial-gradient(circle, color-mix(in srgb, var(--cat-color) 20%, transparent) 0%, transparent 80%);
 }
 .category-grid-item:hover .cat-img-overlay {
   opacity: 1;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--cat-color) 28%, transparent) 0%,
-    color-mix(in srgb, var(--cat-color) 10%, transparent) 100%
-  );
 }
 
-/* Bottom accent bar */
-.category-grid-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--cat-color);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-  border-radius: 0 0 18px 18px;
-}
-.category-grid-item:hover::after {
-  transform: scaleX(1);
-}
-
+/* Category Label — Single Line Text Truncation */
 .cat-label {
-  font-size: 12.5px;
-  font-weight: 700;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--clr-text);
   text-align: center;
-  line-height: 1.3;
-  padding: 10px 10px 12px;
-  width: 100%;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  line-height: 1.35;
+  margin-top: 8px;
+  padding: 0 4px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: 0.1px;
-  transition: color 0.25s ease;
+  transition: color 0.2s ease, font-weight 0.2s ease;
 }
 .category-grid-item:hover .cat-label {
   color: var(--cat-color);
+  font-weight: 700;
 }
 
 
