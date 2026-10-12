@@ -1,4 +1,4 @@
-﻿/**
+/**
  * render.js â€” DOM rendering helpers for product cards, categories, cart items
  * Icons: Lucide (https://lucide.dev) â€” call lucide.createIcons() after inserting HTML
  */
@@ -620,8 +620,8 @@ function showLoading(containerId) {
 /**
  * Render products as a price-list table grouped by category.
  * Each category gets a heading row, then its product rows.
- * Columns: Item | Name | Actual Price | Discount | Offer Price | Qty | Final Price.
- * Entering a quantity >= 1 auto-adds/updates the item in the cart.
+ * Columns: Item | Name | Actual Price | Discount | Offer Price | Qty | Final Price | Action.
+ * Default quantity is 1 with dropdown + type combo. Cart updates only when Add to Cart is clicked.
  * @param {Array} products
  * @param {string} containerId
  */
@@ -659,11 +659,20 @@ function renderProductTable(products, containerId) {
     byCat[cat].items.push(product);
   }
 
+  const QTY_PRESETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100];
+
   const sections = groups.map(group => {
     const icon = CATEGORY_ICONS[group.category] || 'sparkles';
     const color = CATEGORY_COLORS[group.category] || 'var(--clr-red)';
     const catRows = group.items.map(product => {
       const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
+      const initialQty = inCart > 0 ? inCart : 1;
+      const finalPrice = product.price * initialQty;
+
+      const presetOptions = QTY_PRESETS.map(n =>
+        `<option value="${n}" ${n === initialQty ? 'selected' : ''}>${n}</option>`
+      ).join('');
+
       return `
         <tr data-product-id="${product.id}">
           <td class="pt-img-cell" data-label="Item">
@@ -680,11 +689,28 @@ function renderProductTable(products, containerId) {
           <td class="pt-disc" data-label="Discount">${product.discountPercent ? `-${product.discountPercent}%` : '&mdash;'}</td>
           <td class="pt-price" data-label="Offer Price">${fmt(product.price)}</td>
           <td class="pt-qty-cell" data-label="Qty">
-            <input class="pt-qty-input" type="number" min="0" step="1" inputmode="numeric"
-                   value="${inCart || ''}" data-product-id="${product.id}"
-                   aria-label="Quantity of ${product.name}" />
+            <div class="pt-qty-group">
+              <input class="pt-qty-input" type="number" min="1" max="999" step="1" inputmode="numeric"
+                     value="${initialQty}" data-product-id="${product.id}"
+                     aria-label="Quantity of ${product.name}" />
+              <div class="pt-qty-select-wrap" title="Select quantity">
+                <select class="pt-qty-select" data-product-id="${product.id}" aria-label="Select quantity for ${product.name}">
+                  <option value="" disabled hidden ${QTY_PRESETS.includes(initialQty) ? '' : 'selected'}></option>
+                  ${presetOptions}
+                </select>
+                <span class="pt-qty-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+              </div>
+            </div>
           </td>
-          <td class="pt-final" data-label="Final Price" data-product-id="${product.id}">${inCart ? fmt(product.price * inCart) : '&mdash;'}</td>
+          <td class="pt-final" data-label="Final Price" data-product-id="${product.id}">${fmt(finalPrice)}</td>
+          <td class="pt-action-cell" data-label="Action">
+            <button type="button" class="pt-add-btn ${inCart > 0 ? 'is-in-cart' : ''}" data-product-id="${product.id}" aria-label="${inCart > 0 ? `Update ${product.name} in cart` : `Add ${product.name} to cart`}">
+              <i data-lucide="${inCart > 0 ? 'check' : 'shopping-cart'}"></i>
+              <span class="pt-btn-label">${inCart > 0 ? `In Cart (${inCart})` : 'Add to Cart'}</span>
+            </button>
+          </td>
         </tr>
       `;
     }).join('');
@@ -707,6 +733,7 @@ function renderProductTable(products, containerId) {
                 <th scope="col">Offer Price</th>
                 <th scope="col">Qty</th>
                 <th scope="col">Final Price</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>${catRows}</tbody>
@@ -719,40 +746,138 @@ function renderProductTable(products, containerId) {
   container.classList.add('table-mode');
   container.innerHTML = sections;
 
-  // Quantity input: auto-syncs the cart (qty >= 1 adds/updates, 0/empty removes).
-  // Final Price updates live from the quantity.
-  container.querySelectorAll('.pt-qty-input').forEach(input => {
-    const product = getProductById(input.dataset.productId);
-    if (!product) return;
-    const cell = container.querySelector(`.pt-final[data-product-id="${product.id}"]`);
+  function _setBtnIcon(btn, iconName) {
+    if (!btn) return;
+    const current = btn.querySelector('i, svg');
+    const newI = document.createElement('i');
+    newI.setAttribute('data-lucide', iconName);
+    if (current) current.replaceWith(newI);
+    else btn.prepend(newI);
+    _applyIcons();
+  }
 
-    const applyToCart = qty => {
-      if (qty >= 1) {
-        if (typeof getCartItemQty === 'function' && getCartItemQty(product.id) > 0) {
-          updateCartQty(product.id, qty);
+  // Row quantity & Add-to-cart logic:
+  // - Typing or selecting quantity updates Final Price in real-time.
+  // - Cart is ONLY updated when "Add to Cart" / "Update" button is clicked.
+  container.querySelectorAll('tr[data-product-id]').forEach(row => {
+    const product = getProductById(row.dataset.productId);
+    if (!product) return;
+
+    const input     = row.querySelector('.pt-qty-input');
+    const select    = row.querySelector('.pt-qty-select');
+    const cellFinal = row.querySelector(`.pt-final[data-product-id="${product.id}"]`);
+    const btn       = row.querySelector('.pt-add-btn');
+    const btnLabel  = btn ? btn.querySelector('.pt-btn-label') : null;
+
+    if (!input || !cellFinal || !btn) return;
+
+    const updatePreviewAndBtn = () => {
+      const raw = input.value.trim();
+      let qty = parseInt(raw, 10);
+      if (isNaN(qty) || qty < 0) qty = 0;
+
+      // Update final price cell
+      cellFinal.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
+
+      // Update select dropdown matching
+      if (select) {
+        const hasPreset = QTY_PRESETS.includes(qty);
+        select.value = hasPreset ? String(qty) : '';
+      }
+
+      // Check current in-cart quantity to update button state
+      const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
+      if (inCart > 0) {
+        if (qty === inCart) {
+          btn.classList.add('is-in-cart');
+          btn.classList.remove('is-modified');
+          if (btnLabel) btnLabel.textContent = `In Cart (${inCart})`;
+          _setBtnIcon(btn, 'check');
+        } else if (qty >= 1) {
+          btn.classList.remove('is-in-cart');
+          btn.classList.add('is-modified');
+          if (btnLabel) btnLabel.textContent = `Update (${qty})`;
+          _setBtnIcon(btn, 'refresh-cw');
         } else {
-          addToCart(product, qty);
+          btn.classList.remove('is-in-cart');
+          btn.classList.add('is-modified');
+          if (btnLabel) btnLabel.textContent = 'Remove';
+          _setBtnIcon(btn, 'trash-2');
         }
       } else {
-        removeFromCart(product.id);
+        btn.classList.remove('is-in-cart', 'is-modified');
+        if (btnLabel) btnLabel.textContent = 'Add to Cart';
+        _setBtnIcon(btn, 'shopping-cart');
       }
     };
 
-    const sync = () => {
-      const raw = input.value.trim();
-      const qty = raw === '' ? 0 : Math.min(Math.max(parseInt(raw, 10) || 0, 0), 99);
-      if (qty >= 1 && String(qty) !== raw) input.value = qty;
-      applyToCart(qty);
-      cell.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
-    };
+    // User types in input: update preview only (do NOT auto-add to cart)
+    input.addEventListener('input', updatePreviewAndBtn);
 
-    input.addEventListener('input', () => {
-      const qty = Math.min(Math.max(parseInt(input.value, 10) || 0, 0), 99);
-      applyToCart(qty);
-      cell.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
+    // Normalize on blur: minimum 1
+    input.addEventListener('blur', () => {
+      const raw = input.value.trim();
+      let qty = parseInt(raw, 10);
+      if (isNaN(qty) || qty < 1) {
+        input.value = 1;
+        updatePreviewAndBtn();
+      }
     });
-    input.addEventListener('change', sync);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        input.blur();
+        btn.click();
+      }
+    });
+
+    // User picks from dropdown select
+    if (select) {
+      select.addEventListener('change', () => {
+        if (select.value) {
+          input.value = select.value;
+          updatePreviewAndBtn();
+        }
+      });
+    }
+
+    // User clicks Add to Cart / Update button: cart updates HERE ONLY
+    btn.addEventListener('click', () => {
+      let qty = parseInt(input.value.trim(), 10);
+      if (isNaN(qty) || qty < 1) {
+        qty = 1;
+        input.value = 1;
+        updatePreviewAndBtn();
+      }
+
+      const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
+
+      if (inCart > 0) {
+        if (typeof updateCartQty === 'function') updateCartQty(product.id, qty);
+      } else {
+        if (typeof addToCart === 'function') addToCart(product, qty);
+      }
+
+      // Visual feedback
+      btn.classList.add('just-added');
+      if (btnLabel) {
+        btnLabel.textContent = inCart > 0 ? 'Updated ✓' : 'Added ✓';
+      }
+      _setBtnIcon(btn, 'check');
+
+      if (typeof showToast === 'function') {
+        showToast(`${qty} × ${product.name} added to cart!`);
+      }
+
+      setTimeout(() => {
+        btn.classList.remove('just-added', 'is-modified');
+        btn.classList.add('is-in-cart');
+        if (btnLabel) {
+          btnLabel.textContent = `In Cart (${qty})`;
+        }
+        _setBtnIcon(btn, 'check');
+      }, 1200);
+    });
   });
 
   // Full-size image preview on thumbnail click
@@ -772,6 +897,35 @@ function renderProductTable(products, containerId) {
       }
     });
   });
+
+  // Sync row button states if cart is modified externally (e.g. cart cleared or items removed)
+  if (!container._cartSyncAttached) {
+    container._cartSyncAttached = true;
+    document.addEventListener('cartUpdated', () => {
+      container.querySelectorAll('tr[data-product-id]').forEach(r => {
+        const pId = r.dataset.productId;
+        const b = r.querySelector('.pt-add-btn');
+        const bLabel = b ? b.querySelector('.pt-btn-label') : null;
+        const inp = r.querySelector('.pt-qty-input');
+        if (!b || !pId) return;
+        const currentInCart = typeof getCartItemQty === 'function' ? getCartItemQty(pId) : 0;
+        const curVal = inp ? parseInt(inp.value.trim(), 10) || 1 : 1;
+
+        if (currentInCart > 0) {
+          if (curVal === currentInCart) {
+            b.classList.add('is-in-cart');
+            b.classList.remove('is-modified');
+            if (bLabel) bLabel.textContent = `In Cart (${currentInCart})`;
+            _setBtnIcon(b, 'check');
+          }
+        } else {
+          b.classList.remove('is-in-cart', 'is-modified');
+          if (bLabel) bLabel.textContent = 'Add to Cart';
+          _setBtnIcon(b, 'shopping-cart');
+        }
+      });
+    });
+  }
 
   _applyIcons();
 }
