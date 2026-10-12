@@ -717,9 +717,8 @@ function renderProductTable(products, containerId) {
 
     return `
       <div class="pt-cat-section">
-        <div class="pt-cat-heading" style="border-left-color:${color}">
-          <i data-lucide="${icon}" style="width:18px;height:18px;color:inherit;"></i>
-          <span>${group.category}</span>
+        <div class="pt-cat-heading">
+          <span class="pt-cat-title">${group.category}</span>
           <span class="pt-cat-count">${group.items.length} items</span>
         </div>
         <div class="product-table-wrap">

@@ -573,6 +573,9 @@ function _renderCartPage() {
   if (itemCountEl) itemCountEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
   if (subtotalEl)  subtotalEl.textContent  = `\u20B9${total.toLocaleString('en-IN')}`;
   if (totalEl)     totalEl.textContent     = `\u20B9${total.toLocaleString('en-IN')}`;
+
+  if (typeof _applyIcons === 'function') _applyIcons();
+  else if (window.lucide) lucide.createIcons();
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•

@@ -63,9 +63,9 @@
   --transition: 0.2s ease;
   --transition-slow: 0.35s ease;
 
-  /* Header height */
-  --notice-height: 34px;
-  --header-height: calc(56px + var(--notice-height));
+  /* Header height — compact & proper */
+  --notice-height: 24px;
+  --header-height: calc(46px + var(--notice-height));
 }
 
 /* ── Reset ──────────────────────────────────────────────────────── */
