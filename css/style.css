@@ -2422,7 +2422,7 @@ select option,
 .about-story-img-wrap img {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: right center;
+  object-position: center;
   display: block;
   transition: transform 0.6s ease;
 }
