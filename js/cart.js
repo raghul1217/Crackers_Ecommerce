@@ -6,7 +6,7 @@
 const CART_KEY = 'sivakasi666_cart';
 const CUSTOMER_KEY = 'sivakasi666_customer';
 const ORDERS_API = '/api/orders';
-const SHOP_PHONE = '919345546946'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
+const SHOP_PHONE = '919843029619'; // sivakasi666crackers Pattasu Kadai WhatsApp order number
 const SHOP_NAME  = 'sivakasi666crackers Pattasu Kadai';
 
 // Internal cart state: { [productId]: { id, qty, price, name } }
