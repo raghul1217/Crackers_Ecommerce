@@ -19,8 +19,28 @@
       "savings": 72,
       "status": "pending",
       "createdAt": "2026-09-27T14:49:39.231Z"
+    },
+    {
+      "id": "SVC-0002",
+      "customerName": "Praveen Kumar",
+      "mobile": "9943467524",
+      "address": "Ghijbvv",
+      "items": [
+        {
+          "name": "Tuk Tuk (20 Items)",
+          "content": "7 CM Electric Sparklers, 7 CM Glitering Sparklers, Red Bijili, Flower Pot Big, Ground Chakkar Big, Twinkling Star, Bullet Bomb, Toys Cartoon, Glitering Stone, Jee Boom Baa, 10 Wala, 2 3/4 Kuruvi, 3 1/2 Lakshmi, Colour Matches, Colour Matches King Power, Colour Matches Golden, Snake Serpents, Ariel Shot, Photo Flash, Butterfly",
+          "qty": 3,
+          "rate": 1,
+          "finalRate": 1,
+          "lineTotal": 3
+        }
+      ],
+      "total": 3,
+      "savings": 0,
+      "status": "pending",
+      "createdAt": "2026-10-13T03:08:19.515Z"
     }
   ],
-  "count": 1,
+  "count": 2,
   "updatedAt": "2026-09-27T00:00:00.000Z"
 }
