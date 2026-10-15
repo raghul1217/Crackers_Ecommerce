@@ -6,7 +6,8 @@
  *
  * products.json shape:
  *   { exportedAt, count, products: [{ id, name, category, tag, content,
- *     rate, discount, finalRate, image, fallbackImage, rating, inStock }] }
+ *     rate, discount, finalRate, image, fallbackImage, rating, inStock,
+ *     bestseller, newArrival }] }
  *
  *   `rate`      MRP / list price
  *   `discount`  FACTOR, not a percent (0.8 = customer pays 80% of MRP)
@@ -142,7 +143,11 @@ function _toProduct(p) {
     unit: content,
     rating: _round2(_num(p.rating, 4.2)),
     inStock: p.inStock === undefined ? true : !!p.inStock,
-    badge: p.badge || TAG_BADGE[p.tag] || null,
+    badge: p.badge || TAG_BADGE[p.tag] ||
+      (p.bestseller ? 'Bestseller' : null) ||
+      (p.newArrival ? 'New' : null),
+    bestseller: !!p.bestseller,
+    newArrival: !!p.newArrival,
   };
 }
 

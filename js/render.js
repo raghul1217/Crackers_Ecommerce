@@ -622,7 +622,7 @@ function showLoading(containerId) {
  * Render products as a price-list table grouped by category.
  * Each category gets a heading row, then its product rows.
  * Columns: Item | Name | Actual Price | Discount | Offer Price | Qty | Final Price | Action.
- * Default quantity is 1 with dropdown + type combo. Cart updates only when Add to Cart is clicked.
+ * Default quantity is 1 with an editable number field. Cart updates only when Add to Cart is clicked.
  * @param {Array} products
  * @param {string} containerId
  */
@@ -660,8 +660,6 @@ function renderProductTable(products, containerId) {
     byCat[cat].items.push(product);
   }
 
-  const QTY_PRESETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100];
-
   const sections = groups.map(group => {
     const icon = CATEGORY_ICONS[group.category] || 'sparkles';
     const color = CATEGORY_COLORS[group.category] || 'var(--clr-red)';
@@ -669,10 +667,6 @@ function renderProductTable(products, containerId) {
       const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
       const initialQty = inCart > 0 ? inCart : 1;
       const finalPrice = product.price * initialQty;
-
-      const presetOptions = QTY_PRESETS.map(n =>
-        `<option value="${n}" ${n === initialQty ? 'selected' : ''}>${n}</option>`
-      ).join('');
 
       return `
         <tr data-product-id="${product.id}">
@@ -694,15 +688,6 @@ function renderProductTable(products, containerId) {
               <input class="pt-qty-input" type="number" min="1" max="999" step="1" inputmode="numeric"
                      value="${initialQty}" data-product-id="${product.id}"
                      aria-label="Quantity of ${product.name}" />
-              <div class="pt-qty-select-wrap" title="Select quantity">
-                <select class="pt-qty-select" data-product-id="${product.id}" aria-label="Select quantity for ${product.name}">
-                  <option value="" disabled hidden ${QTY_PRESETS.includes(initialQty) ? '' : 'selected'}></option>
-                  ${presetOptions}
-                </select>
-                <span class="pt-qty-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </span>
-              </div>
             </div>
           </td>
           <td class="pt-final" data-label="Final Price" data-product-id="${product.id}">${fmt(finalPrice)}</td>
@@ -764,7 +749,6 @@ function renderProductTable(products, containerId) {
     if (!product) return;
 
     const input     = row.querySelector('.pt-qty-input');
-    const select    = row.querySelector('.pt-qty-select');
     const cellFinal = row.querySelector(`.pt-final[data-product-id="${product.id}"]`);
     const btn       = row.querySelector('.pt-add-btn');
     const btnLabel  = btn ? btn.querySelector('.pt-btn-label') : null;
@@ -778,12 +762,6 @@ function renderProductTable(products, containerId) {
 
       // Update final price cell
       cellFinal.innerHTML = qty >= 1 ? fmt(product.price * qty) : '&mdash;';
-
-      // Update select dropdown matching
-      if (select) {
-        const hasPreset = QTY_PRESETS.includes(qty);
-        select.value = hasPreset ? String(qty) : '';
-      }
 
       // Check current in-cart quantity to update button state
       const inCart = typeof getCartItemQty === 'function' ? getCartItemQty(product.id) : 0;
@@ -830,16 +808,6 @@ function renderProductTable(products, containerId) {
         btn.click();
       }
     });
-
-    // User picks from dropdown select
-    if (select) {
-      select.addEventListener('change', () => {
-        if (select.value) {
-          input.value = select.value;
-          updatePreviewAndBtn();
-        }
-      });
-    }
 
     // User clicks Add to Cart / Update button: cart updates HERE ONLY
     btn.addEventListener('click', () => {
