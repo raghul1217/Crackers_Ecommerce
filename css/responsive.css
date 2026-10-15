@@ -175,47 +175,39 @@
     display: none !important;
   }
 
-  /* Category Selection: 2-row horizontal swipe rail on mobile */
+  /* Category Selection: centered wrapping grid on mobile */
   .cat-section {
     margin-left: 0;
     margin-right: 0;
-    padding: 16px 0 10px;
+    padding: 16px 14px 14px;
   }
   .cat-section .section-header {
     padding-bottom: 12px;
   }
   .category-grid {
-    display: grid;
-    grid-template-rows: repeat(2, auto);
-    grid-auto-flow: column;
-    grid-auto-columns: 82px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
     column-gap: 10px;
-    row-gap: 12px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    padding: 4px 16px 14px;
-    margin: 0 -16px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .category-grid::-webkit-scrollbar {
-    display: none;
+    row-gap: 14px;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+    scroll-snap-type: none;
   }
   .category-grid-item {
-    scroll-snap-align: start;
-    width: 82px;
-    max-width: 82px;
+    width: 100%;
+    max-width: none;
     padding: 4px 2px;
   }
   .cat-img-wrap {
-    width: 60px;
-    height: 60px;
+    width: 72px;
+    height: 72px;
   }
   .cat-label {
-    font-size: 11px;
-    margin-top: 6px;
+    font-size: 11.5px;
+    margin-top: 7px;
     padding: 0 2px;
   }
 }
@@ -376,7 +368,7 @@
   }
 
   .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 16px 12px;
   }
   .cat-label { font-size: 12px; }
@@ -436,7 +428,7 @@
   }
 
   .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 18px 12px;
   }
 
@@ -590,7 +582,7 @@
    ═══════════════════════════════════════════════════════════════ */
 @media (min-width: 1440px) {
   .products-grid { grid-template-columns: repeat(6, 1fr); }
-  .category-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 20px 14px; }
+  .category-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 20px 14px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════

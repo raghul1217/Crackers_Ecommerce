@@ -1118,7 +1118,7 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 16px 10px;
   justify-content: center;
 }
@@ -1149,8 +1149,8 @@ h1,h2,h3,h4 { font-family: var(--font-heading); line-height: 1.25; }
 /* Circular Category Avatar */
 .cat-img-wrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   overflow: hidden;
   background: radial-gradient(circle at 35% 35%, #ffffff 25%, color-mix(in srgb, var(--cat-color) 12%, #f8f9fa) 100%);

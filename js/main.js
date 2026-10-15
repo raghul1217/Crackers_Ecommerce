@@ -55,7 +55,15 @@ async function initHome() {
   const products = await loadProducts();
 
   // Category grid
-  const categories = getCategories();
+  const HOME_HIDDEN_CATEGORIES = [
+    'Mega Fountains',
+    'Mini Fountains',
+    'Color Matches',
+    'Special Fountains',
+    'Fountain with Bomb',
+    'Rider Shots'
+  ];
+  const categories = getCategories().filter(c => !HOME_HIDDEN_CATEGORIES.includes(c));
   renderCategoryGrid(categories, 'category-grid'); // calls _applyIcons internally
 
   // Category chips (horizontal scroll)
